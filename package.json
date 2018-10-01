@@ -12,6 +12,7 @@
     "discord.js": "^11.4.2",
     "dotenv": "^6.0.0",
     "ms": "^2.1.1",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "superagent": "^4.0.0-beta.5"
   }
 }
