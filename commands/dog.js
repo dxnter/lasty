@@ -1,14 +1,16 @@
 const Discord = require('discord.js');
-const superagent = require('superagent');
+const axios = require('axios');
 
 module.exports.run = async (bot, message, args) => {
-  const { body } = await superagent.get('https://random.dog/woof.json');
+  const {
+    data: { url },
+  } = await axios.get('https://random.dog/woof.json');
 
   return message.channel.send(
     new Discord.RichEmbed()
       .setColor('#E31C23')
       .setTitle('Doggo :dog:')
-      .setImage(body.url)
+      .setImage(url)
   );
 };
 

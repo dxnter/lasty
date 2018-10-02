@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { TOKEN, PREFIX } = process.env;
+const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
 
 const Discord = require('discord.js');
 const fs = require('fs');
@@ -19,7 +19,6 @@ fs.readdir('./commands/', (err, files) => {
 
   jsfiles.forEach((f, i) => {
     const props = require(`./commands/${f}`);
-    console.log(`${f} loaded`);
     bot.commands.set(props.help.name, props);
   });
 });
@@ -41,4 +40,4 @@ bot.on('message', async message => {
   if (commandFile) commandFile.run(bot, message, args);
 });
 
-bot.login(TOKEN);
+bot.login(DISCORD_BOT_TOKEN);
