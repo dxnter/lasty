@@ -38,10 +38,13 @@ module.exports.run = async (bot, message, args) => {
           .addField('np - Shows currently playing song. (Without `,lf` prefix)', 'Example: `,np` or `,np iiMittens`')
           .addField('recent - Shows recent tracks.', 'Alternate: None')
           .addBlankField(true)
-          .addField('Command Paramaters', '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)')
+          .addField(
+            'Command Paramaters',
+            '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)\n**Username can be omitted if set with** `,lf set`\n'
+          )
           .addField('tracks - Shows most played tracks', 'Example: `,lf tracks iiMittens month`')
-          .addField('artists - Shows most listened artists', 'Alternate: topartists')
-          .addField('albums - Shows most played albums', 'Alternate: albums, tab')
+          .addField('artists - Shows most listened artists', 'Example: `,lf artists dluxxe week`')
+          .addField('albums - Shows most played albums', 'Example: `,lf albums Reversibly 90`')
       );
     }
 
