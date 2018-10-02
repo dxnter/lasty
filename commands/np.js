@@ -62,9 +62,14 @@ module.exports.run = (bot, message, args) => {
                 .setThumbnail(latestTrack.image[2]['#text'])
                 .addField('Track', `[${track}](${songUrl.replace(')', '\\)')})`, true)
                 .addField('Artist', `[${artist}](${url})`, true)
-                .setFooter(`'${artist}' Scrobbles: ${userplaycount} | Total Scrobbles: ${playcount} | Album: ${album}`);
+                .setFooter(
+                  `'${artist}' Scrobbles: ${userplaycount || 0} | Total Scrobbles: ${playcount} | Album: ${album}`
+                );
 
-              message.channel.send(embed);
+              message.channel.send(embed).then(async embedMessage => {
+                await embedMessage.react('👍');
+                await embedMessage.react('👎');
+              });
             })
             .catch(err => {
               console.log('Error:', err);
