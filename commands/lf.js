@@ -36,7 +36,7 @@ module.exports.run = async (bot, message, args) => {
           .setColor('#E31C23')
           .addField('Last.FM Commands', 'Run commands with prefix `,lf`. Set username with `,lf set`')
           .addField('set - Set Last.FM username.', 'Example: `,lf set iiMittens`')
-          .addField("delete - Deletes your Last.FM username from Lasty's database", 'Alternate: `reset`')
+          .addField('delete - Deletes your Last.FM username', 'Alternate: `reset`')
           .addField('np - Shows currently playing song. (Without `,lf` prefix)', 'Example: `,np` or `,np iiMittens`')
           .addField('recent - Shows 10 most recent tracks played.', 'Alternate: None')
           .addBlankField(true)
