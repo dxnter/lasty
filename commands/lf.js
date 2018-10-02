@@ -91,6 +91,11 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'recent': {
+      if (!fmUser) {
+        return message.channel.send(
+          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
+        );
+      }
       const GET_RECENT_TRACKS = 'user.getRecentTracks';
       const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
       const tracksRequestURL = `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`;
@@ -119,6 +124,11 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'tracks': {
+      if (!fmUser) {
+        return message.channel.send(
+          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
+        );
+      }
       const GET_TOP_TRACKS = 'user.getTopTracks';
       const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=${
         PERIOD_PARMS[period]
@@ -150,6 +160,11 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'artists': {
+      if (!fmUser) {
+        return message.channel.send(
+          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
+        );
+      }
       const GET_TOP_ARTISTS = 'user.getTopArtists';
       const TOP_ARTISTS_QUERY_STRING = `&user=${fmUser}&period=${
         PERIOD_PARMS[period]
@@ -175,6 +190,11 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'albums': {
+      if (!fmUser) {
+        return message.channel.send(
+          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
+        );
+      }
       const GET_TOP_ALBUMS = 'user.getTopAlbums';
       const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${
         PERIOD_PARMS[period]

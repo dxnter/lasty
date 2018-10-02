@@ -3,9 +3,18 @@
   "version": "1.0.0",
   "description": "LastFM and utility Discord bot",
   "main": "bot.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dxnter/lasty.git"
+  },
   "scripts": {
     "start": "nodemon"
   },
+  "keywords": [
+    "discord",
+    "lastfm",
+    "bot"
+  ],
   "author": "dxnter",
   "license": "ISC",
   "dependencies": {
