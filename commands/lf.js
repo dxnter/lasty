@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 const axios = require('axios');
+const mongoose = require('mongoose');
+const User = require('../models/user');
 
 const { LASTFM_API_KEY } = process.env;
 const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
@@ -32,6 +34,30 @@ module.exports.run = async (bot, message, args) => {
           .addField('artists - Shows most listened artists', 'Alternate: topartists')
           .addField('albums - Shows most played albums', 'Alternate: albums, tab')
       );
+    }
+
+    case 'set': {
+      const existingUser = await User.findOne({ userID: message.author.id });
+      if (existingUser) {
+        if (existingUser.lastFM === fmUser) {
+          return message.channel.send(`Your Last.FM profile is already set to ${fmUser}`);
+        }
+        existingUser.lastFM = fmUser;
+        return existingUser
+          .save()
+          .then(() => message.channel.send(`Last.FM username updated to ${fmUser}`))
+          .catch(console.error);
+      }
+
+      const user = new User({
+        _id: mongoose.Types.ObjectId(),
+        lastFM: fmUser,
+        userID: message.author.id,
+      });
+      return user
+        .save()
+        .then(() => message.channel.send(`Last.FM username set to ${fmUser}`))
+        .catch(console.error);
     }
 
     case 'recent': {

@@ -3,7 +3,16 @@ require('dotenv').config();
 const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
 
 const Discord = require('discord.js');
+const mongoose = require('mongoose');
 const fs = require('fs');
+
+mongoose
+  .connect(
+    process.env.DATABASE_URL,
+    { useNewUrlParser: true }
+  )
+  .then(() => console.log('Now connected to MongoDB'))
+  .catch(err => console.log('Something went wrong', err));
 
 const bot = new Discord.Client({ disableEveryone: true });
 bot.commands = new Discord.Collection();

@@ -1,11 +1,18 @@
 const Discord = require('discord.js');
 const axios = require('axios');
 
+const User = require('../models/user');
+
 const { LASTFM_API_KEY } = process.env;
 const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
 
-module.exports.run = (bot, message, args) => {
-  const fmUser = args[0];
+module.exports.run = async (bot, message, args) => {
+  let fmUser = args[0];
+
+  if (!fmUser) {
+    const dbUser = await User.findOne({ userID: message.author.id });
+    fmUser = dbUser.lastFM;
+  }
 
   const USER_INFO = 'user.getInfo';
   const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
