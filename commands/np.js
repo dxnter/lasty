@@ -25,10 +25,6 @@ module.exports.run = (bot, message, args) => {
       axios
         .get(songRequestURL)
         .then(res => {
-          if (res.data.message) {
-            return message.channel.send('User not found');
-          }
-
           const latestTrack = res.data.recenttracks.track[0];
 
           if (!latestTrack) {
@@ -63,7 +59,7 @@ module.exports.run = (bot, message, args) => {
                 .addField('Track', `[${track}](${songUrl.replace(')', '\\)')})`, true)
                 .addField('Artist', `[${artist}](${url})`, true)
                 .setFooter(
-                  `'${artist}' Scrobbles: ${userplaycount || 0} | Total Scrobbles: ${playcount} | Album: ${album}`
+                  `'${artist}' Scrobbles: ${userplaycount || 0} | Total Scrobbles: ${playcount || 0} | Album: ${album}`
                 );
 
               message.channel.send(embed).then(async embedMessage => {
