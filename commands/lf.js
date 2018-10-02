@@ -54,12 +54,12 @@ module.exports.run = async (bot, message, args) => {
       const existingUser = await User.findOne({ userID: message.author.id });
       if (existingUser) {
         if (existingUser.lastFM === fmUser) {
-          return message.channel.send(`Your Last.FM profile is already set to ${fmUser}`);
+          return message.channel.send(`Your Last.FM profile is already set to **${fmUser}**`);
         }
         existingUser.lastFM = fmUser;
         return existingUser
           .save()
-          .then(() => message.channel.send(`Last.FM username updated to ${fmUser}`))
+          .then(() => message.channel.send(`Last.FM username updated to **${fmUser}**`))
           .catch(console.error);
       }
 
@@ -71,7 +71,7 @@ module.exports.run = async (bot, message, args) => {
       return user
         .save()
         .then(() => {
-          message.channel.send(`Last.FM username set to ${fmUser}`);
+          message.channel.send(`Last.FM username set to **${fmUser}**`);
           console.log(user);
         })
         .catch(console.error);
@@ -129,6 +129,13 @@ module.exports.run = async (bot, message, args) => {
           `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
         );
       }
+      if (period) {
+        if (!PERIOD_PARMS[period]) {
+          return message.channel.send(
+            `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+          );
+        }
+      }
       const GET_TOP_TRACKS = 'user.getTopTracks';
       const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=${
         PERIOD_PARMS[period]
@@ -165,6 +172,13 @@ module.exports.run = async (bot, message, args) => {
           `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
         );
       }
+      if (period) {
+        if (!PERIOD_PARMS[period]) {
+          return message.channel.send(
+            `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+          );
+        }
+      }
       const GET_TOP_ARTISTS = 'user.getTopArtists';
       const TOP_ARTISTS_QUERY_STRING = `&user=${fmUser}&period=${
         PERIOD_PARMS[period]
@@ -194,6 +208,13 @@ module.exports.run = async (bot, message, args) => {
         return message.channel.send(
           `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
         );
+      }
+      if (period) {
+        if (!PERIOD_PARMS[period]) {
+          return message.channel.send(
+            `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+          );
+        }
       }
       const GET_TOP_ALBUMS = 'user.getTopAlbums';
       const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${
