@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const axios = require('axios');
 const mongoose = require('mongoose');
+const chalk = require('chalk');
 const User = require('../models/user');
 
 const { LASTFM_API_KEY } = process.env;
@@ -35,6 +36,7 @@ module.exports.run = async (bot, message, args) => {
           .setColor('#E31C23')
           .addField('Last.FM Commands', 'Run commands with prefix `,lf`. Set username with `,lf set`')
           .addField('set - Set Last.FM username.', 'Example: `,lf set iiMittens`')
+          .addField("delete - Deletes your Last.FM username from Lasty's database", 'Alternate: `reset`')
           .addField('np - Shows currently playing song. (Without `,lf` prefix)', 'Example: `,np` or `,np iiMittens`')
           .addField('recent - Shows 10 most recent tracks played.', 'Alternate: None')
           .addBlankField(true)
@@ -68,8 +70,24 @@ module.exports.run = async (bot, message, args) => {
       });
       return user
         .save()
-        .then(() => message.channel.send(`Last.FM username set to ${fmUser}`))
+        .then(() => {
+          message.channel.send(`Last.FM username set to ${fmUser}`);
+          console.log(user);
+        })
         .catch(console.error);
+    }
+
+    case 'delete':
+    case 'reset': {
+      const existingUser = await User.findOne({ userID: message.author.id });
+      if (existingUser) {
+        return User.deleteOne(existingUser).then(() =>
+          message.channel.send(`**${existingUser.lastFM}** has been deleted from the database`)
+        );
+      }
+      return message.channel.send(
+        'Please set your Last.FM username with `,lf set [username]`\nNo account? Sign up: https://www.last.fm/join'
+      );
     }
 
     case 'recent': {

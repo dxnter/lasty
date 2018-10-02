@@ -10,7 +10,13 @@ module.exports.run = async (bot, message, args) => {
   let fmUser = args[0];
   if (!fmUser) {
     const dbUser = await User.findOne({ userID: message.author.id });
-    fmUser = dbUser.lastFM;
+    try {
+      fmUser = dbUser.lastFM;
+    } catch (e) {
+      return message.channel.send(
+        'Please set your Last.FM username with `,lf set [username]`\nNo account? Sign up: https://www.last.fm/join'
+      );
+    }
   }
 
   const USER_INFO = 'user.getInfo';

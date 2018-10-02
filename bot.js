@@ -13,7 +13,7 @@ mongoose
     process.env.DATABASE_URL,
     { useNewUrlParser: true }
   )
-  .then(() => log(`${chalk.bgGreen.black('[MongoDB]')} Successfully connected to the database`))
+  .then(() => log(chalk.green('[MongoDB] Successfully connected to the database')))
   .catch(err => console.log('Something went wrong', err));
 
 const bot = new Discord.Client({ disableEveryone: true });
@@ -35,7 +35,7 @@ fs.readdir('./commands/', (err, files) => {
 });
 
 bot.on('ready', async () => {
-  console.log(`${bot.user.username} is online on ${bot.guilds.size} servers!`);
+  log(chalk.blue(`[Discord.js] ${bot.user.username} is online on ${bot.guilds.size} servers!`));
   bot.user.setActivity('with code | ,help', { type: 'PLAYING' });
 });
 
