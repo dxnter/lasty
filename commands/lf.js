@@ -7,8 +7,17 @@ const { LASTFM_API_KEY } = process.env;
 const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
 
 module.exports.run = async (bot, message, args) => {
-  const fmUser = args[1];
-  const period = args[2];
+  let fmUser = args[1];
+  let period = args[2];
+  const dbUser = await User.findOne({ userID: message.author.id });
+  if (dbUser) {
+    fmUser = dbUser.lastFM;
+    period = args[1];
+  }
+  if (args.length === 3) {
+    fmUser = args[1];
+    period = args[2];
+  }
 
   const PERIOD_PARMS = {
     week: '7day',

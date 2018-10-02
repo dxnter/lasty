@@ -8,7 +8,6 @@ const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
 
 module.exports.run = async (bot, message, args) => {
   let fmUser = args[0];
-
   if (!fmUser) {
     const dbUser = await User.findOne({ userID: message.author.id });
     fmUser = dbUser.lastFM;
