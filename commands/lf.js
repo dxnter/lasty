@@ -10,7 +10,7 @@ module.exports.run = async (bot, message, args) => {
   let fmUser = args[1];
   let period = args[2];
   const dbUser = await User.findOne({ userID: message.author.id });
-  if (dbUser) {
+  if (dbUser && args[0] !== 'set') {
     fmUser = dbUser.lastFM;
     period = args[1];
   }
@@ -36,7 +36,7 @@ module.exports.run = async (bot, message, args) => {
           .addField('Last.FM Commands', 'Run commands with prefix `,lf`. Set username with `,lf set`')
           .addField('set - Set Last.FM username.', 'Example: `,lf set iiMittens`')
           .addField('np - Shows currently playing song. (Without `,lf` prefix)', 'Example: `,np` or `,np iiMittens`')
-          .addField('recent - Shows recent tracks.', 'Alternate: None')
+          .addField('recent - Shows 10 most recent tracks played.', 'Alternate: None')
           .addBlankField(true)
           .addField(
             'Command Paramaters',

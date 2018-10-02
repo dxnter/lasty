@@ -1,17 +1,19 @@
 require('dotenv').config();
 
-const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
-
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const chalk = require('chalk');
+
+const log = console.log;
+const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
 
 mongoose
   .connect(
     process.env.DATABASE_URL,
     { useNewUrlParser: true }
   )
-  .then(() => console.log('Now connected to MongoDB'))
+  .then(() => log(`${chalk.bgGreen.black('[MongoDB]')} Successfully connected to the database`))
   .catch(err => console.log('Something went wrong', err));
 
 const bot = new Discord.Client({ disableEveryone: true });
@@ -34,6 +36,7 @@ fs.readdir('./commands/', (err, files) => {
 
 bot.on('ready', async () => {
   console.log(`${bot.user.username} is online on ${bot.guilds.size} servers!`);
+  bot.user.setActivity('with code | ,help', { type: 'PLAYING' });
 });
 
 bot.on('message', async message => {
