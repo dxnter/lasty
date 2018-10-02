@@ -25,7 +25,7 @@ module.exports.run = async (bot, message, args) => {
           .addField('Last.FM Commands', 'Run commands with prefix `,lf`. Set username with `,lf set`')
           .addField('set - Set Last.FM username.', 'Example: `,lf set iiMittens`')
           .addField('np - Shows currently playing song. (Without `,lf` prefix)', 'Example: `,np` or `,np iiMittens`')
-          .addField('recent - Shows recent tracks.', 'Alternate: lp, last')
+          .addField('recent - Shows recent tracks.', 'Alternate: None')
           .addBlankField(true)
           .addField('Command Paramaters', '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)')
           .addField('tracks - Shows most played tracks', 'Example: `,lf tracks iiMittens month`')
@@ -34,33 +34,32 @@ module.exports.run = async (bot, message, args) => {
       );
     }
 
-    case 'recent':
-    case 'last':
-    case 'lp': {
-      const fmUser = args[1];
+    case 'recent': {
       const GET_RECENT_TRACKS = 'user.getRecentTracks';
       const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
       const tracksRequestURL = `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`;
 
       let recentTracks = '';
-      axios.get(tracksRequestURL).then(recentTracksRes => {
-        recentTracksRes.data.recenttracks.track.forEach((track, i) => {
-          const {
-            artist: { '#text': artist },
-            name: song,
-            url,
-          } = track;
-          recentTracks += `\`${i + 1}\` **[${song}](${url.replace(')', '\\)')})** by **${artist}**\n`;
-        });
+      return axios
+        .get(tracksRequestURL)
+        .then(recentTracksRes => {
+          recentTracksRes.data.recenttracks.track.forEach((track, i) => {
+            const {
+              artist: { '#text': artist },
+              name: song,
+              url,
+            } = track;
+            recentTracks += `\`${i + 1}\` **[${song}](${url.replace(')', '\\)')})** by **${artist}**\n`;
+          });
 
-        return message.channel.send(
-          new Discord.RichEmbed()
-            .setColor('#E31C23')
-            .setAuthor(`${fmUser}'s Recent Tracks`)
-            .setDescription(recentTracks)
-        );
-      });
-      break;
+          return message.channel.send(
+            new Discord.RichEmbed()
+              .setColor('#E31C23')
+              .setAuthor(`${fmUser}'s Recent Tracks`)
+              .setDescription(recentTracks)
+          );
+        })
+        .catch(e => message.channel.send(`No Last.FM data availible for ${fmUser}`));
     }
 
     case 'tracks': {
@@ -71,25 +70,27 @@ module.exports.run = async (bot, message, args) => {
       const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
 
       let topTracksStr = '';
-      axios.get(topTracksRequestURL).then(topTracksRes => {
-        topTracksRes.data.toptracks.track.forEach(track => {
-          const {
-            artist: { name: artist },
-            name: song,
-            playcount,
-            url,
-          } = track;
-          topTracksStr += `\`${playcount} ▶️\` • **[${song}](${url.replace(')', '\\)')})** by **${artist}**\n`;
-        });
+      return axios
+        .get(topTracksRequestURL)
+        .then(topTracksRes => {
+          topTracksRes.data.toptracks.track.forEach(track => {
+            const {
+              artist: { name: artist },
+              name: song,
+              playcount,
+              url,
+            } = track;
+            topTracksStr += `\`${playcount} ▶️\` • **[${song}](${url.replace(')', '\\)')})** by **${artist}**\n`;
+          });
 
-        return message.channel.send(
-          new Discord.RichEmbed()
-            .setColor('#E31C23')
-            .setAuthor(`${fmUser}'s Top Tracks for time period of ${period ? PERIOD_PARMS[period] : 'overall'}`)
-            .setDescription(topTracksStr)
-        );
-      });
-      break;
+          return message.channel.send(
+            new Discord.RichEmbed()
+              .setColor('#E31C23')
+              .setAuthor(`${fmUser}'s Top Tracks for time period of ${period ? PERIOD_PARMS[period] : 'overall'}`)
+              .setDescription(topTracksStr)
+          );
+        })
+        .catch(e => message.channel.send(`No Last.FM data availible for ${fmUser}`));
     }
 
     case 'artists': {
@@ -100,19 +101,54 @@ module.exports.run = async (bot, message, args) => {
       const topArtistsRequestURL = `${LASTFM_API_URL}${GET_TOP_ARTISTS}${TOP_ARTISTS_QUERY_STRING}`;
 
       let topArtistsStr = '';
-      axios.get(topArtistsRequestURL).then(topArtists => {
-        topArtists.data.topartists.artist.forEach(artistRes => {
-          const { name: artist, playcount, url } = artistRes;
-          topArtistsStr += `\`${playcount} ▶️\`•  **[${artist}](${url.replace(')', '\\)')})**\n`;
-        });
-        return message.channel.send(
-          new Discord.RichEmbed()
-            .setColor('#E31C23')
-            .setAuthor(`${fmUser}'s Top Artists for time period of ${period ? PERIOD_PARMS[period] : 'overall'}`)
-            .setDescription(topArtistsStr)
-        );
-      });
-      break;
+      return axios
+        .get(topArtistsRequestURL)
+        .then(topArtists => {
+          topArtists.data.topartists.artist.forEach(artistRes => {
+            const { name: artist, playcount, url } = artistRes;
+            topArtistsStr += `\`${playcount} ▶️\`•  **[${artist}](${url.replace(')', '\\)')})**\n`;
+          });
+          return message.channel.send(
+            new Discord.RichEmbed()
+              .setColor('#E31C23')
+              .setAuthor(`${fmUser}'s Top Artists for time period of ${period ? PERIOD_PARMS[period] : 'overall'}`)
+              .setDescription(topArtistsStr)
+          );
+        })
+        .catch(e => message.channel.send(`No Last.FM data availible for ${fmUser}`));
+    }
+
+    case 'albums': {
+      const GET_TOP_ALBUMS = 'user.getTopAlbums';
+      const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${
+        PERIOD_PARMS[period]
+      }&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+      const topAlbumsRequestURL = `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
+
+      let topAlbumsStr = '';
+      return axios
+        .get(topAlbumsRequestURL)
+        .then(albumsRes => {
+          albumsRes.data.topalbums.album.forEach(albumData => {
+            const {
+              name: albumName,
+              playcount,
+              url: albumURL,
+              artist: { name: artistName, url: artistURL },
+            } = albumData;
+            topAlbumsStr += `\`${playcount} ▶️\`•  **[${albumName}](${albumURL.replace(
+              ')',
+              '\\)'
+            )})** by **[${artistName}](${artistURL.replace(')', '\\)')})**\n`;
+          });
+          return message.channel.send(
+            new Discord.RichEmbed()
+              .setColor('#E31C23')
+              .setAuthor(`${fmUser}'s Top Albums for time period of ${period ? PERIOD_PARMS[period] : 'overall'}`)
+              .setDescription(topAlbumsStr)
+          );
+        })
+        .catch(e => message.channel.send(`No Last.FM data availible for ${fmUser}`));
     }
 
     default: {
