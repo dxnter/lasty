@@ -53,8 +53,10 @@ module.exports.run = (bot, message, args) => {
                 },
               } = artistRes;
 
+              const avatarURL = `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}`;
+
               const embed = new Discord.RichEmbed()
-                .setAuthor(`Last.FM: ${fmUser}`, bot.user.displayAvatarURL, `http://www.last.fm/user/${fmUser}`)
+                .setAuthor(`Last.FM: ${fmUser}`, avatarURL, `http://www.last.fm/user/${fmUser}`)
                 .setThumbnail(latestTrack.image[2]['#text'])
                 .addField('Track', `[${track}](${songUrl.replace(')', '\\)')})`, true)
                 .addField('Artist', `[${artist}](${url})`, true)

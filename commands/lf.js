@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const axios = require('axios');
 
 const { LASTFM_API_KEY } = process.env;
 const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
@@ -8,7 +9,26 @@ module.exports.run = async (bot, message, args) => {
     case 'last':
     case 'lp':
     case 'recent': {
-      console.log('last');
+      const fmUser = args[1];
+      const GET_RECENT_TRACKS = 'user.getRecentTracks';
+      const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+      const tracksRequestURL = `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`;
+
+      let recentTracks = '';
+      axios.get(tracksRequestURL).then(tracksRes => {
+        tracksRes.data.recenttracks.track.forEach((track, i) => {
+          const {
+            artist: { '#text': artist },
+            name: song,
+            url,
+          } = track;
+          recentTracks += `\`${i + 1}\` **[${song}](${url.replace(')', '\\)')})** by **${artist}**\n`;
+        });
+
+        return message.channel.send(
+          new Discord.RichEmbed().setAuthor(`${fmUser}'s Recent Tracks`).setDescription(recentTracks)
+        );
+      });
       break;
     }
     case 'help': {
