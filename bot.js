@@ -51,4 +51,6 @@ bot.on('message', async message => {
   if (commandFile) commandFile.run(bot, message, args);
 });
 
+bot.on('error', console.error);
+
 bot.login(DISCORD_BOT_TOKEN);
