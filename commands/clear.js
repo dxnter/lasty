@@ -8,7 +8,7 @@ module.exports.run = async (bot, message, args) => {
       'Please supply a clear amount\n`,clear <amount>`'
     );
   if (!Number.isInteger(Number(args[0])))
-    return message.channel.send('Please enter an integer value ');
+    return message.channel.send('Please enter an integer value');
   message.channel.bulkDelete(args[0]).then(() => {
     message.channel
       .send(`Cleared ${args[0]} messages`)
