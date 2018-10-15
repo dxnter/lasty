@@ -26,7 +26,7 @@ module.exports.run = async (bot, message, args) => {
     '90': '3month',
     '180': '6month',
     year: '12month',
-    all: 'overall',
+    all: 'overall'
   };
 
   switch (args[0]) {
@@ -34,19 +34,43 @@ module.exports.run = async (bot, message, args) => {
       return message.channel.send(
         new Discord.RichEmbed()
           .setColor('#E31C23')
-          .addField('Last.FM Commands', 'Run commands with prefix `,lf`. Set username with `,lf set`')
-          .addField('set - Set Last.FM username.', 'Example: `,lf set iiMittens`')
-          .addField('delete - Deletes your Last.FM username', 'Alternate: `reset`')
-          .addField('np - Shows currently playing song. (Without `,lf` prefix)', 'Example: `,np` or `,np iiMittens`')
-          .addField('recent - Shows 10 most recent tracks played.', 'Alternate: None')
+          .addField(
+            'Last.FM Commands',
+            'Run commands with prefix `,lf`. Set username with `,lf set`'
+          )
+          .addField(
+            'set - Set Last.FM username.',
+            'Example: `,lf set iiMittens`'
+          )
+          .addField(
+            'delete - Deletes your Last.FM username',
+            'Alternate: `reset`'
+          )
+          .addField(
+            'np - Shows currently playing song. (Without `,lf` prefix)',
+            'Example: `,np` or `,np iiMittens`'
+          )
+          .addField(
+            'recent - Shows 10 most recent tracks played.',
+            'Alternate: None'
+          )
           .addBlankField(true)
           .addField(
             'Command Paramaters',
             '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)\n**Username can be omitted if set with** `,lf set`\n'
           )
-          .addField('tracks - Shows most played tracks', 'Example: `,lf tracks iiMittens month`')
-          .addField('artists - Shows most listened artists', 'Example: `,lf artists dluxxe week`')
-          .addField('albums - Shows most played albums', 'Example: `,lf albums Reversibly 90`')
+          .addField(
+            'tracks - Shows most played tracks',
+            'Example: `,lf tracks iiMittens month`'
+          )
+          .addField(
+            'artists - Shows most listened artists',
+            'Example: `,lf artists dluxxe week`'
+          )
+          .addField(
+            'albums - Shows most played albums',
+            'Example: `,lf albums Reversibly 90`'
+          )
       );
     }
 
@@ -54,19 +78,23 @@ module.exports.run = async (bot, message, args) => {
       const existingUser = await User.findOne({ userID: message.author.id });
       if (existingUser) {
         if (existingUser.lastFM === fmUser) {
-          return message.channel.send(`Your Last.FM profile is already set to **${fmUser}**`);
+          return message.channel.send(
+            `Your Last.FM profile is already set to **${fmUser}**`
+          );
         }
         existingUser.lastFM = fmUser;
         return existingUser
           .save()
-          .then(() => message.channel.send(`Last.FM username updated to **${fmUser}**`))
+          .then(() =>
+            message.channel.send(`Last.FM username updated to **${fmUser}**`)
+          )
           .catch(console.error);
       }
 
       const user = new User({
         _id: mongoose.Types.ObjectId(),
         lastFM: fmUser,
-        userID: message.author.id,
+        userID: message.author.id
       });
       return user
         .save()
@@ -82,7 +110,9 @@ module.exports.run = async (bot, message, args) => {
       const existingUser = await User.findOne({ userID: message.author.id });
       if (existingUser) {
         return User.deleteOne(existingUser).then(() =>
-          message.channel.send(`**${existingUser.lastFM}** has been deleted from the database`)
+          message.channel.send(
+            `**${existingUser.lastFM}** has been deleted from the database`
+          )
         );
       }
       return message.channel.send(
@@ -93,7 +123,9 @@ module.exports.run = async (bot, message, args) => {
     case 'recent': {
       if (!fmUser) {
         return message.channel.send(
-          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
+          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
+            args[0]
+          }\``
         );
       }
       const GET_RECENT_TRACKS = 'user.getRecentTracks';
@@ -108,9 +140,12 @@ module.exports.run = async (bot, message, args) => {
             const {
               artist: { '#text': artist },
               name: song,
-              url,
+              url
             } = track;
-            recentTracks += `\`${i + 1}\` **[${song}](${url.replace(')', '\\)')})** by **${artist}**\n`;
+            recentTracks += `\`${i + 1}\` **[${song}](${url.replace(
+              ')',
+              '\\)'
+            )})** by **${artist}**\n`;
           });
 
           return message.channel.send(
@@ -120,13 +155,17 @@ module.exports.run = async (bot, message, args) => {
               .setDescription(recentTracks)
           );
         })
-        .catch(e => message.channel.send(`No Last.FM data availible for ${fmUser}`));
+        .catch(e =>
+          message.channel.send(`No Last.FM data availible for ${fmUser}`)
+        );
     }
 
     case 'tracks': {
       if (!fmUser) {
         return message.channel.send(
-          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
+          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
+            args[0]
+          }\``
         );
       }
       if (period) {
@@ -151,25 +190,36 @@ module.exports.run = async (bot, message, args) => {
               artist: { name: artist },
               name: song,
               playcount,
-              url,
+              url
             } = track;
-            topTracksStr += `\`${playcount} ▶️\` • **[${song}](${url.replace(')', '\\)')})** by **${artist}**\n`;
+            topTracksStr += `\`${playcount} ▶️\` • **[${song}](${url.replace(
+              ')',
+              '\\)'
+            )})** by **${artist}**\n`;
           });
 
           return message.channel.send(
             new Discord.RichEmbed()
               .setColor('#E31C23')
-              .setAuthor(`${fmUser}'s Top Tracks for time period of ${period ? PERIOD_PARMS[period] : 'overall'}`)
+              .setAuthor(
+                `${fmUser}'s Top Tracks for time period of ${
+                  period ? PERIOD_PARMS[period] : 'overall'
+                }`
+              )
               .setDescription(topTracksStr)
           );
         })
-        .catch(e => message.channel.send(`No Last.FM data availible for ${fmUser}`));
+        .catch(e =>
+          message.channel.send(`No Last.FM data availible for ${fmUser}`)
+        );
     }
 
     case 'artists': {
       if (!fmUser) {
         return message.channel.send(
-          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
+          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
+            args[0]
+          }\``
         );
       }
       if (period) {
@@ -191,22 +241,33 @@ module.exports.run = async (bot, message, args) => {
         .then(topArtists => {
           topArtists.data.topartists.artist.forEach(artistRes => {
             const { name: artist, playcount, url } = artistRes;
-            topArtistsStr += `\`${playcount} ▶️\`•  **[${artist}](${url.replace(')', '\\)')})**\n`;
+            topArtistsStr += `\`${playcount} ▶️\`•  **[${artist}](${url.replace(
+              ')',
+              '\\)'
+            )})**\n`;
           });
           return message.channel.send(
             new Discord.RichEmbed()
               .setColor('#E31C23')
-              .setAuthor(`${fmUser}'s Top Artists for time period of ${period ? PERIOD_PARMS[period] : 'overall'}`)
+              .setAuthor(
+                `${fmUser}'s Top Artists for time period of ${
+                  period ? PERIOD_PARMS[period] : 'overall'
+                }`
+              )
               .setDescription(topArtistsStr)
           );
         })
-        .catch(e => message.channel.send(`No Last.FM data availible for ${fmUser}`));
+        .catch(e =>
+          message.channel.send(`No Last.FM data availible for ${fmUser}`)
+        );
     }
 
     case 'albums': {
       if (!fmUser) {
         return message.channel.send(
-          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${args[0]}\``
+          `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
+            args[0]
+          }\``
         );
       }
       if (period) {
@@ -231,7 +292,7 @@ module.exports.run = async (bot, message, args) => {
               name: albumName,
               playcount,
               url: albumURL,
-              artist: { name: artistName, url: artistURL },
+              artist: { name: artistName, url: artistURL }
             } = albumData;
             topAlbumsStr += `\`${playcount} ▶️\`•  **[${albumName}](${albumURL.replace(
               ')',
@@ -241,11 +302,17 @@ module.exports.run = async (bot, message, args) => {
           return message.channel.send(
             new Discord.RichEmbed()
               .setColor('#E31C23')
-              .setAuthor(`${fmUser}'s Top Albums for time period of ${period ? PERIOD_PARMS[period] : 'overall'}`)
+              .setAuthor(
+                `${fmUser}'s Top Albums for time period of ${
+                  period ? PERIOD_PARMS[period] : 'overall'
+                }`
+              )
               .setDescription(topAlbumsStr)
           );
         })
-        .catch(e => message.channel.send(`No Last.FM data availible for ${fmUser}`));
+        .catch(e =>
+          message.channel.send(`No Last.FM data availible for ${fmUser}`)
+        );
     }
 
     default: {
@@ -255,5 +322,5 @@ module.exports.run = async (bot, message, args) => {
 };
 
 module.exports.help = {
-  name: 'lf',
+  name: 'lf'
 };
