@@ -183,7 +183,7 @@ module.exports.run = async (bot, message, args) => {
         artistTopAlbums,
         formattedArtist,
         artistURL
-      } = await getArtistTopAlbums(fmUser, args);
+      } = await getArtistTopAlbums(args);
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(`${formattedArtist}'s Top 10 Albums`, null, artistURL)
