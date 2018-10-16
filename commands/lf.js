@@ -316,6 +316,39 @@ module.exports.run = async (bot, message, args) => {
         );
     }
 
+    case 'topalbums': {
+      const artist = args.slice(1).join(' ');
+      const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
+      const TOP_ALBUMS_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
+      const artistTopAlbumsRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
+
+      return axios
+        .get(artistTopAlbumsRequestURL)
+        .then(topAlbumsRes => {
+          const formattedArtist = topAlbumsRes.data.topalbums['@attr'].artist;
+          const artistURL = topAlbumsRes.data.topalbums.album[0].artist.url;
+          const artistTopAlbums = topAlbumsRes.data.topalbums.album.map(
+            (album, i) => {
+              const { name, playcount, url: albumURL } = album;
+              return `\`${i + 1}\` **[${name}](${albumURL.replace(
+                ')',
+                '\\)'
+              )})** • \`${playcount.toLocaleString()} ▶\`  ️`;
+            }
+          );
+          return message.channel.send(
+            new Discord.RichEmbed()
+              .setAuthor(`${formattedArtist}'s Top 10 Albums`, null, artistURL)
+              .setDescription(artistTopAlbums)
+              .setColor('#E31C23')
+          );
+        })
+        .catch(e => {
+          console.log(e);
+          message.channel.send(`No data availible for ${artist}`);
+        });
+    }
+
     default: {
       return message.channel.send('Invalid command, try `,lf help`');
     }

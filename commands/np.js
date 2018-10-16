@@ -25,7 +25,7 @@ function getTotalScrobbles(fmUser) {
   });
 }
 
-let globalArtist;
+let gl5obalArtist;
 /**
  * Fetches the most recently listened to track for the provided Last.FM user
  * @param {string} fmUser A registered user on Last.FM
