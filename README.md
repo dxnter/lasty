@@ -1,0 +1,2 @@
+# lasty
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/770d884fb3a5471c9060518f9463c2eb)](https://app.codacy.com/app/dxnter/lasty?utm_source=github.com&utm_medium=referral&utm_content=dxnter/lasty&utm_campaign=Badge_Grade_Dashboard)
