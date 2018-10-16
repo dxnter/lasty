@@ -6,6 +6,10 @@ const User = require('../models/user');
 const { LASTFM_API_KEY } = process.env;
 const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
 
+/**
+ * Fetches the total amount of scrobbles for the provided Last.FM user
+ * @param {string} fmUser A registered user on Last.FM
+ */
 function getTotalScrobbles(fmUser) {
   const USER_INFO = 'user.getInfo';
   const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
@@ -21,9 +25,14 @@ function getTotalScrobbles(fmUser) {
   });
 }
 
-function getRecentTracks(fmUser) {
+let globalArtist;
+/**
+ * Fetches the most recently listened to track for the provided Last.FM user
+ * @param {*} fmUser A registered user on Last.FM
+ */
+function getRecentTrack(fmUser) {
   const RECENT_TRACKS = 'user.getRecentTracks';
-  const SONG_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=2&format=json`;
+  const SONG_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=1&format=json`;
   const songRequestURL = `${LASTFM_API_URL}${RECENT_TRACKS}${SONG_QUERY_STRING}`;
   return axios.get(songRequestURL).then(recentTracksRes => {
     const latestTrack = recentTracksRes.data.recenttracks.track[0];
@@ -44,6 +53,11 @@ function getRecentTracks(fmUser) {
   });
 }
 
+/**
+ * Fetches the total amount of scrobbles a Last.FM user has
+ * for a specific artist
+ * @param {*} fmUser A registered user on Last.FM
+ */
 function getArtistScrobbles(fmUser) {
   const ARTIST_INFO = 'artist.getInfo';
   const ARTIST_QUERY_STRING = `&artist=${globalArtist}&api_key=${LASTFM_API_KEY}&username=${fmUser}&format=json`;
@@ -78,7 +92,7 @@ module.exports.run = async (bot, message, args) => {
   axios
     .all([
       getTotalScrobbles(fmUser),
-      getRecentTracks(fmUser),
+      getRecentTrack(fmUser),
       getArtistScrobbles(fmUser)
     ])
     .then(
@@ -106,11 +120,11 @@ module.exports.run = async (bot, message, args) => {
             )
             .addField('Artist', `[${artist}](${url})`, true)
             .setFooter(
-              `'${artist}' Scrobbles: ${artistScrobbles ||
+              `${artist} Scrobbles: ${artistScrobbles ||
                 0} | Total Scrobbles: ${totalScrobbles || 0} | Album: ${album}`
             );
 
-          message.channel.send(embed).then(async embedMessage => {
+          return message.channel.send(embed).then(async embedMessage => {
             await embedMessage.react('👍');
             await embedMessage.react('👎');
           });
