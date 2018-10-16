@@ -13,7 +13,9 @@ mongoose
     process.env.DATABASE_URL,
     { useNewUrlParser: true }
   )
-  .then(() => log(chalk.green('[MongoDB] Successfully connected to the database')))
+  .then(() =>
+    log(chalk.green('[MongoDB] Successfully connected to the database'))
+  )
   .catch(err => console.log('Something went wrong', err));
 
 const bot = new Discord.Client({ disableEveryone: true });
@@ -35,7 +37,13 @@ fs.readdir('./commands/', (err, files) => {
 });
 
 bot.on('ready', async () => {
-  log(chalk.blue(`[Discord.js] ${bot.user.username} is online on ${bot.guilds.size} servers!`));
+  log(
+    chalk.blue(
+      `[Discord.js] ${bot.user.username} is online on ${
+        bot.guilds.size
+      } servers!`
+    )
+  );
   bot.user.setActivity('with code | ,help', { type: 'PLAYING' });
 });
 
@@ -46,6 +54,9 @@ bot.on('message', async message => {
   const messageArray = message.content.split(' ');
   const cmd = messageArray[0];
   const args = messageArray.slice(1);
+
+  console.log('cmd -', cmd);
+  console.log('args -', args);
 
   const commandFile = bot.commands.get(cmd.slice(PREFIX.length));
   if (commandFile) commandFile.run(bot, message, args);

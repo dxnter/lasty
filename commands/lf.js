@@ -33,7 +33,6 @@ module.exports.run = async (bot, message, args) => {
     case 'help': {
       return message.channel.send(
         new Discord.RichEmbed()
-          .setColor('#E31C23')
           .addField(
             'Last.FM Commands',
             'Run commands with prefix `,lf`. Set username with `,lf set`'
@@ -71,6 +70,7 @@ module.exports.run = async (bot, message, args) => {
             'albums - Shows most played albums',
             'Example: `,lf albums Reversibly 90`'
           )
+          .setColor('#E31C23')
       );
     }
 
@@ -128,31 +128,33 @@ module.exports.run = async (bot, message, args) => {
           }\``
         );
       }
+
       const GET_RECENT_TRACKS = 'user.getRecentTracks';
       const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
-      const tracksRequestURL = `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`;
+      const recentTracksRequestURL = `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`;
 
-      let recentTracks = '';
       return axios
-        .get(tracksRequestURL)
+        .get(recentTracksRequestURL)
         .then(recentTracksRes => {
-          recentTracksRes.data.recenttracks.track.forEach((track, i) => {
-            const {
-              artist: { '#text': artist },
-              name: song,
-              url
-            } = track;
-            recentTracks += `\`${i + 1}\` **[${song}](${url.replace(
-              ')',
-              '\\)'
-            )})** by **${artist}**\n`;
-          });
+          const recentTracks = recentTracksRes.data.recenttracks.track.map(
+            (track, i) => {
+              const {
+                artist: { '#text': artist },
+                name: song,
+                url
+              } = track;
+              return `\`${i + 1}\` **[${song}](${url.replace(
+                ')',
+                '\\)'
+              )})** by **${artist}**`;
+            }
+          );
 
           return message.channel.send(
             new Discord.RichEmbed()
-              .setColor('#E31C23')
               .setAuthor(`${fmUser}'s Recent Tracks`)
               .setDescription(recentTracks)
+              .setColor('#E31C23')
           );
         })
         .catch(e =>
@@ -181,32 +183,31 @@ module.exports.run = async (bot, message, args) => {
       }&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
       const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
 
-      let topTracksStr = '';
       return axios
         .get(topTracksRequestURL)
         .then(topTracksRes => {
-          topTracksRes.data.toptracks.track.forEach(track => {
+          const topTracks = topTracksRes.data.toptracks.track.map(track => {
             const {
               artist: { name: artist },
               name: song,
               playcount,
               url
             } = track;
-            topTracksStr += `\`${playcount} ▶️\` • **[${song}](${url.replace(
+            return `\`${playcount} ▶️\` • **[${song}](${url.replace(
               ')',
               '\\)'
-            )})** by **${artist}**\n`;
+            )})** by **${artist}**`;
           });
 
           return message.channel.send(
             new Discord.RichEmbed()
-              .setColor('#E31C23')
               .setAuthor(
                 `${fmUser}'s Top Tracks for time period of ${
                   period ? PERIOD_PARMS[period] : 'overall'
                 }`
               )
-              .setDescription(topTracksStr)
+              .setDescription(topTracks)
+              .setColor('#E31C23')
           );
         })
         .catch(e =>
@@ -235,26 +236,27 @@ module.exports.run = async (bot, message, args) => {
       }&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
       const topArtistsRequestURL = `${LASTFM_API_URL}${GET_TOP_ARTISTS}${TOP_ARTISTS_QUERY_STRING}`;
 
-      let topArtistsStr = '';
       return axios
         .get(topArtistsRequestURL)
-        .then(topArtists => {
-          topArtists.data.topartists.artist.forEach(artistRes => {
-            const { name: artist, playcount, url } = artistRes;
-            topArtistsStr += `\`${playcount} ▶️\`•  **[${artist}](${url.replace(
-              ')',
-              '\\)'
-            )})**\n`;
-          });
+        .then(topArtistsRes => {
+          const topArtists = topArtistsRes.data.topartists.artist.map(
+            artistRes => {
+              const { name: artist, playcount, url } = artistRes;
+              return `\`${playcount} ▶️\`•  **[${artist}](${url.replace(
+                ')',
+                '\\)'
+              )})**`;
+            }
+          );
           return message.channel.send(
             new Discord.RichEmbed()
-              .setColor('#E31C23')
               .setAuthor(
                 `${fmUser}'s Top Artists for time period of ${
                   period ? PERIOD_PARMS[period] : 'overall'
                 }`
               )
-              .setDescription(topArtistsStr)
+              .setDescription(topArtists)
+              .setColor('#E31C23')
           );
         })
         .catch(e =>
@@ -283,31 +285,30 @@ module.exports.run = async (bot, message, args) => {
       }&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
       const topAlbumsRequestURL = `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
 
-      let topAlbumsStr = '';
       return axios
         .get(topAlbumsRequestURL)
         .then(albumsRes => {
-          albumsRes.data.topalbums.album.forEach(albumData => {
+          const topAlbums = albumsRes.data.topalbums.album.map(topAlbumsRes => {
             const {
               name: albumName,
               playcount,
               url: albumURL,
               artist: { name: artistName, url: artistURL }
-            } = albumData;
-            topAlbumsStr += `\`${playcount} ▶️\`•  **[${albumName}](${albumURL.replace(
+            } = topAlbumsRes;
+            return `\`${playcount} ▶️\`•  **[${albumName}](${albumURL.replace(
               ')',
               '\\)'
-            )})** by **[${artistName}](${artistURL.replace(')', '\\)')})**\n`;
+            )})** by **[${artistName}](${artistURL.replace(')', '\\)')})**`;
           });
           return message.channel.send(
             new Discord.RichEmbed()
-              .setColor('#E31C23')
               .setAuthor(
                 `${fmUser}'s Top Albums for time period of ${
                   period ? PERIOD_PARMS[period] : 'overall'
                 }`
               )
-              .setDescription(topAlbumsStr)
+              .setDescription(topAlbums)
+              .setColor('#E31C23')
           );
         })
         .catch(e =>
