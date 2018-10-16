@@ -28,7 +28,7 @@ function getTotalScrobbles(fmUser) {
 let globalArtist;
 /**
  * Fetches the most recently listened to track for the provided Last.FM user
- * @param {*} fmUser A registered user on Last.FM
+ * @param {string} fmUser A registered user on Last.FM
  */
 function getRecentTrack(fmUser) {
   const RECENT_TRACKS = 'user.getRecentTracks';
@@ -56,7 +56,7 @@ function getRecentTrack(fmUser) {
 /**
  * Fetches the total amount of scrobbles a Last.FM user has
  * for a specific artist
- * @param {*} fmUser A registered user on Last.FM
+ * @param {string} fmUser A registered user on Last.FM
  */
 function getArtistScrobbles(fmUser) {
   const ARTIST_INFO = 'artist.getInfo';
@@ -77,7 +77,7 @@ function getArtistScrobbles(fmUser) {
 }
 
 module.exports.run = async (bot, message, args) => {
-  let fmUser = args[0];
+  let [fmUser] = args;
   if (!fmUser) {
     const dbUser = await User.findOne({ userID: message.author.id });
     try {

@@ -54,10 +54,7 @@ bot.on('message', async message => {
   const messageArray = message.content.split(' ');
   const cmd = messageArray[0];
   const args = messageArray.slice(1);
-
-  console.log('cmd -', cmd);
-  console.log('args -', args);
-
+  
   const commandFile = bot.commands.get(cmd.slice(PREFIX.length));
   if (commandFile) commandFile.run(bot, message, args);
 });
