@@ -122,12 +122,14 @@ module.exports.run = async (bot, message, args) => {
         );
       }
       return message.channel.send(
-        'Please set your Last.FM username with `,lf set [username]`\nNo account? Sign up: https://www.last.fm/join'
+        `<@${
+          message.author.id
+        }>, Please set your Last.FM username with \`,lf set [username]\`\nNo account? Sign up: https://www.last.fm/join`
       );
     }
 
     case 'recent': {
-      const recentTracks = await get10RecentTracks(fmUser);
+      const recentTracks = await get10RecentTracks(fmUser, message, args);
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(`${fmUser}'s Recent Tracks`)
@@ -137,7 +139,7 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'tracks': {
-      const topTracks = await getUsersTopTracks(fmUser, period);
+      const topTracks = await getUsersTopTracks(fmUser, period, message, args);
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(
@@ -151,7 +153,12 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'artists': {
-      const topArtists = await getUsersTopArtists(fmUser, period);
+      const topArtists = await getUsersTopArtists(
+        fmUser,
+        period,
+        message,
+        args
+      );
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(
@@ -165,7 +172,7 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'albums': {
-      const topAlbums = await getUsersTopAlbums(fmUser, period);
+      const topAlbums = await getUsersTopAlbums(fmUser, period, message, args);
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(
@@ -193,7 +200,9 @@ module.exports.run = async (bot, message, args) => {
     }
 
     default: {
-      return message.channel.send('Invalid command, try `,lf help`');
+      return message.channel.send(
+        `<@${message.author.id}>, Invalid command, try \`,lf help\``
+      );
     }
   }
 };

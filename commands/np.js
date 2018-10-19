@@ -15,7 +15,9 @@ module.exports.run = async (bot, message, args) => {
       fmUser = dbUser.lastFM;
     } catch (e) {
       return message.channel.send(
-        'Please set your Last.FM username with `,lf set [username]`\nNo account? Sign up: https://www.last.fm/join'
+        `<@${
+          message.author.id
+        }>, Please set your Last.FM username with \`,lf set [username]\`\nNo account? Sign up: https://www.last.fm/join`
       );
     }
   }

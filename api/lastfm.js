@@ -39,7 +39,7 @@ let globalArtist;
  *
  * @returns {{track: String, artist: String, album: String, songUrl: String, albumCover: String}}
  */
-module.exports.getRecentTrack = function(fmUser) {
+module.exports.getRecentTrack = function(fmUser, message) {
   const RECENT_TRACKS = 'user.getRecentTracks';
   const SONG_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=1&format=json`;
   const songRequestURL = `${LASTFM_API_URL}${RECENT_TRACKS}${SONG_QUERY_STRING}`;
@@ -68,7 +68,7 @@ module.exports.getRecentTrack = function(fmUser) {
  *
  * @returns {Array} recentTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-module.exports.get10RecentTracks = function(fmUser) {
+module.exports.get10RecentTracks = function(fmUser, message, args) {
   if (!fmUser) {
     return message.channel.send(
       `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
@@ -129,7 +129,7 @@ module.exports.getArtistScrobbles = function(fmUser) {
  *
  * @returns {Array} topTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-module.exports.getUsersTopTracks = function(fmUser, period) {
+module.exports.getUsersTopTracks = function(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
       `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
@@ -174,7 +174,7 @@ module.exports.getUsersTopTracks = function(fmUser, period) {
  *
  * @returns {Array} topArtists - Markdown formatted strings containing Last.FM links and artist data.
  */
-module.exports.getUsersTopArtists = function(fmUser, period) {
+module.exports.getUsersTopArtists = function(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
       `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
@@ -213,7 +213,7 @@ module.exports.getUsersTopArtists = function(fmUser, period) {
  *
  * @returns {Array} topAlbums - Markdown formatted strings containing Last.FM links and artist data.
  */
-module.exports.getUsersTopAlbums = function(fmUser, period) {
+module.exports.getUsersTopAlbums = function(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
       `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
