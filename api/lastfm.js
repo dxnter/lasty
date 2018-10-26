@@ -197,10 +197,10 @@ module.exports.getUsersTopArtists = function(fmUser, period, message, args) {
   return axios.get(topArtistsRequestURL).then(topArtistsRes => {
     const topArtists = topArtistsRes.data.topartists.artist.map(artistRes => {
       const { name: artist, playcount, url } = artistRes;
-      return `\`${playcount} ▶️\`•  **[${artist}](${url.replace(
-        ')',
-        '\\)'
-      )})**`;
+      const usersArtistsSrobblesURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
+        .split(' ')
+        .join('+')}`;
+      return `\`${playcount} ▶️\`•  **[${artist}](${usersArtistsSrobblesURL})**`;
     });
     return topArtists;
   });
