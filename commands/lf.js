@@ -142,12 +142,8 @@ module.exports.run = async (bot, message, args) => {
       const topTracks = await getUsersTopTracks(fmUser, period, message, args);
       return message.channel.send(
         new Discord.RichEmbed()
-          .setAuthor(
-            `${fmUser}'s Top Tracks for time period of ${
-              period ? PERIOD_PARMS[period] : 'overall'
-            }`
-          )
-          .setDescription(topTracks)
+          .setAuthor(topTracks.author)
+          .setDescription(topTracks.description)
           .setColor('#E31C23')
       );
     }
@@ -161,12 +157,8 @@ module.exports.run = async (bot, message, args) => {
       );
       return message.channel.send(
         new Discord.RichEmbed()
-          .setAuthor(
-            `${fmUser}'s Top Artists for time period of ${
-              period ? PERIOD_PARMS[period] : 'overall'
-            }`
-          )
-          .setDescription(topArtists)
+          .setAuthor(topArtists.author)
+          .setDescription(topArtists.description)
           .setColor('#E31C23')
       );
     }
@@ -175,12 +167,8 @@ module.exports.run = async (bot, message, args) => {
       const topAlbums = await getUsersTopAlbums(fmUser, period, message, args);
       return message.channel.send(
         new Discord.RichEmbed()
-          .setAuthor(
-            `${fmUser}'s Top Albums for time period of ${
-              period ? PERIOD_PARMS[period] : 'overall'
-            }`
-          )
-          .setDescription(topAlbums)
+          .setAuthor(topAlbums.author)
+          .setDescription(topAlbums.description)
           .setColor('#E31C23')
       );
     }

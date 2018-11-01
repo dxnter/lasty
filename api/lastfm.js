@@ -123,7 +123,7 @@ module.exports.getArtistScrobbles = function(fmUser) {
 };
 
 /**
- * Fetches the top 10 most scrobbled songs for the supplied time period.
+ * Fetches the top 10 most scrobbled tracks for the supplied time period.
  * @param {String} fmUser A registered user on Last.FM.
  * @param {String} [period] A valid period in the PERIOD_PARAMS.
  *
@@ -139,9 +139,10 @@ module.exports.getUsersTopTracks = function(fmUser, period, message, args) {
   }
   if (period) {
     if (!PERIOD_PARAMS[period]) {
-      return message.channel.send(
-        `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
-      );
+      return {
+        author: 'Error',
+        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+      };
     }
   }
 
@@ -163,7 +164,12 @@ module.exports.getUsersTopTracks = function(fmUser, period, message, args) {
         '\\)'
       )})** by **${artist}**`;
     });
-    return topTracks;
+    return {
+      author: `${fmUser}'s Top Tracks for time period of ${
+        period ? PERIOD_PARAMS[period] : 'overall'
+      }`,
+      description: topTracks
+    };
   });
 };
 
@@ -184,9 +190,10 @@ module.exports.getUsersTopArtists = function(fmUser, period, message, args) {
   }
   if (period) {
     if (!PERIOD_PARAMS[period]) {
-      return message.channel.send(
-        `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
-      );
+      return {
+        author: 'Error',
+        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+      };
     }
   }
   const GET_TOP_ARTISTS = 'user.getTopArtists';
@@ -202,7 +209,12 @@ module.exports.getUsersTopArtists = function(fmUser, period, message, args) {
         .join('+')}`;
       return `\`${playcount} ▶️\`•  **[${artist}](${usersArtistsSrobblesURL})**`;
     });
-    return topArtists;
+    return {
+      author: `${fmUser}'s Top Artists for time period of ${
+        period ? PERIOD_PARAMS[period] : 'overall'
+      }`,
+      description: topArtists
+    };
   });
 };
 
@@ -223,9 +235,10 @@ module.exports.getUsersTopAlbums = function(fmUser, period, message, args) {
   }
   if (period) {
     if (!PERIOD_PARAMS[period]) {
-      return message.channel.send(
-        `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
-      );
+      return {
+        author: 'Error',
+        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+      };
     }
   }
   const GET_TOP_ALBUMS = 'user.getTopAlbums';
@@ -246,7 +259,12 @@ module.exports.getUsersTopAlbums = function(fmUser, period, message, args) {
         '\\)'
       )})** by **[${artistName}](${artistURL.replace(')', '\\)')})**`;
     });
-    return topAlbums;
+    return {
+      author: `${fmUser}'s Top Albums for time period of ${
+        period ? PERIOD_PARAMS[period] : 'overall'
+      }`,
+      description: topAlbums
+    };
   });
 };
 
