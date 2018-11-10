@@ -13,9 +13,9 @@ module.exports.run = (bot, message, args) =>
         '`np`',
         'Shows last played track on Last.FM `,np` or `,np [username]`'
       )
-      .addField('cat', 'Shows a cat picture')
-      .addField('doggo', 'Shows a doggo picture')
-      .addField('eval', 'Evaluate JavaScript code')
+      .addField('cat', 'Shows a random cat picture')
+      .addField('doggo', 'Shows a random dog picture')
+      .addField('eval', 'Evaluates JavaScript code')
       .addField('leet', 'Translate a sentence into l33tsp3@K!')
       .addField('`botinfo`', 'Display information about Lasty')
       .addField('`serverinfo`', 'Display information about the server')
