@@ -41,7 +41,7 @@ const addStar = async (reaction, user) => {
       .setDescription(foundStar.description)
       .setAuthor(message.author.tag, message.author.displayAvatarURL)
       .setTimestamp()
-      .setFooter(`⭐ ${parseInt(star[1]) + 1} | ${message.id}`)
+      .setFooter(`⭐ ${parseInt(star[1]) + 1}`)
       .setImage(image);
     const starMsg = await starChannel.fetchMessage(stars.id);
     await starMsg.edit({ embed });
@@ -58,7 +58,7 @@ const addStar = async (reaction, user) => {
       .setDescription(message.cleanContent)
       .setAuthor(message.author.tag, message.author.displayAvatarURL)
       .setTimestamp(new Date())
-      .setFooter(`⭐ 1 | ${message.id}`)
+      .setFooter(`⭐ 1`)
       .setImage(image);
     await starChannel.send({ embed });
   }

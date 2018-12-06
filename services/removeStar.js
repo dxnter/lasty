@@ -34,7 +34,7 @@ const removeStar = async (reaction, user) => {
       .setDescription(foundStar.description)
       .setAuthor(message.author.tag, message.author.displayAvatarURL)
       .setTimestamp()
-      .setFooter(`⭐ ${parseInt(star[1]) - 1} | ${message.id}`)
+      .setFooter(`⭐ ${parseInt(star[1]) - 1}`)
       .setImage(image);
     const starMsg = await starChannel.fetchMessage(stars.id);
     await starMsg.edit({ embed });
