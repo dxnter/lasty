@@ -3,6 +3,7 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const User = require('../models/user');
 const {
+  getUserInfo,
   get10RecentTracks,
   getUsersTopTracks,
   getUsersTopArtists,
@@ -109,6 +110,35 @@ module.exports.run = async (bot, message, args) => {
           console.log(user);
         })
         .catch(console.error);
+    }
+
+    case 'info': {
+      const existingUser = await User.findOne({ userID: message.author.id });
+      if (!existingUser) {
+        return message.channel.send(
+          `<@${
+            message.author.id
+          }>, Please set your Last.FM username with \`,lf set [username]\`\nNo account? Sign up: https://www.last.fm/join`
+        );
+      }
+      const {
+        totalScrobbles,
+        name,
+        profileURL,
+        country,
+        image,
+        unixRegistration
+      } = await getUserInfo(fmUser);
+      const lastFMAvatar = image[1]['#text'];
+
+      return message.channel.send(
+        new Discord.RichEmbed()
+          .setAuthor(name, lastFMAvatar, profileURL)
+          .addField('Total Scrobbes', totalScrobbles.toLocaleString())
+          .addField('Country', country)
+          .addField('Registration Date', new Date(unixRegistration * 1000))
+          .setColor('#E31C23')
+      );
     }
 
     case 'delete':

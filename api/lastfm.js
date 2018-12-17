@@ -11,6 +11,23 @@ const PERIOD_PARAMS = {
   all: 'overall'
 };
 
+module.exports.getUserInfo = function(fmUser) {
+  const USER_INFO = 'user.getInfo';
+  const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
+  const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
+  return axios.get(userRequestURL).then(userInfoRes => {
+    const {
+      playcount: totalScrobbles,
+      name,
+      url: profileURL,
+      country,
+      image,
+      registered: { unixtime: unixRegistration }
+    } = userInfoRes.data.user;
+    return { totalScrobbles, name, profileURL, country, image, unixRegistration };
+  });
+};
+
 /**
  * Fetches the total amount of scrobbles for the provided Last.FM user.
  * @param {String} fmUser - A registered user on Last.FM.
