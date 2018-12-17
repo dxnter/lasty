@@ -1,10 +1,7 @@
 const Discord = require('discord.js');
 const axios = require('axios');
-const {
-  getTotalScrobbles,
-  getRecentTrack,
-  getArtistScrobbles
-} = require('../api/lastfm');
+const pluralize = require('pluralize');
+const { getTotalScrobbles, getRecentTrack } = require('../api/lastfm');
 const User = require('../models/user');
 
 module.exports.run = async (bot, message, args) => {
@@ -22,48 +19,46 @@ module.exports.run = async (bot, message, args) => {
     }
   }
 
-  axios
-    .all([
-      getTotalScrobbles(fmUser),
-      getRecentTrack(fmUser),
-      getArtistScrobbles(fmUser)
-    ])
-    .then(
-      axios.spread(
-        (
-          totalScrobbles,
-          { track, artist, album, songUrl, albumCover },
-          { url, artistScrobbles }
-        ) => {
-          const avatarURL = `https://cdn.discordapp.com/avatars/${
-            message.author.id
-          }/${message.author.avatar}`;
+  axios.all([getTotalScrobbles(fmUser), getRecentTrack(fmUser)]).then(
+    axios.spread((totalScrobbles, trackInfo) => {
+      if (trackInfo.error) return message.channel.send(trackInfo.error);
+      const {
+        track,
+        artist,
+        album,
+        albumCover,
+        songURL,
+        artistURL,
+        userplaycount
+      } = trackInfo;
 
-          const embed = new Discord.RichEmbed()
-            .setAuthor(
-              `Last.FM: ${fmUser}`,
-              avatarURL,
-              `http://www.last.fm/user/${fmUser}`
-            )
-            .setThumbnail(albumCover)
-            .addField(
-              'Track',
-              `[${track}](${songUrl.replace(')', '\\)')})`,
-              true
-            )
-            .addField('Artist', `[${artist}](${url})`, true)
-            .setFooter(
-              `${artist} Scrobbles: ${artistScrobbles ||
-                0} | Total Scrobbles: ${totalScrobbles || 0} | Album: ${album}`
-            );
+      const avatarURL = `https://cdn.discordapp.com/avatars/${
+        message.author.id
+      }/${message.author.avatar}`;
 
-          return message.channel.send(embed).then(embedMessage => {
-            embedMessage.react('👍');
-            embedMessage.react('👎');
-          });
-        }
-      )
-    );
+      const embed = new Discord.RichEmbed()
+        .setAuthor(
+          `Last.FM: ${fmUser}`,
+          avatarURL,
+          `http://www.last.fm/user/${fmUser}`
+        )
+        .setThumbnail(albumCover)
+        .addField(
+          '**Track**',
+          `[${track}](${songURL.replace(')', '\\)')})`,
+          true
+        )
+        .addField('**Artist**', `[${artist}](${artistURL})`, true)
+        .setFooter(
+          `Playcount: ${userplaycount.toLocaleString()} | ${pluralize(
+            fmUser
+          )} Scrobbles: ${totalScrobbles.toLocaleString() ||
+            0} | Album: ${album}`
+        );
+
+      return message.channel.send(embed);
+    })
+  );
 };
 
 module.exports.help = {

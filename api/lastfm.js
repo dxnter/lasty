@@ -32,12 +32,11 @@ module.exports.getTotalScrobbles = function(fmUser) {
   });
 };
 
-let globalArtist;
 /**
  * Fetches the most recently listened to track for the provided Last.FM user.
  * @param {String} fmUser A registered user on Last.FM.
  *
- * @returns {{track: String, artist: String, album: String, songUrl: String, albumCover: String}}
+ * @returns {{track: String, artist: String, album: String, albumCover: String, songURL: String, artistURL: String, userplaycount: Number}}
  */
 module.exports.getRecentTrack = function(fmUser, message) {
   const RECENT_TRACKS = 'user.getRecentTracks';
@@ -53,12 +52,36 @@ module.exports.getRecentTrack = function(fmUser, message) {
     const {
       name: track,
       artist: { '#text': artist },
-      album: { '#text': album },
-      url: songUrl
+      album: { '#text': album }
     } = latestTrack;
     const albumCover = latestTrack.image[2]['#text'];
-    globalArtist = artist;
-    return { track, artist, album, songUrl, albumCover };
+
+    const TRACK_INFO = 'track.getInfo';
+    const TRACK_INFO_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&track=${track}&artist=${artist}&format=json`;
+    const trackInfoRequestURL = `${LASTFM_API_URL}${TRACK_INFO}${TRACK_INFO_QUERY_STRING}`;
+    return axios.get(trackInfoRequestURL).then(trackInfoRes => {
+      if (trackInfoRes.data.error) return { error: 'Track not found!' };
+
+      let userplaycount;
+      if (trackInfoRes.data.track.hasOwnProperty('userplaycount')) {
+        userplaycount = trackInfoRes.data.track.userplaycount;
+      } else {
+        userplaycount = 1;
+      }
+      const {
+        url: songURL,
+        artist: { url: artistURL }
+      } = trackInfoRes.data.track;
+      return {
+        track,
+        artist,
+        album,
+        albumCover,
+        songURL,
+        artistURL,
+        userplaycount
+      };
+    });
   });
 };
 
@@ -94,31 +117,6 @@ module.exports.get10RecentTracks = function(fmUser, message, args) {
       }
     );
     return recentTracks;
-  });
-};
-
-/**
- * Fetches the total amount of scrobbles a Last.FM user has
- * for a specific artist.
- * @param {String} fmUser A registered user on Last.FM.
- *
- * @returns {{url: String, artistScrobbles: Number}}
- */
-module.exports.getArtistScrobbles = function(fmUser) {
-  const ARTIST_INFO = 'artist.getInfo';
-  const ARTIST_QUERY_STRING = `&artist=${globalArtist}&api_key=${LASTFM_API_KEY}&username=${fmUser}&format=json`;
-  const artistRequestURL = `${LASTFM_API_URL}${ARTIST_INFO}${ARTIST_QUERY_STRING}`;
-  return axios.get(artistRequestURL).then(artistScrobblesRes => {
-    const {
-      data: {
-        artist: { url },
-        artist: {
-          stats: { userplaycount: artistScrobbles }
-        }
-      }
-    } = artistScrobblesRes;
-
-    return { url, artistScrobbles };
   });
 };
 
