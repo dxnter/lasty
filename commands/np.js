@@ -54,7 +54,8 @@ module.exports.run = async (bot, message, args) => {
             fmUser
           )} Scrobbles: ${totalScrobbles.toLocaleString() ||
             0} | Album: ${album}`
-        );
+        )
+        .setColor('#E31C23');
 
       return message.channel.send(embed);
     })
