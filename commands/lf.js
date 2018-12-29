@@ -53,6 +53,10 @@ module.exports.run = async (bot, message, args) => {
             'Alternate: `reset`'
           )
           .addField(
+            'info - Shows Last.FM account information',
+            'Example: `,lf info`'
+          )
+          .addField(
             'np - Shows currently playing song. (Without `,lf` prefix)',
             'Example: `,np` or `,np iiMittens`'
           )
