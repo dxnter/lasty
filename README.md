@@ -23,7 +23,7 @@ These instructions will get you a copy of the bot running locally to use on a Di
 ## Commands
 `,lf help`
 
-![lf help](https://i.imgur.com/n0kS07l.png)
+![lf help](https://i.imgur.com/8JV3BoO.png)
 
 `,help`
 
