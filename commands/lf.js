@@ -40,16 +40,13 @@ module.exports.run = async (bot, message, args) => {
     case 'help': {
       return message.channel.send(
         new Discord.RichEmbed()
+          .setTitle('Last.FM Commands')
           .addField(
-            'Last.FM Commands',
-            'Run commands with prefix `,lf`. Set username with `,lf set`'
-          )
-          .addField(
-            'set - Set Last.FM username.',
+            'set - Sets Last.FM username.',
             'Example: `,lf set iiMittens`'
           )
           .addField(
-            'delete - Deletes your Last.FM username',
+            'delete - Deletes saved Last.FM username',
             'Alternate: `reset`'
           )
           .addField(

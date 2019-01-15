@@ -11,6 +11,7 @@ const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
 const addStar = require('./services/addStar');
 const removeStar = require('./services/removeStar');
 
+
 mongoose
   .connect(
     process.env.DATABASE_URL,
