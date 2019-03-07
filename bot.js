@@ -8,15 +8,8 @@ const chalk = require('chalk');
 const log = console.log;
 const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
 
-const addStar = require('./services/addStar');
-const removeStar = require('./services/removeStar');
-
-
 mongoose
-  .connect(
-    process.env.DATABASE_URL,
-    { useNewUrlParser: true }
-  )
+  .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() =>
     log(chalk.green('[MongoDB] Successfully connected to the database'))
   )
@@ -62,10 +55,6 @@ bot.on('message', async message => {
   const commandFile = bot.commands.get(cmd.slice(PREFIX.length));
   if (commandFile) commandFile.run(bot, message, args);
 });
-
-bot.on('messageReactionAdd', (reaction, user) => addStar(reaction, user));
-
-bot.on('messageReactionRemove', (reaction, user) => removeStar(reaction, user));
 
 bot.on('error', console.error);
 
