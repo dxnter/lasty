@@ -1,9 +1,9 @@
 require('dotenv').config();
 
-const Discord = require('discord.js');
-const mongoose = require('mongoose');
-const fs = require('fs');
-const chalk = require('chalk');
+import Discord from 'discord.js';
+import mongoose from 'mongoose';
+import fs from 'fs';
+import chalk from 'chalk';
 
 const log = console.log;
 const { DISCORD_BOT_TOKEN, PREFIX } = process.env;

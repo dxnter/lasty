@@ -1,18 +1,14 @@
-const Discord = require('discord.js');
-const axios = require('axios');
-const mongoose = require('mongoose');
-const User = require('../models/user');
-const {
+import Discord from 'discord.js';
+import mongoose from 'mongoose';
+import User from '../models/user';
+import {
   getUserInfo,
   get10RecentTracks,
   getUsersTopTracks,
   getUsersTopArtists,
   getUsersTopAlbums,
   getArtistTopAlbums
-} = require('../api/lastfm');
-
-const { LASTFM_API_KEY } = process.env;
-const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
+} from '../api/lastfm';
 
 module.exports.run = async (bot, message, args) => {
   let fmUser = args[1];
@@ -26,15 +22,6 @@ module.exports.run = async (bot, message, args) => {
     fmUser = args[1];
     period = args[2];
   }
-
-  const PERIOD_PARMS = {
-    week: '7day',
-    month: '1month',
-    '90': '3month',
-    '180': '6month',
-    year: '12month',
-    all: 'overall'
-  };
 
   switch (args[0]) {
     case 'help': {

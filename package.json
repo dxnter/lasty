@@ -8,7 +8,7 @@
     "url": "git+https://github.com/dxnter/lasty.git"
   },
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon -r esm bot.js"
   },
   "keywords": [
     "discord",
@@ -22,6 +22,7 @@
     "chalk": "^2.4.1",
     "discord.js": "^11.4.2",
     "dotenv": "^6.0.0",
+    "esm": "^3.2.18",
     "mongoose": "^5.3.1",
     "ms": "^2.1.1",
     "nodemon": "^1.18.4",

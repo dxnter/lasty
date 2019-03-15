@@ -1,5 +1,6 @@
-const Discord = require('discord.js');
-const { delay } = require('../utils/util');
+import Discord from 'discord.js';
+import { delay } from '../utils/util';
+
 const frames = [
   '(-°□°)-  ┬─┬',
   '(╯°□°)╯    ]',

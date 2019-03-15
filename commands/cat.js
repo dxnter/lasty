@@ -1,9 +1,9 @@
-const Discord = require('discord.js');
-const axios = require('axios');
+import Discord from 'discord.js';
+import axios from 'axios';
 
 module.exports.run = async (bot, message, args) => {
   const {
-    data: { file },
+    data: { file }
   } = await axios.get('https://aws.random.cat/meow');
 
   message.channel.send(
@@ -15,5 +15,5 @@ module.exports.run = async (bot, message, args) => {
 };
 
 module.exports.help = {
-  name: 'cat',
+  name: 'cat'
 };

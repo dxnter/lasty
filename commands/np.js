@@ -1,8 +1,8 @@
-const Discord = require('discord.js');
-const axios = require('axios');
-const pluralize = require('pluralize');
-const { getTotalScrobbles, getRecentTrack } = require('../api/lastfm');
-const User = require('../models/user');
+import Discord from 'discord.js';
+import axios from 'axios';
+import pluralize from 'pluralize';
+import { getTotalScrobbles, getRecentTrack } from '../api/lastfm';
+import User from '../models/user';
 
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;

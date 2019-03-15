@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 const { LASTFM_API_KEY } = process.env;
 const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
 
@@ -11,7 +11,7 @@ const PERIOD_PARAMS = {
   all: 'overall'
 };
 
-module.exports.getUserInfo = function(fmUser) {
+export function getUserInfo(fmUser) {
   const USER_INFO = 'user.getInfo';
   const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
   const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
@@ -24,9 +24,16 @@ module.exports.getUserInfo = function(fmUser) {
       image,
       registered: { unixtime: unixRegistration }
     } = userInfoRes.data.user;
-    return { totalScrobbles, name, profileURL, country, image, unixRegistration };
+    return {
+      totalScrobbles,
+      name,
+      profileURL,
+      country,
+      image,
+      unixRegistration
+    };
   });
-};
+}
 
 /**
  * Fetches the total amount of scrobbles for the provided Last.FM user.
@@ -34,7 +41,7 @@ module.exports.getUserInfo = function(fmUser) {
  *
  * @returns {number} playcount - Amount of scrobbles for the fmUser.
  */
-module.exports.getTotalScrobbles = function(fmUser) {
+export function getTotalScrobbles(fmUser) {
   const USER_INFO = 'user.getInfo';
   const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
   const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
@@ -47,7 +54,7 @@ module.exports.getTotalScrobbles = function(fmUser) {
 
     return playcount;
   });
-};
+}
 
 /**
  * Fetches the most recently listened to track for the provided Last.FM user.
@@ -55,7 +62,7 @@ module.exports.getTotalScrobbles = function(fmUser) {
  *
  * @returns {{track: String, artist: String, album: String, albumCover: String, songURL: String, artistURL: String, userplaycount: Number}}
  */
-module.exports.getRecentTrack = function(fmUser, message) {
+export function getRecentTrack(fmUser, message) {
   const RECENT_TRACKS = 'user.getRecentTracks';
   const SONG_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=1&format=json`;
   const songRequestURL = `${LASTFM_API_URL}${RECENT_TRACKS}${SONG_QUERY_STRING}`;
@@ -100,7 +107,7 @@ module.exports.getRecentTrack = function(fmUser, message) {
       };
     });
   });
-};
+}
 
 /**
  * Fetches 10 most recently listen to tracks for the provided Last.FM user.
@@ -108,7 +115,7 @@ module.exports.getRecentTrack = function(fmUser, message) {
  *
  * @returns {Array} recentTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-module.exports.get10RecentTracks = function(fmUser, message, args) {
+export function get10RecentTracks(fmUser, message, args) {
   if (!fmUser) {
     return message.channel.send(
       `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
@@ -135,7 +142,7 @@ module.exports.get10RecentTracks = function(fmUser, message, args) {
     );
     return recentTracks;
   });
-};
+}
 
 /**
  * Fetches the top 10 most scrobbled tracks for the supplied time period.
@@ -144,7 +151,7 @@ module.exports.get10RecentTracks = function(fmUser, message, args) {
  *
  * @returns {Array} topTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-module.exports.getUsersTopTracks = function(fmUser, period, message, args) {
+export function getUsersTopTracks(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
       `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
@@ -186,7 +193,7 @@ module.exports.getUsersTopTracks = function(fmUser, period, message, args) {
       description: topTracks
     };
   });
-};
+}
 
 /**
  * Fetches the top 10 most scrobbled artists for the supplied time period.
@@ -195,7 +202,7 @@ module.exports.getUsersTopTracks = function(fmUser, period, message, args) {
  *
  * @returns {Array} topArtists - Markdown formatted strings containing Last.FM links and artist data.
  */
-module.exports.getUsersTopArtists = function(fmUser, period, message, args) {
+export function getUsersTopArtists(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
       `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
@@ -231,7 +238,7 @@ module.exports.getUsersTopArtists = function(fmUser, period, message, args) {
       description: topArtists
     };
   });
-};
+}
 
 /**
  * Fetches the top 10 most scrobbled albums for the supplied time period.
@@ -240,7 +247,7 @@ module.exports.getUsersTopArtists = function(fmUser, period, message, args) {
  *
  * @returns {Array} topAlbums - Markdown formatted strings containing Last.FM links and artist data.
  */
-module.exports.getUsersTopAlbums = function(fmUser, period, message, args) {
+export function getUsersTopAlbums(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
       `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
@@ -281,7 +288,7 @@ module.exports.getUsersTopAlbums = function(fmUser, period, message, args) {
       description: topAlbums
     };
   });
-};
+}
 
 /**
  * Fetches the top 10 albums of an artist sorted by listeners.
@@ -289,7 +296,7 @@ module.exports.getUsersTopAlbums = function(fmUser, period, message, args) {
  *
  * @returns {{artistTopAlbums: Array, formattedArtist: String, artistURL: String}}
  */
-module.exports.getArtistTopAlbums = function(args) {
+export function getArtistTopAlbums(args) {
   const artist = args.slice(1).join(' ');
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
   const TOP_ALBUMS_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
@@ -308,4 +315,4 @@ module.exports.getArtistTopAlbums = function(args) {
     );
     return { artistTopAlbums, formattedArtist, artistURL };
   });
-};
+}

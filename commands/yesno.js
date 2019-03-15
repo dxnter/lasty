@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const axios = require('axios');
+import Discord from 'discord.js';
+import axios from 'axios';
 
 module.exports.run = async (bot, message, args) => {
   const {
