@@ -186,6 +186,12 @@ module.exports.run = async (bot, message, args) => {
         message,
         args
       );
+      if (topArtists.description.length === 0)
+        return message.channel.send(
+          `<@${
+            message.author.id
+          }>, You don't have any listening history for that time period!`
+        );
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(topArtists.author)
@@ -196,6 +202,13 @@ module.exports.run = async (bot, message, args) => {
 
     case 'albums': {
       const topAlbums = await getUsersTopAlbums(fmUser, period, message, args);
+      if (topAlbums.description.length === 0) {
+        return message.channel.send(
+          `<@${
+            message.author.id
+          }>, You don't have any listening history for that time period!`
+        );
+      }
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(topAlbums.author)
