@@ -1,6 +1,4 @@
 import Discord from 'discord.js';
-import mongoose from 'mongoose';
-import User from '../models/user';
 import {
   getUserInfo,
   get10RecentTracks,
@@ -9,11 +7,15 @@ import {
   getUsersTopAlbums,
   getArtistTopAlbums
 } from '../api/lastfm';
+import db from '../db';
 
 module.exports.run = async (bot, message, args) => {
   let fmUser = args[1];
   let period = args[2];
-  const dbUser = await User.findOne({ userID: message.author.id });
+  const dbUser = db
+    .get('users')
+    .find({ userID: message.author.id })
+    .value();
   if (dbUser && args[0] !== 'set') {
     fmUser = dbUser.lastFM;
     period = args[1];
@@ -70,7 +72,11 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'set': {
-      const existingUser = await User.findOne({ userID: message.author.id });
+      const existingUser = db
+        .get('users')
+        .find({ userID: message.author.id })
+        .value();
+
       if (existingUser) {
         if (existingUser.lastFM === fmUser) {
           return message.channel.send(
@@ -78,35 +84,31 @@ module.exports.run = async (bot, message, args) => {
           );
         }
         existingUser.lastFM = fmUser;
-        return existingUser
-          .save()
-          .then(() =>
-            message.channel.send(`Last.FM username updated to **${fmUser}**`)
-          )
-          .catch(console.error);
+        db.get('users')
+          .find({ userID: message.author.id })
+          .assign({ lastFM: fmUser })
+          .write();
+        return message.channel.send(
+          `Last.FM username updated to **${fmUser}**`
+        );
       }
-
-      const user = new User({
-        _id: mongoose.Types.ObjectId(),
-        lastFM: fmUser,
-        userID: message.author.id
-      });
-      return user
-        .save()
-        .then(() => {
-          message.channel.send(`Last.FM username set to **${fmUser}**`);
-          console.log(user);
-        })
-        .catch(console.error);
+      db.get('users')
+        .push({ userID: message.author.id, lastFM: fmUser })
+        .write();
+      return message.channel.send(`Last.FM username set to **${fmUser}**`);
     }
 
     case 'info': {
-      const existingUser = await User.findOne({ userID: message.author.id });
+      const existingUser = db
+        .get('users')
+        .find({ userID: message.author.id })
+        .value();
+
       if (!existingUser) {
         return message.channel.send(
           `<@${
             message.author.id
-          }>, Please set your Last.FM username with \`,lf set [username]\`\nNo account? Sign up: https://www.last.fm/join`
+          }>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
         );
       }
       const {
@@ -131,18 +133,23 @@ module.exports.run = async (bot, message, args) => {
 
     case 'delete':
     case 'reset': {
-      const existingUser = await User.findOne({ userID: message.author.id });
+      const existingUser = db
+        .get('users')
+        .find({ userID: message.author.id })
+        .value();
+
       if (existingUser) {
-        return User.deleteOne(existingUser).then(() =>
-          message.channel.send(
-            `**${existingUser.lastFM}** has been deleted from the database`
-          )
+        db.get('users')
+          .remove({ userID: message.author.id })
+          .write();
+        return message.channel.send(
+          `**${existingUser.lastFM}** has been deleted from the database`
         );
       }
       return message.channel.send(
         `<@${
           message.author.id
-        }>, Please set your Last.FM username with \`,lf set [username]\`\nNo account? Sign up: https://www.last.fm/join`
+        }>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
       );
     }
 

@@ -1,20 +1,23 @@
 import Discord from 'discord.js';
 import axios from 'axios';
 import pluralize from 'pluralize';
+import db from '../db';
 import { getTotalScrobbles, getRecentTrack } from '../api/lastfm';
-import User from '../models/user';
 
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;
   if (!fmUser) {
-    const dbUser = await User.findOne({ userID: message.author.id });
+    const dbUser = db
+      .get('users')
+      .find({ userID: message.author.id })
+      .value();
     try {
       fmUser = dbUser.lastFM;
     } catch (e) {
       return message.channel.send(
         `<@${
           message.author.id
-        }>, Please set your Last.FM username with \`,lf set [username]\`\nNo account? Sign up: https://www.last.fm/join`
+        }>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
       );
     }
   }

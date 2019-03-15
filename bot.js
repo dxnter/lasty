@@ -1,19 +1,12 @@
 require('dotenv').config();
 
 import Discord from 'discord.js';
-import mongoose from 'mongoose';
 import fs from 'fs';
 import chalk from 'chalk';
+import './db';
 
 const log = console.log;
 const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
-
-mongoose
-  .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
-  .then(() =>
-    log(chalk.green('[MongoDB] Successfully connected to the database'))
-  )
-  .catch(err => log('Something went wrong', err));
 
 const bot = new Discord.Client({ disableEveryone: true });
 bot.commands = new Discord.Collection();

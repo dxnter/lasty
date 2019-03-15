@@ -118,7 +118,7 @@ export function getRecentTrack(fmUser, message) {
 export function get10RecentTracks(fmUser, message, args) {
   if (!fmUser) {
     return message.channel.send(
-      `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
+      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${
         args[0]
       }\``
     );
@@ -154,7 +154,7 @@ export function get10RecentTracks(fmUser, message, args) {
 export function getUsersTopTracks(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
-      `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
+      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${
         args[0]
       }\``
     );
@@ -205,7 +205,7 @@ export function getUsersTopTracks(fmUser, period, message, args) {
 export function getUsersTopArtists(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
-      `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
+      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${
         args[0]
       }\``
     );
@@ -250,7 +250,7 @@ export function getUsersTopArtists(fmUser, period, message, args) {
 export function getUsersTopAlbums(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
-      `Last.FM username not set, enter \`,lf set [username]\` or enter a username after \`${
+      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${
         args[0]
       }\``
     );
