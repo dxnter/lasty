@@ -11,15 +11,14 @@ module.exports.run = async (bot, message, args) => {
       .get('users')
       .find({ userID: message.author.id })
       .value();
-    try {
-      fmUser = dbUser.lastFM;
-    } catch (e) {
+    if (!dbUser) {
       return message.channel.send(
         `<@${
           message.author.id
         }>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
       );
     }
+    fmUser = dbUser.lastFM;
   }
 
   axios.all([getTotalScrobbles(fmUser), getRecentTrack(fmUser)]).then(
