@@ -1,14 +1,9 @@
-import Discord from 'discord.js';
-
 module.exports.run = async (bot, message, args) => {
-  if (!message.member.hasPermission('MANAGE_MESSAGES'))
+  if (!message.member.hasPermission('MANAGE_MESSAGES')) {
     return message.reply('oof.');
-  if (!args[0])
-    return message.channel.send(
-      'Please supply a clear amount\n`,clear <amount>`'
-    );
-  if (!Number.isInteger(Number(args[0])))
-    return message.channel.send('Please enter an integer value');
+  }
+  if (!args[0]) return message.channel.send('Please supply a clear amount\n`,clear <amount>`');
+  if (!Number.isInteger(Number(args[0]))) return message.channel.send('Please enter an integer value');
   message.channel.bulkDelete(args[0]).then(() => {
     message.channel
       .send(`Cleared ${args[0]} messages`)
@@ -18,5 +13,5 @@ module.exports.run = async (bot, message, args) => {
 };
 
 module.exports.help = {
-  name: 'clear'
+  name: 'clear',
 };

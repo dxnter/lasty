@@ -1,15 +1,8 @@
 import axios from 'axios';
+
 const { LASTFM_API_KEY } = process.env;
 const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
-
-const PERIOD_PARAMS = {
-  week: '7day',
-  month: '1month',
-  '90': '3month',
-  '180': '6month',
-  year: '12month',
-  all: 'overall'
-};
+const { PERIOD_PARAMS } = require('../constants');
 
 export function getUserInfo(fmUser) {
   const USER_INFO = 'user.getInfo';
@@ -22,7 +15,7 @@ export function getUserInfo(fmUser) {
       url: profileURL,
       country,
       image,
-      registered: { unixtime: unixRegistration }
+      registered: { unixtime: unixRegistration },
     } = userInfoRes.data.user;
     return {
       totalScrobbles,
@@ -30,7 +23,7 @@ export function getUserInfo(fmUser) {
       profileURL,
       country,
       image,
-      unixRegistration
+      unixRegistration,
     };
   });
 }
@@ -46,11 +39,7 @@ export function getTotalScrobbles(fmUser) {
   const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
   const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
   return axios.get(userRequestURL).then(totalScrobblesRes => {
-    const {
-      data: {
-        user: { playcount }
-      }
-    } = totalScrobblesRes;
+    const { data: { user: { playcount } } } = totalScrobblesRes;
 
     return playcount;
   });
@@ -69,15 +58,9 @@ export function getRecentTrack(fmUser, message) {
   return axios.get(songRequestURL).then(recentTracksRes => {
     const latestTrack = recentTracksRes.data.recenttracks.track[0];
     if (!latestTrack) {
-      return message.channel.send(
-        `${fmUser} hasn't listen to anything lately...`
-      );
+      return message.channel.send(`${fmUser} hasn't listen to anything lately...`);
     }
-    const {
-      name: track,
-      artist: { '#text': artist },
-      album: { '#text': album }
-    } = latestTrack;
+    const { name: track, artist: { '#text': artist }, album: { '#text': album } } = latestTrack;
     const albumCover = latestTrack.image[2]['#text'];
 
     const TRACK_INFO = 'track.getInfo';
@@ -92,10 +75,7 @@ export function getRecentTrack(fmUser, message) {
       } else {
         userplaycount = 1;
       }
-      const {
-        url: songURL,
-        artist: { url: artistURL }
-      } = trackInfoRes.data.track;
+      const { url: songURL, artist: { url: artistURL } } = trackInfoRes.data.track;
       return {
         track,
         artist,
@@ -103,7 +83,7 @@ export function getRecentTrack(fmUser, message) {
         albumCover,
         songURL,
         artistURL,
-        userplaycount
+        userplaycount,
       };
     });
   });
@@ -118,28 +98,17 @@ export function getRecentTrack(fmUser, message) {
 export function get10RecentTracks(fmUser, message, args) {
   if (!fmUser) {
     return message.channel.send(
-      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${
-        args[0]
-      }\``
+      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${args[0]}\``
     );
   }
   const GET_RECENT_TRACKS = 'user.getRecentTracks';
   const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
   const recentTracksRequestURL = `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`;
   return axios.get(recentTracksRequestURL).then(recentTracksRes => {
-    const recentTracks = recentTracksRes.data.recenttracks.track.map(
-      (track, i) => {
-        const {
-          artist: { '#text': artist },
-          name: song,
-          url
-        } = track;
-        return `\`${i + 1}\` **[${song}](${url.replace(
-          ')',
-          '\\)'
-        )})** by **${artist}**`;
-      }
-    );
+    const recentTracks = recentTracksRes.data.recenttracks.track.map((track, i) => {
+      const { artist: { '#text': artist }, name: song, url } = track;
+      return `\`${i + 1}\` **[${song}](${url.replace(')', '\\)')})** by **${artist}**`;
+    });
     return recentTracks;
   });
 }
@@ -154,16 +123,14 @@ export function get10RecentTracks(fmUser, message, args) {
 export function getUsersTopTracks(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
-      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${
-        args[0]
-      }\``
+      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${args[0]}\``
     );
   }
   if (period) {
     if (!PERIOD_PARAMS[period]) {
       return {
         author: 'Error',
-        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`,
       };
     }
   }
@@ -175,22 +142,12 @@ export function getUsersTopTracks(fmUser, period, message, args) {
   const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
   return axios.get(topTracksRequestURL).then(topTracksRes => {
     const topTracks = topTracksRes.data.toptracks.track.map(track => {
-      const {
-        artist: { name: artist },
-        name: song,
-        playcount,
-        url
-      } = track;
-      return `\`${playcount} ▶️\` • **[${song}](${url.replace(
-        ')',
-        '\\)'
-      )})** by **${artist}**`;
+      const { artist: { name: artist }, name: song, playcount, url } = track;
+      return `\`${playcount} ▶️\` • **[${song}](${url.replace(')', '\\)')})** by **${artist}**`;
     });
     return {
-      author: `${fmUser}'s Top Tracks for time period of ${
-        period ? PERIOD_PARAMS[period] : 'overall'
-      }`,
-      description: topTracks
+      author: `${fmUser}'s Top Tracks for time period of ${period ? PERIOD_PARAMS[period] : 'overall'}`,
+      description: topTracks,
     };
   });
 }
@@ -205,16 +162,14 @@ export function getUsersTopTracks(fmUser, period, message, args) {
 export function getUsersTopArtists(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
-      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${
-        args[0]
-      }\``
+      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${args[0]}\``
     );
   }
   if (period) {
     if (!PERIOD_PARAMS[period]) {
       return {
         author: 'Error',
-        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`,
       };
     }
   }
@@ -226,16 +181,12 @@ export function getUsersTopArtists(fmUser, period, message, args) {
   return axios.get(topArtistsRequestURL).then(topArtistsRes => {
     const topArtists = topArtistsRes.data.topartists.artist.map(artistRes => {
       const { name: artist, playcount, url } = artistRes;
-      const usersArtistsSrobblesURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
-        .split(' ')
-        .join('+')}`;
+      const usersArtistsSrobblesURL = `https://www.last.fm/user/${fmUser}/library/music/${artist.split(' ').join('+')}`;
       return `\`${playcount} ▶️\`•  **[${artist}](${usersArtistsSrobblesURL})**`;
     });
     return {
-      author: `${fmUser}'s Top Artists for time period of ${
-        period ? PERIOD_PARAMS[period] : 'overall'
-      }`,
-      description: topArtists
+      author: `${fmUser}'s Top Artists for time period of ${period ? PERIOD_PARAMS[period] : 'overall'}`,
+      description: topArtists,
     };
   });
 }
@@ -250,16 +201,14 @@ export function getUsersTopArtists(fmUser, period, message, args) {
 export function getUsersTopAlbums(fmUser, period, message, args) {
   if (!fmUser) {
     return message.channel.send(
-      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${
-        args[0]
-      }\``
+      `Last.FM username not set, enter \`,lf set <username>\` or enter a username after \`${args[0]}\``
     );
   }
   if (period) {
     if (!PERIOD_PARAMS[period]) {
       return {
         author: 'Error',
-        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
+        description: `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`,
       };
     }
   }
@@ -270,22 +219,15 @@ export function getUsersTopAlbums(fmUser, period, message, args) {
   const topAlbumsRequestURL = `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
   return axios.get(topAlbumsRequestURL).then(albumsRes => {
     const topAlbums = albumsRes.data.topalbums.album.map(singleAlbum => {
-      const {
-        name: albumName,
-        playcount,
-        url: albumURL,
-        artist: { name: artistName, url: artistURL }
-      } = singleAlbum;
+      const { name: albumName, playcount, url: albumURL, artist: { name: artistName, url: artistURL } } = singleAlbum;
       return `\`${playcount} ▶️\`•  **[${albumName}](${albumURL.replace(
         ')',
         '\\)'
       )})** by **[${artistName}](${artistURL.replace(')', '\\)')})**`;
     });
     return {
-      author: `${fmUser}'s Top Albums for time period of ${
-        period ? PERIOD_PARAMS[period] : 'overall'
-      }`,
-      description: topAlbums
+      author: `${fmUser}'s Top Albums for time period of ${period ? PERIOD_PARAMS[period] : 'overall'}`,
+      description: topAlbums,
     };
   });
 }
@@ -304,15 +246,10 @@ export function getArtistTopAlbums(args) {
   return axios.get(artistTopAlbumsRequestURL).then(topAlbumsRes => {
     const formattedArtist = topAlbumsRes.data.topalbums['@attr'].artist;
     const artistURL = topAlbumsRes.data.topalbums.album[0].artist.url;
-    const artistTopAlbums = topAlbumsRes.data.topalbums.album.map(
-      (album, i) => {
-        const { name, playcount, url: albumURL } = album;
-        return `\`${i + 1}\` **[${name}](${albumURL.replace(
-          ')',
-          '\\)'
-        )})** • \`${playcount.toLocaleString()} ▶\`  ️`;
-      }
-    );
+    const artistTopAlbums = topAlbumsRes.data.topalbums.album.map((album, i) => {
+      const { name, playcount, url: albumURL } = album;
+      return `\`${i + 1}\` **[${name}](${albumURL.replace(')', '\\)')})** • \`${playcount.toLocaleString()} ▶\`  ️`;
+    });
     return { artistTopAlbums, formattedArtist, artistURL };
   });
 }

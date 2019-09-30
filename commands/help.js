@@ -4,15 +4,9 @@ module.exports.run = (bot, message, args) =>
   message.channel.send(
     new Discord.RichEmbed()
       .setColor('#E31C23')
-      .addField(
-        'Lasty Commands',
-        `Run commands with prefix \`${process.env.PREFIX}\``
-      )
+      .addField('Lasty Commands', `Run commands with prefix \`${process.env.PREFIX}\``)
       .addField('`lf`', 'Last.FM statistics and charts, `,lf help`')
-      .addField(
-        '`np`',
-        'Shows last played track on Last.FM `,np` or `,np [username]`'
-      )
+      .addField('`np`', 'Shows last played track on Last.FM `,np` or `,np [username]`')
       .addField('cat', 'Shows a random cat picture')
       .addField('doggo', 'Shows a random dog picture')
       .addField('eval', 'Evaluates JavaScript code')
@@ -24,5 +18,5 @@ module.exports.run = (bot, message, args) =>
   );
 
 module.exports.help = {
-  name: 'help'
+  name: 'help',
 };

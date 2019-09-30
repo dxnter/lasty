@@ -1,21 +1,19 @@
-import Discord from 'discord.js';
-import axios from 'axios';
-import pluralize from 'pluralize';
-import db from '../db';
-import { getTotalScrobbles, getRecentTrack } from '../api/lastfm';
+import Discord from "discord.js";
+import axios from "axios";
+import pluralize from "pluralize";
+import db from "../db";
+import { getTotalScrobbles, getRecentTrack } from "../api/lastfm";
 
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;
   if (!fmUser) {
     const dbUser = db
-      .get('users')
+      .get("users")
       .find({ userID: message.author.id })
       .value();
     if (!dbUser) {
       return message.channel.send(
-        `<@${
-          message.author.id
-        }>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
+        `<@${message.author.id}>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
       );
     }
     fmUser = dbUser.lastFM;
@@ -34,9 +32,7 @@ module.exports.run = async (bot, message, args) => {
         userplaycount
       } = trackInfo;
 
-      const avatarURL = `https://cdn.discordapp.com/avatars/${
-        message.author.id
-      }/${message.author.avatar}`;
+      const avatarURL = message.author.displayAvatarURL;
 
       const embed = new Discord.RichEmbed()
         .setAuthor(
@@ -46,18 +42,18 @@ module.exports.run = async (bot, message, args) => {
         )
         .setThumbnail(albumCover)
         .addField(
-          '**Track**',
-          `[${track}](${songURL.replace(')', '\\)')})`,
+          "**Track**",
+          `[${track}](${songURL.replace(")", "\\)")})`,
           true
         )
-        .addField('**Artist**', `[${artist}](${artistURL})`, true)
+        .addField("**Artist**", `[${artist}](${artistURL})`, true)
         .setFooter(
           `Playcount: ${userplaycount.toLocaleString()} | ${pluralize(
             fmUser
           )} Scrobbles: ${totalScrobbles.toLocaleString() ||
             0} | Album: ${album}`
         )
-        .setColor('#E31C23');
+        .setColor("#E31C23");
 
       return message.channel.send(embed);
     })
@@ -65,5 +61,5 @@ module.exports.run = async (bot, message, args) => {
 };
 
 module.exports.help = {
-  name: 'np'
+  name: "np"
 };
