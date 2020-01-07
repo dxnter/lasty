@@ -1,14 +1,14 @@
-import Discord from "discord.js";
-import axios from "axios";
-import pluralize from "pluralize";
-import db from "../db";
-import { getTotalScrobbles, getRecentTrack } from "../api/lastfm";
+import Discord from 'discord.js';
+import axios from 'axios';
+import pluralize from 'pluralize';
+import db from '../db';
+import { getTotalScrobbles, getRecentTrack } from '../api/lastfm';
 
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;
   if (!fmUser) {
     const dbUser = db
-      .get("users")
+      .get('users')
       .find({ userID: message.author.id })
       .value();
     if (!dbUser) {
@@ -42,18 +42,18 @@ module.exports.run = async (bot, message, args) => {
         )
         .setThumbnail(albumCover)
         .addField(
-          "**Track**",
-          `[${track}](${songURL.replace(")", "\\)")})`,
+          '**Track**',
+          `[${track}](${songURL.replace(')', '\\)')})`,
           true
         )
-        .addField("**Artist**", `[${artist}](${artistURL})`, true)
+        .addField('**Artist**', `[${artist}](${artistURL})`, true)
         .setFooter(
           `Playcount: ${userplaycount.toLocaleString()} | ${pluralize(
             fmUser
           )} Scrobbles: ${totalScrobbles.toLocaleString() ||
             0} | Album: ${album}`
         )
-        .setColor("#E31C23");
+        .setColor('#E31C23');
 
       return message.channel.send(embed);
     })
@@ -61,5 +61,5 @@ module.exports.run = async (bot, message, args) => {
 };
 
 module.exports.help = {
-  name: "np"
+  name: 'np'
 };
