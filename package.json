@@ -18,14 +18,15 @@
   "author": "dxnter",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.1",
-    "chalk": "^2.4.2",
+    "@types/node": "^13.1.4",
+    "axios": "^0.19.0",
+    "chalk": "^3.0.0",
     "discord.js": "^11.5.1",
-    "dotenv": "^8.1.0",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "lowdb": "^1.0.0",
     "ms": "^2.1.2",
-    "nodemon": "^1.19.3",
-    "pluralize": "^7.0.0"
+    "nodemon": "^2.0.2",
+    "pluralize": "^8.0.0"
   }
 }
