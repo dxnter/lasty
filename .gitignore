@@ -1,8 +1,4 @@
 node_modules/
-<<<<<<< HEAD
 .env
 db.json
-=======
-db.json
-.env
->>>>>>> bb6cf7c4f9e8664ed5ee906262432def7e114d7a
+jsconfig.json
