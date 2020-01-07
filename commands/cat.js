@@ -2,9 +2,7 @@ import Discord from 'discord.js';
 import axios from 'axios';
 
 module.exports.run = async (bot, message, args) => {
-  const {
-    data: { file }
-  } = await axios.get('https://aws.random.cat/meow');
+  const { data: { file } } = await axios.get('https://aws.random.cat/meow');
 
   message.channel.send(
     new Discord.RichEmbed()
@@ -15,5 +13,5 @@ module.exports.run = async (bot, message, args) => {
 };
 
 module.exports.help = {
-  name: 'cat'
+  name: 'cat',
 };
