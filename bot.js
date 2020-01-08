@@ -6,7 +6,9 @@ import './db';
 
 import weeklyStatCron from './utils/weeklyStatCron';
 
-require('dotenv').config();
+require('dotenv').config({
+  path: `${__dirname}/.env`
+});
 
 const log = console.log;
 const { LASTFM_API_KEY, DISCORD_BOT_TOKEN, PREFIX } = process.env;
