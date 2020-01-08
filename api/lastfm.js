@@ -45,9 +45,9 @@ export async function getUserInfo(fmUser) {
  *
  * @returns {number} playcount - Amount of scrobbles for the fmUser.
  */
-export async function getTotalScrobbles(fmUser) {
+export async function getTotalScrobbles(fmUser, apiKey = LASTFM_API_KEY) {
   const USER_INFO = 'user.getInfo';
-  const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
+  const USER_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&format=json`;
   const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
   const {
     data: {
@@ -154,7 +154,13 @@ export async function get10RecentTracks(fmUser, message, args) {
  *
  * @returns {Array} topTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-export async function getUsersTopTracks(fmUser, period, message, args) {
+export async function getUsersTopTracks(
+  fmUser,
+  period,
+  message,
+  args,
+  apiKey = LASTFM_API_KEY
+) {
   if (!fmUser) {
     return Util.userNotSet(message, args);
   }
@@ -162,7 +168,7 @@ export async function getUsersTopTracks(fmUser, period, message, args) {
     return Util.invalidPeriod(period);
   }
   const GET_TOP_TRACKS = 'user.getTopTracks';
-  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${apiKey}&limit=10&format=json`;
   const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
   const {
     data: {
@@ -198,7 +204,13 @@ export async function getUsersTopTracks(fmUser, period, message, args) {
  *
  * @returns {Array} topArtists - Markdown formatted strings containing Last.FM links and artist data.
  */
-export async function getUsersTopArtists(fmUser, period, message, args) {
+export async function getUsersTopArtists(
+  fmUser,
+  period,
+  message,
+  args,
+  apiKey = LASTFM_API_KEY
+) {
   if (!fmUser) {
     return Util.userNotSet(message, args);
   }
@@ -206,7 +218,7 @@ export async function getUsersTopArtists(fmUser, period, message, args) {
     return Util.invalidPeriod(period);
   }
   const GET_TOP_ARTISTS = 'user.getTopArtists';
-  const TOP_ARTISTS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+  const TOP_ARTISTS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${apiKey}&limit=10&format=json`;
   const topArtistsRequestURL = `${LASTFM_API_URL}${GET_TOP_ARTISTS}${TOP_ARTISTS_QUERY_STRING}`;
   const {
     data: {
@@ -237,7 +249,13 @@ export async function getUsersTopArtists(fmUser, period, message, args) {
  *
  * @returns {Array} topAlbums - Markdown formatted strings containing Last.FM links and artist data.
  */
-export async function getUsersTopAlbums(fmUser, period, message, args) {
+export async function getUsersTopAlbums(
+  fmUser,
+  period,
+  message,
+  args,
+  apiKey = LASTFM_API_KEY
+) {
   if (!fmUser) {
     return Util.userNotSet(message, args);
   }
@@ -245,7 +263,7 @@ export async function getUsersTopAlbums(fmUser, period, message, args) {
     return Util.invalidPeriod(period);
   }
   const GET_TOP_ALBUMS = 'user.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${apiKey}&limit=10&format=json`;
   const topAlbumsRequestURL = `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
   const {
     data: {
