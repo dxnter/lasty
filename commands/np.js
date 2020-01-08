@@ -5,6 +5,7 @@ import db from '../db';
 import { getTotalScrobbles, getRecentTrack } from '../api/lastfm';
 
 const { LASTFM_API_KEY } = process.env;
+console.log(process.env);
 
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;
