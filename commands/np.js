@@ -4,6 +4,8 @@ import pluralize from 'pluralize';
 import db from '../db';
 import { getTotalScrobbles, getRecentTrack } from '../api/lastfm';
 
+const { LASTFM_API_KEY } = process.env;
+
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;
   if (!fmUser) {
@@ -19,45 +21,50 @@ module.exports.run = async (bot, message, args) => {
     fmUser = dbUser.lastFM;
   }
 
-  axios.all([getTotalScrobbles(fmUser), getRecentTrack(fmUser)]).then(
-    axios.spread((totalScrobbles, trackInfo) => {
-      if (trackInfo.error) return message.channel.send(trackInfo.error);
-      const {
-        track,
-        artist,
-        album,
-        albumCover,
-        songURL,
-        artistURL,
-        userplaycount
-      } = trackInfo;
+  axios
+    .all([
+      getTotalScrobbles(fmUser, LASTFM_API_KEY),
+      getRecentTrack(fmUser, LASTFM_API_KEY)
+    ])
+    .then(
+      axios.spread((totalScrobbles, trackInfo) => {
+        if (trackInfo.error) return message.channel.send(trackInfo.error);
+        const {
+          track,
+          artist,
+          album,
+          albumCover,
+          songURL,
+          artistURL,
+          userplaycount
+        } = trackInfo;
 
-      const avatarURL = message.author.displayAvatarURL;
+        const avatarURL = message.author.displayAvatarURL;
 
-      const embed = new Discord.RichEmbed()
-        .setAuthor(
-          `Last.FM: ${fmUser}`,
-          avatarURL,
-          `http://www.last.fm/user/${fmUser}`
-        )
-        .setThumbnail(albumCover)
-        .addField(
-          '**Track**',
-          `[${track}](${songURL.replace(')', '\\)')})`,
-          true
-        )
-        .addField('**Artist**', `[${artist}](${artistURL})`, true)
-        .setFooter(
-          `Playcount: ${userplaycount.toLocaleString()} | ${pluralize(
-            fmUser
-          )} Scrobbles: ${totalScrobbles.toLocaleString() ||
-            0} | Album: ${album}`
-        )
-        .setColor('#E31C23');
+        const embed = new Discord.RichEmbed()
+          .setAuthor(
+            `Last.FM: ${fmUser}`,
+            avatarURL,
+            `http://www.last.fm/user/${fmUser}`
+          )
+          .setThumbnail(albumCover)
+          .addField(
+            '**Track**',
+            `[${track}](${songURL.replace(')', '\\)')})`,
+            true
+          )
+          .addField('**Artist**', `[${artist}](${artistURL})`, true)
+          .setFooter(
+            `Playcount: ${userplaycount.toLocaleString()} | ${pluralize(
+              fmUser
+            )} Scrobbles: ${totalScrobbles.toLocaleString() ||
+              0} | Album: ${album}`
+          )
+          .setColor('#E31C23');
 
-      return message.channel.send(embed);
-    })
-  );
+        return message.channel.send(embed);
+      })
+    );
 };
 
 module.exports.help = {
