@@ -65,7 +65,8 @@ module.exports.run = async (bot, message, args) => {
 
         return message.channel.send(embed);
       })
-    );
+    )
+    .catch(err => console.log(err));
 };
 
 module.exports.help = {
