@@ -25,7 +25,7 @@ module.exports.run = async (bot, message, args) => {
   axios
     .all([
       getTotalScrobbles(fmUser, LASTFM_API_KEY),
-      getRecentTrack(fmUser, LASTFM_API_KEY)
+      getRecentTrack(fmUser, null, LASTFM_API_KEY)
     ])
     .then(
       axios.spread((totalScrobbles, trackInfo) => {
