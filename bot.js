@@ -50,13 +50,15 @@ bot.on('message', async message => {
   if (commandFile) commandFile.run(bot, message, args);
 });
 
-new CronJob(
-  '0 23 * * *',
-  weeklyStatCron(bot, LASTFM_API_KEY),
-  null,
-  true,
-  'America/Chicago'
-);
+// new CronJob(
+//   '30 12 * * *',
+//   () => {
+//     weeklyStatCron(bot, LASTFM_API_KEY);
+//   },
+//   null,
+//   true,
+//   'America/Chicago'
+// );
 
 bot.on('error', console.error);
 

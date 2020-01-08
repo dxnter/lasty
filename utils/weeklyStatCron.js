@@ -10,7 +10,6 @@ import db from '../db';
 async function weeklyStatCron(bot, LASTFM_API_KEY) {
   const users = db.get('users').value();
   users.forEach(async user => {
-    console.log(user);
     const { userID, lastFM: fmUser } = user;
     const { description: topArtists } = await getUsersTopArtists(
       fmUser,
