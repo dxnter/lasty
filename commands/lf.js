@@ -1,11 +1,11 @@
 import Discord from 'discord.js';
 import {
-  getUserInfo,
-  get10RecentTracks,
-  getUsersTopTracks,
-  getUsersTopArtists,
-  getUsersTopAlbums,
-  getArtistTopAlbums
+  fetchUserInfo,
+  fetch10RecentTracks,
+  fetchUsersTopTracks,
+  fetchUsersTopArtists,
+  fetchUsersTopAlbums,
+  fetchArtistTopAlbums,
 } from '../api/lastfm';
 import db from '../db';
 
@@ -118,7 +118,7 @@ module.exports.run = async (bot, message, args) => {
         country,
         image,
         unixRegistration
-      } = await getUserInfo(fmUser, LASTFM_API_KEY);
+      } = await fetchUserInfo(fmUser, LASTFM_API_KEY);
       const lastFMAvatar = image[1]['#text'];
 
       return message.channel.send(
@@ -152,7 +152,7 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'recent': {
-      const recentTracks = await get10RecentTracks(
+      const recentTracks = await fetch10RecentTracks(
         fmUser,
         message,
         args,
@@ -167,7 +167,7 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'tracks': {
-      const topTracks = await getUsersTopTracks(
+      const topTracks = await fetchUsersTopTracks(
         fmUser,
         period,
         message,
@@ -183,7 +183,7 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'artists': {
-      const topArtists = await getUsersTopArtists(
+      const topArtists = await fetchUsersTopArtists(
         fmUser,
         period,
         message,
@@ -203,7 +203,7 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'albums': {
-      const topAlbums = await getUsersTopAlbums(
+      const topAlbums = await fetchUsersTopAlbums(
         fmUser,
         period,
         message,
@@ -228,7 +228,7 @@ module.exports.run = async (bot, message, args) => {
         artistTopAlbums,
         formattedArtist,
         artistURL
-      } = await getArtistTopAlbums(args, LASTFM_API_KEY);
+      } = await fetchArtistTopAlbums(args, LASTFM_API_KEY);
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(`${formattedArtist}'s Top 10 Albums`, null, artistURL)

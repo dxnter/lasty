@@ -1,38 +1,15 @@
 import Discord from 'discord.js';
-import axios from 'axios';
-import {
-  getUsersTopArtists,
-  getUsersTopAlbums,
-  getUsersTopTracks
-} from '../api/lastfm';
 import db from '../db';
+import getCronData from '../utils/getCronData'
+
 
 async function weeklyStatCron(bot, LASTFM_API_KEY) {
   const users = db.get('users').value();
   users.forEach(async user => {
     const { userID, lastFM: fmUser } = user;
-    const { description: topArtists } = await getUsersTopArtists(
-      fmUser,
-      'week',
-      null,
-      null,
-      LASTFM_API_KEY
-    );
-    const { description: topAlbums } = await getUsersTopAlbums(
-      fmUser,
-      'week',
-      null,
-      null,
-      LASTFM_API_KEY
-    );
-    const { description: topTracks } = await getUsersTopTracks(
-      fmUser,
-      'week',
-      null,
-      null,
-      LASTFM_API_KEY
-    );
+    const { topArtists, topAlbums, topTracks, weeklyScrobbles  } = await getCronData(fmUser, LASTFM_API_KEY)
 
+    // Make this into a single embed not multiple messages
     bot
       .fetchUser(userID)
       .then(user => {

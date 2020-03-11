@@ -54,6 +54,7 @@ bot.on('message', async message => {
 
 new CronJob(
   '0 12 * * 0',
+  // '* * * * *',
   () => {
     weeklyStatCron(bot, LASTFM_API_KEY);
   },

@@ -12,7 +12,7 @@ const { PERIOD_PARAMS } = require('../constants');
  *
  * @returns {{totalScrobbles: Number, name: String, profileURL: String, country: String, image: String, unixRegistration: Number}}
  */
-export async function getUserInfo(fmUser, apiKey = LASTFM_API_KEY) {
+export async function fetchUserInfo(fmUser, apiKey = LASTFM_API_KEY) {
   const USER_INFO = 'user.getInfo';
   const USER_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&format=json`;
   const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
@@ -45,7 +45,7 @@ export async function getUserInfo(fmUser, apiKey = LASTFM_API_KEY) {
  *
  * @returns {number} playcount - Amount of scrobbles for the fmUser.
  */
-export async function getTotalScrobbles(fmUser, apiKey = LASTFM_API_KEY) {
+export async function fetchTotalScrobbles(fmUser, apiKey = LASTFM_API_KEY) {
   const USER_INFO = 'user.getInfo';
   const USER_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&format=json`;
   const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
@@ -64,7 +64,7 @@ export async function getTotalScrobbles(fmUser, apiKey = LASTFM_API_KEY) {
  *
  * @returns {{track: String, artist: String, album: String, albumCover: String, songURL: String, artistURL: String, userplaycount: Number}}
  */
-export async function getRecentTrack(fmUser, message, apiKey = LASTFM_API_KEY) {
+export async function fetchRecentTrack(fmUser, message, apiKey = LASTFM_API_KEY) {
   const RECENT_TRACKS = 'user.getRecentTracks';
   const SONG_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&limit=1&format=json`;
   const songRequestURL = `${LASTFM_API_URL}${RECENT_TRACKS}${SONG_QUERY_STRING}`;
@@ -116,7 +116,7 @@ export async function getRecentTrack(fmUser, message, apiKey = LASTFM_API_KEY) {
  *
  * @returns {Array} recentTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-export async function get10RecentTracks(
+export async function fetch10RecentTracks(
   fmUser,
   message,
   args,
@@ -153,13 +153,30 @@ export async function get10RecentTracks(
 }
 
 /**
+ * Fetches the total amount of scrobbles in a week to be used on the weekly cron
+ * @param {String} fmUser A registered user on Last.FM.
+ */
+
+export async function fetchUsersWeeklyScrobbles(fmUser, apiKey = LASTFM_API_KEY) {
+  const GET_TOP_TRACKS = 'user.gettoptracks';
+  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=7day&api_key=${apiKey}&limit=10&format=json`;
+  const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`
+  const { data: { toptracks: { '@attr': profileData } }} = await axios.get(topTracksRequestURL);
+
+  // TODO fix this unneccesary destructure
+  const { total: weeklyScrobbles } = profileData
+
+  return weeklyScrobbles
+}
+
+/**
  * Fetches the top 10 most scrobbled tracks for the supplied time period.
  * @param {String} fmUser A registered user on Last.FM.
  * @param {String} [period] A valid period in the PERIOD_PARAMS.
  *
  * @returns {Array} topTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-export async function getUsersTopTracks(
+export async function fetchUsersTopTracks(
   fmUser,
   period,
   message,
@@ -183,15 +200,15 @@ export async function getUsersTopTracks(
 
   const topTracks = track.map(track => {
     const {
-      artist: { name: artist },
+      artist: { name: artist, url: artistURL },
       name: song,
       playcount,
       url
     } = track;
     return `\`${playcount} ▶️\` • **[${song}](${url.replace(
-      ')',
-      '\\)'
-    )})** by **${artist}**`;
+      ")",
+      "\\)"
+    )})** by **[${artist}](${artistURL.replace(")", "\\)")})**`;
   });
 
   return {
@@ -209,7 +226,7 @@ export async function getUsersTopTracks(
  *
  * @returns {Array} topArtists - Markdown formatted strings containing Last.FM links and artist data.
  */
-export async function getUsersTopArtists(
+export async function fetchUsersTopArtists(
   fmUser,
   period,
   message,
@@ -254,7 +271,7 @@ export async function getUsersTopArtists(
  *
  * @returns {Array} topAlbums - Markdown formatted strings containing Last.FM links and artist data.
  */
-export async function getUsersTopAlbums(
+export async function fetchUsersTopAlbums(
   fmUser,
   period,
   message,
@@ -303,7 +320,7 @@ export async function getUsersTopAlbums(
  *
  * @returns {{artistTopAlbums: Array, formattedArtist: String, artistURL: String}}
  */
-export async function getArtistTopAlbums(args, apiKey = LASTFM_API_KEY) {
+export async function fetchArtistTopAlbums(args, apiKey = LASTFM_API_KEY) {
   const artist = args.slice(1).join(' ');
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
   const TOP_ALBUMS_QUERY_STRING = `&artist=${artist}&api_key=${apiKey}&limit=10&autocorrect=1&format=json`;
