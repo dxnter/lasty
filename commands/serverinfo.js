@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 
-module.exports.run = async (bot, message, args) =>
+module.exports.run = async (bot, message) =>
   message.channel.send(
     new Discord.RichEmbed()
       .setThumbnail(message.guild.iconURL)
@@ -12,5 +12,5 @@ module.exports.run = async (bot, message, args) =>
   );
 
 module.exports.help = {
-  name: 'serverinfo',
+  name: 'serverinfo'
 };

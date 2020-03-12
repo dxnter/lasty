@@ -1,17 +1,16 @@
 import Discord from 'discord.js';
 import fs from 'fs';
 import chalk from 'chalk';
+import dotenv from 'dotenv';
 import { CronJob } from 'cron';
 import './db';
 
 import weeklyStatCron from './utils/weeklyStatCron';
 
-require('dotenv').config({
-  path: `${__dirname}/.env`
-});
+dotenv.config();
 
 const log = console.log;
-const { LASTFM_API_KEY, DISCORD_BOT_TOKEN, PREFIX } = process.env;
+const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
 
 const bot = new Discord.Client({ disableEveryone: true });
 bot.commands = new Discord.Collection();
@@ -25,7 +24,7 @@ fs.readdir('./commands/', (err, files) => {
     return;
   }
 
-  jsfiles.forEach((f, i) => {
+  jsfiles.forEach(f => {
     const props = require(`./commands/${f}`);
     bot.commands.set(props.help.name, props);
   });
@@ -54,9 +53,8 @@ bot.on('message', async message => {
 
 new CronJob(
   '0 12 * * 0',
-  // '* * * * *',
   () => {
-    weeklyStatCron(bot, LASTFM_API_KEY);
+    weeklyStatCron(bot);
   },
   null,
   true,

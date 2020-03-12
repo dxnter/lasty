@@ -1,8 +1,14 @@
 import { Util } from '../utils/util';
 
-const frames = ['(-°□°)-  ┬─┬', '(╯°□°)╯    ]', '(╯°□°)╯  ︵  ┻━┻', '(╯°□°)╯       [', '(╯°□°)╯           ┬─┬'];
+const frames = [
+  '(-°□°)-  ┬─┬',
+  '(╯°□°)╯    ]',
+  '(╯°□°)╯  ︵  ┻━┻',
+  '(╯°□°)╯       [',
+  '(╯°□°)╯           ┬─┬'
+];
 
-module.exports.run = async (bot, message, args) => {
+module.exports.run = async (bot, message) => {
   const msg = await message.channel.send('(\\\\°□°)\\\\  ┬─┬');
   frames.forEach(async frame => {
     await Util.delay(100);
@@ -12,5 +18,5 @@ module.exports.run = async (bot, message, args) => {
 };
 
 module.exports.help = {
-  name: 'tableflip',
+  name: 'tableflip'
 };

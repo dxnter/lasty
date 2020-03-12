@@ -1,12 +1,15 @@
 import Discord from 'discord.js';
 
-module.exports.run = async (bot, message, args) =>
+module.exports.run = async (bot, message) =>
   message.channel.send(
     new Discord.RichEmbed()
       .setThumbnail(bot.user.displayAvatarURL)
       .setColor('#E31C23')
       .setTitle('Lasty')
-      .addField('Description', 'Lasty creates customizable Last.FM charts along with miscellaneous commands.')
+      .addField(
+        'Description',
+        'Lasty creates customizable Last.FM charts along with miscellaneous commands.'
+      )
       .addField('Total Users', bot.users.size)
       .addField('Total Servers', bot.guilds.size)
       .addField('Created On', bot.user.createdAt)
@@ -15,5 +18,5 @@ module.exports.run = async (bot, message, args) =>
   );
 
 module.exports.help = {
-  name: 'botinfo',
+  name: 'botinfo'
 };

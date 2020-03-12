@@ -4,9 +4,6 @@ import pluralize from 'pluralize';
 import db from '../db';
 import { fetchTotalScrobbles, fetchRecentTrack } from '../api/lastfm';
 
-const { LASTFM_API_KEY } = process.env;
-console.log(process.env);
-
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;
   if (!fmUser) {
@@ -23,10 +20,7 @@ module.exports.run = async (bot, message, args) => {
   }
 
   axios
-    .all([
-      fetchTotalScrobbles(fmUser, LASTFM_API_KEY),
-      fetchRecentTrack(fmUser, null, LASTFM_API_KEY)
-    ])
+    .all([fetchTotalScrobbles(fmUser), fetchRecentTrack(fmUser, message)])
     .then(
       axios.spread((totalScrobbles, trackInfo) => {
         if (trackInfo.error) return message.channel.send(trackInfo.error);

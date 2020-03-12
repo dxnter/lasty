@@ -5,11 +5,9 @@ import {
   fetchUsersTopTracks,
   fetchUsersTopArtists,
   fetchUsersTopAlbums,
-  fetchArtistTopAlbums,
+  fetchArtistTopAlbums
 } from '../api/lastfm';
 import db from '../db';
-
-const { LASTFM_API_KEY } = process.env;
 
 module.exports.run = async (bot, message, args) => {
   let fmUser = args[1];
@@ -118,15 +116,19 @@ module.exports.run = async (bot, message, args) => {
         country,
         image,
         unixRegistration
-      } = await fetchUserInfo(fmUser, LASTFM_API_KEY);
-      const lastFMAvatar = image[1]['#text'];
+      } = await fetchUserInfo(fmUser);
+      const lastFMAvatar = image[2]['#text'];
 
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(name, lastFMAvatar, profileURL)
+          .setThumbnail(lastFMAvatar)
           .addField('Total Scrobbes', totalScrobbles.toLocaleString())
           .addField('Country', country)
-          .addField('Registration Date', new Date(unixRegistration * 1000))
+          .addField(
+            'Registration Date',
+            new Date(unixRegistration * 1000).toLocaleString()
+          )
           .setColor('#E31C23')
       );
     }
@@ -152,12 +154,7 @@ module.exports.run = async (bot, message, args) => {
     }
 
     case 'recent': {
-      const recentTracks = await fetch10RecentTracks(
-        fmUser,
-        message,
-        args,
-        LASTFM_API_KEY
-      );
+      const recentTracks = await fetch10RecentTracks(fmUser, message, args);
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(recentTracks.author)
@@ -171,9 +168,13 @@ module.exports.run = async (bot, message, args) => {
         fmUser,
         period,
         message,
-        args,
-        LASTFM_API_KEY
+        args
       );
+      if (topTracks.description.length === 0) {
+        return message.channel.send(
+          `${fmUser} hasn't listened to anything lately...`
+        );
+      }
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(topTracks.author)
@@ -187,13 +188,13 @@ module.exports.run = async (bot, message, args) => {
         fmUser,
         period,
         message,
-        args,
-        LASTFM_API_KEY
+        args
       );
-      if (topArtists.description.length === 0)
+      if (topArtists.description.length === 0) {
         return message.channel.send(
-          `<@${message.author.id}>, You don't have any listening history for that time period!`
+          `${fmUser} hasn't listened to anything lately...`
         );
+      }
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(topArtists.author)
@@ -207,12 +208,11 @@ module.exports.run = async (bot, message, args) => {
         fmUser,
         period,
         message,
-        args,
-        LASTFM_API_KEY
+        args
       );
       if (topAlbums.description.length === 0) {
         return message.channel.send(
-          `<@${message.author.id}>, You don't have any listening history for that time period!`
+          `${fmUser} hasn't listened to anything lately...`
         );
       }
       return message.channel.send(
@@ -228,7 +228,7 @@ module.exports.run = async (bot, message, args) => {
         artistTopAlbums,
         formattedArtist,
         artistURL
-      } = await fetchArtistTopAlbums(args, LASTFM_API_KEY);
+      } = await fetchArtistTopAlbums(args);
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(`${formattedArtist}'s Top 10 Albums`, null, artistURL)

@@ -8,7 +8,8 @@
     "url": "git+https://github.com/dxnter/lasty.git"
   },
   "scripts": {
-    "start": "nodemon -r esm bot.js --ignore db.json"
+    "start": "nodemon -r esm bot.js --ignore db.json",
+    "lint": "eslint --fix . && echo 'Lint complete.'"
   },
   "keywords": [
     "discord",
@@ -22,6 +23,7 @@
     "axios": "^0.19.0",
     "chalk": "^3.0.0",
     "cron": "^1.7.2",
+    "dayjs": "^1.8.22",
     "discord.js": "^11.5.1",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
@@ -29,5 +31,11 @@
     "ms": "^2.1.2",
     "nodemon": "^2.0.2",
     "pluralize": "^8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^1.19.1"
   }
 }

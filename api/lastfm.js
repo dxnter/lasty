@@ -1,3 +1,4 @@
+require('dotenv').config();
 import axios from 'axios';
 
 import { Util } from '../utils/util';
@@ -12,9 +13,9 @@ const { PERIOD_PARAMS } = require('../constants');
  *
  * @returns {{totalScrobbles: Number, name: String, profileURL: String, country: String, image: String, unixRegistration: Number}}
  */
-export async function fetchUserInfo(fmUser, apiKey = LASTFM_API_KEY) {
+export async function fetchUserInfo(fmUser) {
   const USER_INFO = 'user.getInfo';
-  const USER_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&format=json`;
+  const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
   const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
   const {
     data: { user: user }
@@ -45,9 +46,9 @@ export async function fetchUserInfo(fmUser, apiKey = LASTFM_API_KEY) {
  *
  * @returns {number} playcount - Amount of scrobbles for the fmUser.
  */
-export async function fetchTotalScrobbles(fmUser, apiKey = LASTFM_API_KEY) {
+export async function fetchTotalScrobbles(fmUser) {
   const USER_INFO = 'user.getInfo';
-  const USER_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&format=json`;
+  const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
   const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
   const {
     data: {
@@ -64,18 +65,17 @@ export async function fetchTotalScrobbles(fmUser, apiKey = LASTFM_API_KEY) {
  *
  * @returns {{track: String, artist: String, album: String, albumCover: String, songURL: String, artistURL: String, userplaycount: Number}}
  */
-export async function fetchRecentTrack(fmUser, message, apiKey = LASTFM_API_KEY) {
+export async function fetchRecentTrack(fmUser, message) {
   const RECENT_TRACKS = 'user.getRecentTracks';
-  const SONG_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&limit=1&format=json`;
+  const SONG_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=1&format=json`;
   const songRequestURL = `${LASTFM_API_URL}${RECENT_TRACKS}${SONG_QUERY_STRING}`;
-  const recentRes = await axios.get(songRequestURL);
 
-  const latestTrack = recentRes.data.recenttracks.track[0];
-  if (!latestTrack) {
+  const recentRes = await axios.get(songRequestURL).catch(err => {
     return message.channel.send(
       `${fmUser} hasn't listened to anything lately...`
     );
-  }
+  });
+  const latestTrack = recentRes.data.recenttracks.track[0];
 
   const {
     name: track,
@@ -85,7 +85,7 @@ export async function fetchRecentTrack(fmUser, message, apiKey = LASTFM_API_KEY)
   const albumCover = latestTrack.image[2]['#text'];
 
   const TRACK_INFO = 'track.getInfo';
-  const TRACK_INFO_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&track=${track}&artist=${artist}&format=json`;
+  const TRACK_INFO_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&track=${track}&artist=${artist}&format=json`;
   const trackInfoRequestURL = `${LASTFM_API_URL}${TRACK_INFO}${TRACK_INFO_QUERY_STRING}`;
   const { data } = await axios.get(trackInfoRequestURL);
   if (data.error) return { error: 'Track not found!' };
@@ -116,23 +116,23 @@ export async function fetchRecentTrack(fmUser, message, apiKey = LASTFM_API_KEY)
  *
  * @returns {Array} recentTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-export async function fetch10RecentTracks(
-  fmUser,
-  message,
-  args,
-  apiKey = LASTFM_API_KEY
-) {
+export async function fetch10RecentTracks(fmUser, message, args) {
   if (!fmUser) {
     return Util.userNotSet(message, args);
   }
   const GET_RECENT_TRACKS = 'user.getRecentTracks';
-  const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${apiKey}&limit=10&format=json`;
+  const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
   const recentTracksRequestURL = `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`;
+
   const {
     data: {
       recenttracks: { track }
     }
-  } = await axios.get(recentTracksRequestURL);
+  } = await axios.get(recentTracksRequestURL).catch(err => {
+    return message.channel.send(
+      `**${fmUser}** is not a registered Last.FM user`
+    );
+  });
 
   const recentTracks = track.map((track, i) => {
     const {
@@ -157,16 +157,20 @@ export async function fetch10RecentTracks(
  * @param {String} fmUser A registered user on Last.FM.
  */
 
-export async function fetchUsersWeeklyScrobbles(fmUser, apiKey = LASTFM_API_KEY) {
+export async function fetchUsersWeeklyScrobbles(fmUser) {
   const GET_TOP_TRACKS = 'user.gettoptracks';
-  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=7day&api_key=${apiKey}&limit=10&format=json`;
-  const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`
-  const { data: { toptracks: { '@attr': profileData } }} = await axios.get(topTracksRequestURL);
+  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=7day&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+  const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
 
-  // TODO fix this unneccesary destructure
-  const { total: weeklyScrobbles } = profileData
+  const {
+    data: {
+      toptracks: {
+        '@attr': { user, total: weeklyScrobbles }
+      }
+    }
+  } = await axios.get(topTracksRequestURL);
 
-  return weeklyScrobbles
+  return weeklyScrobbles;
 }
 
 /**
@@ -176,13 +180,7 @@ export async function fetchUsersWeeklyScrobbles(fmUser, apiKey = LASTFM_API_KEY)
  *
  * @returns {Array} topTracks - Markdown formatted strings containing Last.FM links and track data.
  */
-export async function fetchUsersTopTracks(
-  fmUser,
-  period,
-  message,
-  args,
-  apiKey = LASTFM_API_KEY
-) {
+export async function fetchUsersTopTracks(fmUser, period, message, args) {
   if (!fmUser) {
     return Util.userNotSet(message, args);
   }
@@ -190,13 +188,17 @@ export async function fetchUsersTopTracks(
     return Util.invalidPeriod(period);
   }
   const GET_TOP_TRACKS = 'user.getTopTracks';
-  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${apiKey}&limit=10&format=json`;
+  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
   const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
   const {
     data: {
       toptracks: { track }
     }
-  } = await axios.get(topTracksRequestURL);
+  } = await axios.get(topTracksRequestURL).catch(err => {
+    return message.channel.send(
+      `**${fmUser}** is not a registered Last.FM user`
+    );
+  });
 
   const topTracks = track.map(track => {
     const {
@@ -206,9 +208,9 @@ export async function fetchUsersTopTracks(
       url
     } = track;
     return `\`${playcount} ▶️\` • **[${song}](${url.replace(
-      ")",
-      "\\)"
-    )})** by **[${artist}](${artistURL.replace(")", "\\)")})**`;
+      ')',
+      '\\)'
+    )})** by **[${artist}](${artistURL.replace(')', '\\)')})**`;
   });
 
   return {
@@ -226,13 +228,7 @@ export async function fetchUsersTopTracks(
  *
  * @returns {Array} topArtists - Markdown formatted strings containing Last.FM links and artist data.
  */
-export async function fetchUsersTopArtists(
-  fmUser,
-  period,
-  message,
-  args,
-  apiKey = LASTFM_API_KEY
-) {
+export async function fetchUsersTopArtists(fmUser, period, message, args) {
   if (!fmUser) {
     return Util.userNotSet(message, args);
   }
@@ -240,16 +236,20 @@ export async function fetchUsersTopArtists(
     return Util.invalidPeriod(period);
   }
   const GET_TOP_ARTISTS = 'user.getTopArtists';
-  const TOP_ARTISTS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${apiKey}&limit=10&format=json`;
+  const TOP_ARTISTS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
   const topArtistsRequestURL = `${LASTFM_API_URL}${GET_TOP_ARTISTS}${TOP_ARTISTS_QUERY_STRING}`;
   const {
     data: {
       topartists: { artist: artists }
     }
-  } = await axios.get(topArtistsRequestURL);
+  } = await axios.get(topArtistsRequestURL).catch(err => {
+    return message.channel.send(
+      `**${fmUser}** is not a registered Last.FM user`
+    );
+  });
 
   const topArtists = artists.map(artistRes => {
-    const { name: artist, playcount, url } = artistRes;
+    const { name: artist, playcount } = artistRes;
     const usersArtistsSrobblesURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
       .split(' ')
       .join('+')}`;
@@ -271,13 +271,7 @@ export async function fetchUsersTopArtists(
  *
  * @returns {Array} topAlbums - Markdown formatted strings containing Last.FM links and artist data.
  */
-export async function fetchUsersTopAlbums(
-  fmUser,
-  period,
-  message,
-  args,
-  apiKey = LASTFM_API_KEY
-) {
+export async function fetchUsersTopAlbums(fmUser, period, message, args) {
   if (!fmUser) {
     return Util.userNotSet(message, args);
   }
@@ -285,13 +279,17 @@ export async function fetchUsersTopAlbums(
     return Util.invalidPeriod(period);
   }
   const GET_TOP_ALBUMS = 'user.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${apiKey}&limit=10&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
   const topAlbumsRequestURL = `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
   const {
     data: {
       topalbums: { album }
     }
-  } = await axios.get(topAlbumsRequestURL);
+  } = await axios.get(topAlbumsRequestURL).catch(err => {
+    return message.channel.send(
+      `**${fmUser}** is not a registered Last.FM user`
+    );
+  });
 
   const topAlbums = album.map(singleAlbum => {
     const {
@@ -320,10 +318,10 @@ export async function fetchUsersTopAlbums(
  *
  * @returns {{artistTopAlbums: Array, formattedArtist: String, artistURL: String}}
  */
-export async function fetchArtistTopAlbums(args, apiKey = LASTFM_API_KEY) {
+export async function fetchArtistTopAlbums(args) {
   const artist = args.slice(1).join(' ');
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&artist=${artist}&api_key=${apiKey}&limit=10&autocorrect=1&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
   const artistTopAlbumsRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
   const { data } = await axios.get(artistTopAlbumsRequestURL);
 

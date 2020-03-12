@@ -1,5 +1,3 @@
-const { PERIOD_PARAMS } = require('../constants');
-
 class Util {
   static delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));

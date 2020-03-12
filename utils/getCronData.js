@@ -3,34 +3,19 @@ import {
   fetchUsersTopAlbums,
   fetchUsersTopTracks,
   fetchUsersWeeklyScrobbles
-} from '../api/lastfm'
+} from '../api/lastfm';
 
-async function getCronData(fmUser, LASTFM_API_KEY) {
+async function getCronData(fmUser) {
   const { description: topArtists } = await fetchUsersTopArtists(
     fmUser,
-    "week",
-    null,
-    null,
-    LASTFM_API_KEY
+    'week'
   );
-  const { description: topAlbums } = await fetchUsersTopAlbums(
-    fmUser,
-    "week",
-    null,
-    null,
-    LASTFM_API_KEY
-  );
-  const { description: topTracks } = await fetchUsersTopTracks(
-    fmUser,
-    "week",
-    null,
-    null,
-    LASTFM_API_KEY
-  );
+  const { description: topAlbums } = await fetchUsersTopAlbums(fmUser, 'week');
+  const { description: topTracks } = await fetchUsersTopTracks(fmUser, 'week');
 
-  const weeklyScrobbles = await fetchUsersWeeklyScrobbles(fmUser, LASTFM_API_KEY)
+  const weeklyScrobbles = await fetchUsersWeeklyScrobbles(fmUser);
 
-  return { topArtists, topAlbums, topTracks, weeklyScrobbles }
+  return { topArtists, topAlbums, topTracks, weeklyScrobbles };
 }
 
-export default getCronData
+export default getCronData;

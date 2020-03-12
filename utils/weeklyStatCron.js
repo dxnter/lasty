@@ -1,29 +1,54 @@
 import Discord from 'discord.js';
+import dayjs from 'dayjs';
 import db from '../db';
-import getCronData from '../utils/getCronData'
+import getCronData from '../utils/getCronData';
 
-
-async function weeklyStatCron(bot, LASTFM_API_KEY) {
+async function weeklyStatCron(bot) {
   const users = db.get('users').value();
   users.forEach(async user => {
     const { userID, lastFM: fmUser } = user;
-    const { topArtists, topAlbums, topTracks, weeklyScrobbles  } = await getCronData(fmUser, LASTFM_API_KEY)
+    const {
+      topArtists,
+      topAlbums,
+      topTracks,
+      weeklyScrobbles
+    } = await getCronData(fmUser);
+    const now = dayjs().format('M/D');
+    const lastWeek = dayjs()
+      .subtract(7, 'day')
+      .format('M/D');
 
-    // Make this into a single embed not multiple messages
     bot
       .fetchUser(userID)
       .then(user => {
         user.send(
-          [':musical_note: **__Last.FM Weekly Stats__**\n', '**Top Artists**'],
-          new Discord.RichEmbed().setDescription(topArtists).setColor('#E31C23')
+          new Discord.RichEmbed()
+            .setColor('#E31C23')
+            .setTitle(`:musical_note: Weekly Recap (${lastWeek} - ${now})`)
+            .setAuthor(
+              `Last.FM | ${fmUser}`,
+              'https://freeiconshop.com/wp-content/uploads/edd/lastfm-flat.png',
+              `https://last.fm/user/${fmUser}`
+            )
+            .setDescription(`Scrobbles • \`${weeklyScrobbles} ▶️\``)
         );
         user.send(
-          '**Top Albums**',
-          new Discord.RichEmbed().setDescription(topAlbums).setColor('#E31C23')
+          new Discord.RichEmbed()
+            .setColor('#E31C23')
+            .setTitle('**:man_singer: Top Artists**')
+            .setDescription(topArtists)
         );
         user.send(
-          '**Top Tracks**',
-          new Discord.RichEmbed().setDescription(topTracks).setColor('#E31C23')
+          new Discord.RichEmbed()
+            .setColor('#E31C23')
+            .setTitle('**:cd: Top Albums**')
+            .setDescription(topAlbums)
+        );
+        user.send(
+          new Discord.RichEmbed()
+            .setColor('#E31C23')
+            .setTitle('**:repeat: Top Tracks**')
+            .setDescription(topTracks)
         );
       })
       .catch(err => {

@@ -15,7 +15,7 @@ const characterMap = {
   o: '0',
   s: '5',
   t: '7',
-  y: '`/',
+  y: '`/'
 };
 
 export { PERIOD_PARAMS, characterMap };
