@@ -11,6 +11,7 @@ async function weeklyStatCron(bot) {
       topArtists,
       topAlbums,
       topTracks,
+      lastFMAvatar,
       weeklyScrobbles
     } = await getCronData(fmUser);
     const now = dayjs().format('M/D');
@@ -27,10 +28,10 @@ async function weeklyStatCron(bot) {
             .setTitle(`:musical_note: Weekly Recap (${lastWeek} - ${now})`)
             .setAuthor(
               `Last.FM | ${fmUser}`,
-              'https://freeiconshop.com/wp-content/uploads/edd/lastfm-flat.png',
+              lastFMAvatar,
               `https://last.fm/user/${fmUser}`
             )
-            .setDescription(`Scrobbles • \`${weeklyScrobbles} ▶️\``)
+          // .setDescription(`Scrobbles • \`${weeklyScrobbles} ▶️\``)
         );
         user.send(
           new Discord.RichEmbed()

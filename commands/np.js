@@ -2,7 +2,11 @@ import Discord from 'discord.js';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import db from '../db';
-import { fetchTotalScrobbles, fetchRecentTrack } from '../api/lastfm';
+import {
+  fetchTotalScrobbles,
+  fetchRecentTrack,
+  fetchUserInfo
+} from '../api/lastfm';
 
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;
@@ -20,9 +24,13 @@ module.exports.run = async (bot, message, args) => {
   }
 
   axios
-    .all([fetchTotalScrobbles(fmUser), fetchRecentTrack(fmUser, message)])
+    .all([
+      fetchTotalScrobbles(fmUser),
+      fetchRecentTrack(fmUser, message),
+      fetchUserInfo(fmUser)
+    ])
     .then(
-      axios.spread((totalScrobbles, trackInfo) => {
+      axios.spread((totalScrobbles, trackInfo, userInfo) => {
         if (trackInfo.error) return message.channel.send(trackInfo.error);
         const {
           track,
@@ -34,12 +42,13 @@ module.exports.run = async (bot, message, args) => {
           userplaycount
         } = trackInfo;
 
-        const avatarURL = message.author.displayAvatarURL;
+        const { image } = userInfo;
+        const lastFMAvatar = image[2]['#text'];
 
         const embed = new Discord.RichEmbed()
           .setAuthor(
             `Last.FM: ${fmUser}`,
-            avatarURL,
+            lastFMAvatar,
             `http://www.last.fm/user/${fmUser}`
           )
           .setThumbnail(albumCover)
