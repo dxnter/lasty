@@ -159,18 +159,20 @@ export async function fetch10RecentTracks(fmUser, message, args) {
 
 export async function fetchUsersWeeklyScrobbles(fmUser) {
   const GET_TOP_TRACKS = 'user.gettoptracks';
-  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=7day&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+  const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=7day&api_key=${LASTFM_API_KEY}&limit=1000&format=json`;
   const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
 
   const {
     data: {
-      toptracks: {
-        '@attr': { user, total: weeklyScrobbles }
-      }
+      toptracks: { track: songs }
     }
   } = await axios.get(topTracksRequestURL);
 
-  return weeklyScrobbles;
+  const totalScrobbles = songs.reduce((total, track) => {
+    return (total += Number(track.playcount));
+  }, 0);
+
+  return totalScrobbles;
 }
 
 /**

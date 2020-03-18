@@ -31,7 +31,7 @@ async function weeklyStatCron(bot) {
               lastFMAvatar,
               `https://last.fm/user/${fmUser}`
             )
-          // .setDescription(`Scrobbles • \`${weeklyScrobbles} ▶️\``)
+          .setDescription(`Scrobbles • \`${weeklyScrobbles} ▶️\``)
         );
         user.send(
           new Discord.RichEmbed()
