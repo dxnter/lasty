@@ -42,6 +42,7 @@ bot.on('ready', async () => {
 bot.on('message', async message => {
   if (message.author.bot) return;
   if (message.channel.type === 'dm') return;
+  if (!message.content.startsWith(PREFIX)) return;
 
   const messageArray = message.content.split(' ');
   const cmd = messageArray[0];
