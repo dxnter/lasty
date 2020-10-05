@@ -1,4 +1,4 @@
-# lasty
+# Lasty
 
 Lasty is a multifunctional Discord bot, intended to primarily interact with [Last.FM](https://www.last.fm/) to provide realtime data. Additional server management and miscellaneous commands are also included. _A public instance of Lasty is currently not available, to host it yourself follow **Getting Started**._
 
