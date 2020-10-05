@@ -66,7 +66,10 @@ module.exports.run = async (bot, message, args) => {
           )
           .setColor('#E31C23');
 
-        return message.channel.send(embed);
+        return message.channel.send(embed).then(async msg => {
+          await msg.react('👍');
+          await msg.react('👎');
+        });
       })
     )
     .catch(err => console.log(err));
