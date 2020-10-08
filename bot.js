@@ -26,7 +26,7 @@ for (const file of commandFiles) {
 
 bot.on('ready', async () => {
   log(chalk.blue(`[Discord.js] ${bot.user.username} is online!`));
-  bot.user.setActivity('to ,l help', { type: 'LISTENING' });
+  bot.user.setActivity(' ,l help', { type: 'LISTENING' });
 });
 
 bot.on('message', message => {

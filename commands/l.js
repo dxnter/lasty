@@ -8,6 +8,7 @@ import {
   fetchArtistTopAlbums
 } from '../api/lastfm';
 import db from '../db';
+import { Util } from '../utils/util';
 
 module.exports.run = async (bot, message, args) => {
   const dbUser = db
@@ -29,13 +30,13 @@ module.exports.run = async (bot, message, args) => {
     case 'help': {
       return message.channel.send(
         new Discord.RichEmbed()
-          .setTitle('Last.FM Commands')
+          .setTitle('Last.f, Commands')
           .addField(
-            'set - Sets Last.FM username.',
+            'set - Sets Last.fm username.',
             'Example: `,l set iiMittens`'
           )
           .addField(
-            'delete - Deletes saved Last.FM username',
+            'delete - Deletes saved Last.fm username',
             'Alternate: `reset`'
           )
           .addField(
@@ -79,8 +80,12 @@ module.exports.run = async (bot, message, args) => {
 
       if (existingUser) {
         if (existingUser.lastFM === fmUser) {
-          return message.channel.send(
-            `Last.FM username is already set to **${fmUser}**`
+          return Util.replyEmbedMessage(
+            message,
+            args,
+            'USER_EXISTS',
+            null,
+            fmUser
           );
         }
         existingUser.lastFM = fmUser;
@@ -88,14 +93,18 @@ module.exports.run = async (bot, message, args) => {
           .find({ userID: message.author.id })
           .assign({ lastFM: fmUser })
           .write();
-        return message.channel.send(
-          `Last.FM username updated to **${fmUser}**`
+        return Util.replyEmbedMessage(
+          message,
+          args,
+          'USER_UPDATED',
+          null,
+          fmUser
         );
       }
       db.get('users')
         .push({ userID: message.author.id, lastFM: fmUser })
         .write();
-      return message.channel.send(`Last.FM username set to **${fmUser}**`);
+      return Util.replyEmbedMessage(message, args, 'USER_SET', null, fmUser);
     }
 
     case 'info': {
@@ -106,7 +115,7 @@ module.exports.run = async (bot, message, args) => {
 
       if (!existingUser) {
         return message.channel.send(
-          `<@${message.author.id}>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
+          `<@${message.author.id}>, Please set your Last.fm username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
         );
       }
       const {
@@ -149,84 +158,94 @@ module.exports.run = async (bot, message, args) => {
         );
       }
       return message.channel.send(
-        `<@${message.author.id}>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
+        new Discord.RichEmbed()
+          .setAuthor('⚠️ Error')
+          .setDescription(
+            `Last.fm username not set, enter \`,l set <username>\``
+          )
+          .setColor('#E31C23')
       );
     }
 
     case 'recent': {
-      const recentTracks = await fetch10RecentTracks(fmUser, message, args);
+      const { author, description, error } = await fetch10RecentTracks(
+        fmUser,
+        message,
+        args
+      );
+      if (error) {
+        return Util.replyEmbedMessage(message, args, error, period, fmUser);
+      }
+
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(
-            recentTracks.author,
+            author,
             message.author.avatarURL,
             `http://www.last.fm/user/${fmUser}`
           )
-          .setDescription(recentTracks.description)
+          .setDescription(description)
           .setColor('#E31C23')
       );
     }
 
     case 'tracks': {
-      const topTracks = await fetchUsersTopTracks(
+      const { author, description, error } = await fetchUsersTopTracks(
         fmUser,
         period,
         message,
         args
       );
-      if (topTracks.description.length === 0) {
-        return message.channel.send(
-          `${fmUser} hasn't listened to anything lately...`
-        );
+      if (error) {
+        return Util.replyEmbedMessage(message, args, error, period, fmUser);
       }
+
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(
-            topTracks.author,
+            author,
             message.author.avatarURL,
             `http://www.last.fm/user/${fmUser}`
           )
-          .setDescription(topTracks.description)
+          .setDescription(description)
           .setColor('#E31C23')
       );
     }
 
     case 'artists': {
-      const topArtists = await fetchUsersTopArtists(
+      const { author, description, error } = await fetchUsersTopArtists(
         fmUser,
         period,
         message,
         args
       );
-      if (topArtists.description.length === 0) {
-        return message.channel.send(
-          `${fmUser} hasn't listened to anything lately...`
-        );
+      if (error) {
+        return Util.replyEmbedMessage(message, args, error, period, fmUser);
       }
+
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(
-            topArtists.author,
+            author,
             message.author.avatarURL,
             `http://www.last.fm/user/${fmUser}`
           )
-          .setDescription(topArtists.description)
+          .setDescription(description)
           .setColor('#E31C23')
       );
     }
 
     case 'albums': {
-      const { author, description } = await fetchUsersTopAlbums(
+      const { author, description, error } = await fetchUsersTopAlbums(
         fmUser,
         period,
         message,
         args
       );
-      if (description.length === 0) {
-        return message.channel.send(
-          `${fmUser} hasn't listened to anything lately...`
-        );
+      if (error) {
+        return Util.replyEmbedMessage(message, args, error, period, fmUser);
       }
+
       return message.channel.send(
         new Discord.RichEmbed()
           .setAuthor(
@@ -247,7 +266,7 @@ module.exports.run = async (bot, message, args) => {
         error
       } = await fetchArtistTopAlbums(message, args);
       if (error) {
-        return message.channel.send(error);
+        return Util.replyEmbedMessage(message, args, error);
       }
       return message.channel.send(
         new Discord.RichEmbed()
@@ -259,7 +278,7 @@ module.exports.run = async (bot, message, args) => {
 
     default: {
       return message.channel.send(
-        `<@${message.author.id}>, Invalid command, try \`,lf help\``
+        `<@${message.author.id}>, Invalid command, try \`,l help\``
       );
     }
   }

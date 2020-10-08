@@ -1,11 +1,8 @@
 import Discord from 'discord.js';
 import axios from 'axios';
 import db from '../db';
-import {
-  fetchTotalScrobbles,
-  fetchRecentTrack,
-  fetchUserInfo
-} from '../api/lastfm';
+import { Util } from '../utils/util';
+import { fetchRecentTrack, fetchUserInfo } from '../api/lastfm';
 
 module.exports.run = async (bot, message, args) => {
   let [fmUser] = args;
@@ -15,22 +12,15 @@ module.exports.run = async (bot, message, args) => {
       .find({ userID: message.author.id })
       .value();
     if (!dbUser) {
-      return message.channel.send(
-        `<@${message.author.id}>, Please set your Last.FM username with \`,lf set <username>\`\nNo account? Sign up: https://www.last.fm/join`
-      );
+      return Util.replyEmbedMessage(message, args, 'USER_UNDEFINED');
     }
     fmUser = dbUser.lastFM;
   }
 
   axios
-    .all([
-      fetchTotalScrobbles(fmUser),
-      fetchRecentTrack(fmUser, message),
-      fetchUserInfo(fmUser)
-    ])
+    .all([fetchRecentTrack(fmUser, message), fetchUserInfo(fmUser)])
     .then(
-      axios.spread((totalScrobbles, trackInfo, userInfo) => {
-        if (trackInfo.error) return message.channel.send(trackInfo.error);
+      axios.spread((trackInfo, userInfo) => {
         const {
           track,
           artist,
@@ -38,10 +28,14 @@ module.exports.run = async (bot, message, args) => {
           albumCover,
           songURL,
           artistURL,
-          userplaycount
+          userplaycount,
+          error
         } = trackInfo;
+        if (error) {
+          return Util.replyEmbedMessage(message, args, error, null, fmUser);
+        }
 
-        const { image } = userInfo;
+        const { totalScrobbles, image } = userInfo;
         const lastFMAvatar = image[2]['#text'];
 
         const embed = new Discord.RichEmbed()
@@ -70,7 +64,9 @@ module.exports.run = async (bot, message, args) => {
         });
       })
     )
-    .catch(err => console.log(err));
+    .catch(err =>
+      Util.replyEmbedMessage(message, args, 'USER_UNREGISTERED', null, fmUser)
+    );
 };
 
 module.exports = {

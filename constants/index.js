@@ -10,11 +10,11 @@ const PERIOD_PARAMS = {
 };
 
 const READABLE_PERIODS = {
-  week: 'of the last week',
-  month: 'of the last month',
-  '90': 'of the last 3 months',
-  '180': 'of the last 6 months',
-  year: 'of the last year'
+  week: 'Week',
+  month: 'Month',
+  '90': '3 Months',
+  '180': '6 Months',
+  year: 'Year'
 };
 
 export { LASTFM_API_URL, PERIOD_PARAMS, READABLE_PERIODS };
