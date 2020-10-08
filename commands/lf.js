@@ -10,12 +10,12 @@ import {
 import db from '../db';
 
 module.exports.run = async (bot, message, args) => {
-  let fmUser = args[1];
-  let period = args[2];
   const dbUser = db
     .get('users')
     .find({ userID: message.author.id })
     .value();
+  let fmUser = args[1];
+  let period = args[2];
   if (dbUser && args[0] !== 'set') {
     fmUser = dbUser.lastFM;
     period = args[1];
@@ -32,7 +32,7 @@ module.exports.run = async (bot, message, args) => {
           .setTitle('Last.FM Commands')
           .addField(
             'set - Sets Last.FM username.',
-            'Example: `,lf set iiMittens`'
+            'Example: `,l set iiMittens`'
           )
           .addField(
             'delete - Deletes saved Last.FM username',
@@ -40,10 +40,10 @@ module.exports.run = async (bot, message, args) => {
           )
           .addField(
             'info - Shows Last.FM account information',
-            'Example: `,lf info`'
+            'Example: `,l info`'
           )
           .addField(
-            'np - Shows currently playing song. (Without `,lf` prefix)',
+            'np - Shows currently playing song. (Without `,l` prefix)',
             'Example: `,np` or `,np iiMittens`'
           )
           .addField(
@@ -53,19 +53,19 @@ module.exports.run = async (bot, message, args) => {
           .addBlankField(true)
           .addField(
             'Command Paramaters',
-            '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)\n**Username can be omitted if set with** `,lf set`\n'
+            '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)\n**Username can be omitted if set with** `,l set`\n'
           )
           .addField(
             'tracks - Shows most played tracks',
-            'Example: `,lf tracks iiMittens month`'
+            'Example: `,l tracks iiMittens month`'
           )
           .addField(
             'artists - Shows most listened artists',
-            'Example: `,lf artists dluxxe week`'
+            'Example: `,l artists week`'
           )
           .addField(
             'albums - Shows most played albums',
-            'Example: `,lf albums Reversibly 90`'
+            'Example: `,l albums Reversibly 90`'
           )
           .setColor('#E31C23')
       );
@@ -80,7 +80,7 @@ module.exports.run = async (bot, message, args) => {
       if (existingUser) {
         if (existingUser.lastFM === fmUser) {
           return message.channel.send(
-            `Your Last.FM profile is already set to **${fmUser}**`
+            `Last.FM username is already set to **${fmUser}**`
           );
         }
         existingUser.lastFM = fmUser;
@@ -123,7 +123,7 @@ module.exports.run = async (bot, message, args) => {
         new Discord.RichEmbed()
           .setAuthor(name, lastFMAvatar, profileURL)
           .setThumbnail(lastFMAvatar)
-          .addField('Total Scrobbes', totalScrobbles.toLocaleString())
+          .addField('Total Scrobbes', Number(totalScrobbles).toLocaleString())
           .addField('Country', country)
           .addField(
             'Registration Date',
@@ -157,7 +157,11 @@ module.exports.run = async (bot, message, args) => {
       const recentTracks = await fetch10RecentTracks(fmUser, message, args);
       return message.channel.send(
         new Discord.RichEmbed()
-          .setAuthor(recentTracks.author)
+          .setAuthor(
+            recentTracks.author,
+            message.author.avatarURL,
+            `http://www.last.fm/user/${fmUser}`
+          )
           .setDescription(recentTracks.description)
           .setColor('#E31C23')
       );
@@ -177,7 +181,11 @@ module.exports.run = async (bot, message, args) => {
       }
       return message.channel.send(
         new Discord.RichEmbed()
-          .setAuthor(topTracks.author)
+          .setAuthor(
+            topTracks.author,
+            message.author.avatarURL,
+            `http://www.last.fm/user/${fmUser}`
+          )
           .setDescription(topTracks.description)
           .setColor('#E31C23')
       );
@@ -197,42 +205,54 @@ module.exports.run = async (bot, message, args) => {
       }
       return message.channel.send(
         new Discord.RichEmbed()
-          .setAuthor(topArtists.author)
+          .setAuthor(
+            topArtists.author,
+            message.author.avatarURL,
+            `http://www.last.fm/user/${fmUser}`
+          )
           .setDescription(topArtists.description)
           .setColor('#E31C23')
       );
     }
 
     case 'albums': {
-      const topAlbums = await fetchUsersTopAlbums(
+      const { author, description } = await fetchUsersTopAlbums(
         fmUser,
         period,
         message,
         args
       );
-      if (topAlbums.description.length === 0) {
+      if (description.length === 0) {
         return message.channel.send(
           `${fmUser} hasn't listened to anything lately...`
         );
       }
       return message.channel.send(
         new Discord.RichEmbed()
-          .setAuthor(topAlbums.author)
-          .setDescription(topAlbums.description)
+          .setAuthor(
+            author,
+            message.author.avatarURL,
+            `http://www.last.fm/user/${fmUser}`
+          )
+          .setDescription(description)
           .setColor('#E31C23')
       );
     }
 
     case 'topalbums': {
       const {
-        artistTopAlbums,
-        formattedArtist,
-        artistURL
-      } = await fetchArtistTopAlbums(args);
+        author,
+        description,
+        artistURL,
+        error
+      } = await fetchArtistTopAlbums(message, args);
+      if (error) {
+        return message.channel.send(error);
+      }
       return message.channel.send(
         new Discord.RichEmbed()
-          .setAuthor(`${formattedArtist}'s Top 10 Albums`, null, artistURL)
-          .setDescription(artistTopAlbums)
+          .setAuthor(author, null, artistURL)
+          .setDescription(description)
           .setColor('#E31C23')
       );
     }
@@ -245,6 +265,6 @@ module.exports.run = async (bot, message, args) => {
   }
 };
 
-module.exports.help = {
-  name: 'lf'
+module.exports = {
+  name: 'l'
 };

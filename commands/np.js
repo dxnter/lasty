@@ -1,6 +1,5 @@
 import Discord from 'discord.js';
 import axios from 'axios';
-import pluralize from 'pluralize';
 import db from '../db';
 import {
   fetchTotalScrobbles,
@@ -47,7 +46,7 @@ module.exports.run = async (bot, message, args) => {
 
         const embed = new Discord.RichEmbed()
           .setAuthor(
-            `Last.FM: ${fmUser}`,
+            `Now playing - ${fmUser}`,
             lastFMAvatar,
             `http://www.last.fm/user/${fmUser}`
           )
@@ -59,10 +58,9 @@ module.exports.run = async (bot, message, args) => {
           )
           .addField('**Artist**', `[${artist}](${artistURL})`, true)
           .setFooter(
-            `Playcount: ${userplaycount.toLocaleString()} | ${pluralize(
-              fmUser
-            )} Scrobbles: ${totalScrobbles.toLocaleString() ||
-              0} | Album: ${album}`
+            `Playcount: ${userplaycount.toLocaleString()} | ${fmUser} Scrobbles: ${Number(
+              totalScrobbles
+            ).toLocaleString() || 0} | Album: ${album}`
           )
           .setColor('#E31C23');
 
@@ -75,6 +73,6 @@ module.exports.run = async (bot, message, args) => {
     .catch(err => console.log(err));
 };
 
-module.exports.help = {
+module.exports = {
   name: 'np'
 };

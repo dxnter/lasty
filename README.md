@@ -1,29 +1,52 @@
-# lasty
+<div align="center">
+  <p>
+    <img src="https://i.imgur.com/ybCbZI3.png" width="400" alt="lasty logo">
+  </p>
+  <strong><i>A Discord bot for fetching Last.FM data.</i></strong>
+</div>
+<hr />
 
-Lasty is a multifunctional Discord bot, intended to primarily interact with [Last.FM](https://www.last.fm/) to provide realtime data. Additional server management and miscellaneous commands are also included. _A public instance of Lasty is currently not available, to host it yourself follow **Getting Started**._
+## What is Lasty?
+Lasty is a Discord bot intended to interact with [Last.FM](https://last.fm/) to provide realtime listening data.
+<br/>
+_A public instance of Lasty is currently not available. Follow [Installation](https://github.com/dxnter/lasty#installation) to get started._
 
-## Getting Started
-
-These instructions will get you a copy of the bot running locally to use on a Discord server.
-
+## 🚀 Installation
 ### Prerequisites
-
 - [Discord Bot Token](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
-- [Last.FM API Key](https://www.last.fm/api)
+- [Last.FM API Key](https://last.fm/api)
 
-### Installing
 
-1. [Clone](https://help.github.com/articles/cloning-a-repository/) the repository
-2. Run `npm install` in the terminal to install required dependencies
-3. Edit the `.env` file with the required tokens
-4. Run `npm start` in the terminal to start the bot
+Clone the repo:
+```console
+$ git clone https://github.com/dxnter/lasty
+$ cd lasty
+```
 
-## Commands
+Install dependencies:
+```console
+$ npm install
+```
 
-`,lf help`
+Create and edit the `.env` file with the required tokens. *Use `.env.sample` for the format*
+```console
+$ vim .env
+```
 
-![lf help](https://i.imgur.com/8JV3BoO.png)
+Globally install `pm2` *(This enables Lasty to continuously run)*
+```console
+$ npm install --global pm2
+```
 
-`,help`
+Start / stop the bot
+```console
+$ pm2 start npm -- start
+OR
+$ pm2 stop all
+```
 
-![help](https://i.imgur.com/d7kImnr.png)
+## 📕 Commands
+*Work in progress, writing wiki page.*
+<br />
+For a list of all available commands:
+`,l help`

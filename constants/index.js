@@ -1,3 +1,5 @@
+const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
+
 const PERIOD_PARAMS = {
   week: '7day',
   month: '1month',
@@ -7,15 +9,12 @@ const PERIOD_PARAMS = {
   all: 'overall'
 };
 
-const characterMap = {
-  e: '3',
-  f: 'ph',
-  g: '9',
-  l: '1',
-  o: '0',
-  s: '5',
-  t: '7',
-  y: '`/'
+const READABLE_PERIODS = {
+  week: 'of the last week',
+  month: 'of the last month',
+  '90': 'of the last 3 months',
+  '180': 'of the last 6 months',
+  year: 'of the last year'
 };
 
-export { PERIOD_PARAMS, characterMap };
+export { LASTFM_API_URL, PERIOD_PARAMS, READABLE_PERIODS };

@@ -11,6 +11,6 @@ module.exports.run = async (bot, message) =>
       .addField('Created On', message.guild.createdAt)
   );
 
-module.exports.help = {
+module.exports = {
   name: 'serverinfo'
 };

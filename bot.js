@@ -15,31 +15,21 @@ const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
 const bot = new Discord.Client({ disableEveryone: true });
 bot.commands = new Discord.Collection();
 
-fs.readdir('./commands/', (err, files) => {
-  if (err) log(err);
+const commandFiles = fs
+  .readdirSync('./commands')
+  .filter(file => file.endsWith('.js'));
 
-  const jsfiles = files.filter(f => f.split('.').pop() === 'js');
-  if (jsfiles.length <= 0) {
-    log("Couldn't find commmands");
-    return;
-  }
-
-  jsfiles.forEach(f => {
-    const props = require(`./commands/${f}`);
-    bot.commands.set(props.help.name, props);
-  });
-});
+for (const file of commandFiles) {
+  const command = require(`./commands/${file}`);
+  bot.commands.set(command.name, command);
+}
 
 bot.on('ready', async () => {
-  log(
-    chalk.blue(
-      `[Discord.js] ${bot.user.username} is online on ${bot.guilds.size} servers!`
-    )
-  );
-  bot.user.setActivity('with code | ,help', { type: 'PLAYING' });
+  log(chalk.blue(`[Discord.js] ${bot.user.username} is online!`));
+  bot.user.setActivity('to ,l help', { type: 'LISTENING' });
 });
 
-bot.on('message', async message => {
+bot.on('message', message => {
   if (message.author.bot) return;
   if (message.channel.type === 'dm') return;
   if (!message.content.startsWith(PREFIX)) return;

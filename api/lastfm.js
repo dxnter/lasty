@@ -1,12 +1,9 @@
 require('dotenv').config();
 import axios from 'axios';
-
 import { Util } from '../utils/util';
+import { LASTFM_API_URL, PERIOD_PARAMS } from '../constants';
 
 const { LASTFM_API_KEY } = process.env;
-const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
-const { PERIOD_PARAMS } = require('../constants');
-
 /**
  * Fetches information about a registered Last.FM user
  * @param {String} fmUser - A registered user on Last.FM.
@@ -147,7 +144,7 @@ export async function fetch10RecentTracks(fmUser, message, args) {
   });
 
   return {
-    author: `${fmUser}'s Recent Tracks`,
+    author: `Latest tracks for ${fmUser}`,
     description: recentTracks
   };
 }
@@ -307,9 +304,7 @@ export async function fetchUsersTopAlbums(fmUser, period, message, args) {
   });
 
   return {
-    author: `${fmUser}'s Top Albums for time period of ${
-      period ? PERIOD_PARAMS[period] : 'overall'
-    }`,
+    author: `${fmUser}'s Top Albums ${Util.makeReadablePeriod(period)}`,
     description: topAlbums
   };
 }
@@ -320,8 +315,14 @@ export async function fetchUsersTopAlbums(fmUser, period, message, args) {
  *
  * @returns {{artistTopAlbums: Array, formattedArtist: String, artistURL: String}}
  */
-export async function fetchArtistTopAlbums(args) {
+export async function fetchArtistTopAlbums(message, args) {
   const artist = args.slice(1).join(' ');
+  if (!artist) {
+    return {
+      error: 'Enter an artist name following `topalbums`'
+    };
+  }
+
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
   const TOP_ALBUMS_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
   const artistTopAlbumsRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
@@ -329,13 +330,19 @@ export async function fetchArtistTopAlbums(args) {
 
   const formattedArtist = data.topalbums['@attr'].artist;
   const artistURL = data.topalbums.album[0].artist.url;
-  const artistTopAlbums = data.topalbums.album.map((album, i) => {
-    const { name, playcount, url: albumURL } = album;
-    return `\`${i + 1}\` **[${name}](${albumURL.replace(
-      ')',
-      '\\)'
-    )})** • \`${playcount.toLocaleString()} ▶\`  ️`;
-  });
+  const artistTopAlbums = data.topalbums.album
+    .sort(Util.sortTopAlbums())
+    .map((album, i) => {
+      const { name, playcount, url: albumURL } = album;
+      return `\`${i + 1}\` **[${name}](${albumURL.replace(
+        ')',
+        '\\)'
+      )})** • \`${playcount.toLocaleString()}\`  ️`;
+    });
 
-  return { artistTopAlbums, formattedArtist, artistURL };
+  return {
+    author: `${Util.pluralize(formattedArtist)} Top 10 Albums`,
+    description: artistTopAlbums,
+    artistURL: artistURL
+  }
 }

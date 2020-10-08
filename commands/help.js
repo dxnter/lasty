@@ -23,6 +23,6 @@ module.exports.run = (bot, message) =>
       .addField('yesno', 'Shows a yes or no reaction gif')
   );
 
-module.exports.help = {
+module.exports = {
   name: 'help'
 };
