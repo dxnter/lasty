@@ -16,10 +16,10 @@ module.exports = {
     if (amount > 100) return message.reply('no more than 100');
     if (amount < 1) return message.reply('delete at least 1');
 
-    message.channel.bulkDelete(amount + 1).then(() => {
+    message.channel.bulkDelete(amount).then(() => {
       message.channel
         .send(`Deleted ${amount} messages`)
-        .then(msg => msg.delete(1500))
+        .then(msg => msg.delete({ timeout: 1500 }))
         .catch(console.error);
     });
   }

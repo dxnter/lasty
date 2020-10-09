@@ -55,9 +55,8 @@ module.exports = {
             )
             .addField('**Artist**', `[${artist}](${artistURL})`, true)
             .setFooter(
-              `Playcount: ${userplaycount.toLocaleString()} | ${fmUser} Scrobbles: ${Number(
-                totalScrobbles
-              ).toLocaleString() || 0} | Album: ${album}`
+              `Playcount: ${userplaycount} | ${fmUser} Scrobbles: ${totalScrobbles ||
+                0} | Album: ${album}`
             )
             .setColor('#E31C23');
 
@@ -68,7 +67,7 @@ module.exports = {
         })
       )
       .catch(err =>
-        replyEmbedMessage(message, args, USER_UNREGISTERED, null, fmUser)
+        replyEmbedMessage(message, args, USER_UNREGISTERED, { fmUser })
       );
   }
 };

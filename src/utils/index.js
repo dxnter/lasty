@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import {
   READABLE_PERIODS,
   USER_UNDEFINED,
+  USER_UNDEFINED_ARGS,
   USER_SET,
   USER_EXISTS,
   USER_UPDATED,
@@ -37,12 +38,21 @@ export const replyEmbedMessage = (
   { period, fmUser } = {}
 ) => {
   switch (description) {
-    case USER_UNDEFINED:
+    case USER_UNDEFINED_ARGS:
       return message.channel.send(
         new Discord.MessageEmbed()
           .setAuthor('❌ Error')
           .setDescription(
             `Last.fm username not set, enter \`,l set <username>\` or enter a username after \`${args[0]}\``
+          )
+          .setColor('#E31C23')
+      );
+    case USER_UNDEFINED:
+      return message.channel.send(
+        new Discord.MessageEmbed()
+          .setAuthor('❌ Error')
+          .setDescription(
+            `Last.fm username not set, enter \`,l set <username>\``
           )
           .setColor('#E31C23')
       );

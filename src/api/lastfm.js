@@ -9,7 +9,7 @@ import {
   LASTFM_API_URL,
   PERIOD_INVALID,
   PERIOD_PARAMS,
-  USER_UNDEFINED,
+  USER_UNDEFINED_ARGS,
   USER_UNREGISTERED
 } from '../constants';
 
@@ -38,33 +38,13 @@ export async function fetchUserInfo(fmUser) {
   } = user;
 
   return {
-    totalScrobbles,
+    totalScrobbles: Number(totalScrobbles).toLocaleString(),
     name,
     profileURL,
     country,
     image,
     unixRegistration
   };
-}
-
-/**
- * Fetches the total amount of scrobbles for the provided Last.FM user.
- * @param {String} fmUser - A registered user on Last.FM.
- *
- * @returns {number} playcount - Amount of scrobbles for the fmUser.
- */
-export async function fetchTotalScrobbles(fmUser) {
-  const USER_INFO = 'user.getInfo';
-  const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
-  const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
-
-  const {
-    data: {
-      user: { playcount }
-    }
-  } = await axios.get(userRequestURL);
-
-  return playcount;
 }
 
 /**
@@ -93,7 +73,6 @@ export async function fetchRecentTrack(fmUser) {
     const TRACK_INFO_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&track=${track}&artist=${artist}&format=json`;
     const trackInfoRequestURL = `${LASTFM_API_URL}${TRACK_INFO}${TRACK_INFO_QUERY_STRING}`;
     const { data } = await axios.get(trackInfoRequestURL);
-    console.log(data);
     if (data.error) return { error: TRACK_NOT_FOUND };
 
     const trackInfo = data.track;
@@ -111,7 +90,7 @@ export async function fetchRecentTrack(fmUser) {
       albumCover,
       songURL,
       artistURL,
-      userplaycount
+      userplaycount: Number(userplaycount).toLocaleString()
     };
   } catch (err) {
     return {
@@ -129,7 +108,7 @@ export async function fetchRecentTrack(fmUser) {
 export async function fetch10RecentTracks(fmUser) {
   if (!fmUser) {
     return {
-      error: USER_UNDEFINED
+      error: USER_UNDEFINED_ARGS
     };
   }
   const GET_RECENT_TRACKS = 'user.getRecentTracks';
@@ -181,7 +160,7 @@ export async function fetch10RecentTracks(fmUser) {
 export async function fetchUsersTopTracks(fmUser, period) {
   if (!fmUser) {
     return {
-      error: USER_UNDEFINED
+      error: USER_UNDEFINED_ARGS
     };
   }
   if (period && !PERIOD_PARAMS[period]) {
@@ -214,7 +193,9 @@ export async function fetchUsersTopTracks(fmUser, period) {
         playcount,
         url
       } = track;
-      return `\`${playcount} ▶️\` • [${song}](${url.replace(
+      return `\`${Number(
+        playcount
+      ).toLocaleString()} ▶️\` • [${song}](${url.replace(
         ')',
         '\\)'
       )}) by **[${artist}](${artistURL.replace(')', '\\)')})**`;
@@ -241,7 +222,7 @@ export async function fetchUsersTopTracks(fmUser, period) {
 export async function fetchUsersTopArtists(fmUser, period) {
   if (!fmUser) {
     return {
-      error: USER_UNDEFINED
+      error: USER_UNDEFINED_ARGS
     };
   }
   if (period && !PERIOD_PARAMS[period]) {
@@ -272,7 +253,9 @@ export async function fetchUsersTopArtists(fmUser, period) {
       const usersArtistsSrobblesURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
         .split(' ')
         .join('+')}`;
-      return `\`${playcount} ▶️\` • **[${artist}](${usersArtistsSrobblesURL})**`;
+      return `\`${Number(
+        playcount
+      ).toLocaleString()} ▶️\` • **[${artist}](${usersArtistsSrobblesURL})**`;
     });
 
     return {
@@ -296,7 +279,7 @@ export async function fetchUsersTopArtists(fmUser, period) {
 export async function fetchUsersTopAlbums(fmUser, period) {
   if (!fmUser) {
     return {
-      error: USER_UNDEFINED
+      error: USER_UNDEFINED_ARGS
     };
   }
   if (period && !PERIOD_PARAMS[period]) {
@@ -329,7 +312,9 @@ export async function fetchUsersTopAlbums(fmUser, period) {
         url: albumURL,
         artist: { name: artistName, url: artistURL }
       } = singleAlbum;
-      return `\`${playcount} ▶️\` • [${albumName}](${albumURL.replace(
+      return `\`${Number(
+        playcount
+      ).toLocaleString()} ▶️\` • [${albumName}](${albumURL.replace(
         ')',
         '\\)'
       )}) by **[${artistName}](${artistURL.replace(')', '\\)')})**`;
@@ -373,7 +358,9 @@ export async function fetchArtistTopAlbums(message, args) {
       .sort(sortTopAlbums())
       .map(album => {
         const { name, playcount, url: albumURL } = album;
-        return `\`${playcount.toLocaleString()} ▶️\` • **[${name}](${albumURL.replace(
+        return `\`${Number(
+          playcount
+        ).toLocaleString()} ▶️\` • **[${name}](${albumURL.replace(
           ')',
           '\\)'
         )})**`;

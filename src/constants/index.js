@@ -18,6 +18,7 @@ export const READABLE_PERIODS = {
 };
 
 export const USER_UNDEFINED = 'USER_UNDEFINED';
+export const USER_UNDEFINED_ARGS = 'USER_UNDEFINED_ARGS';
 export const USER_SET = 'USER_SET';
 export const USER_EXISTS = 'USER_EXISTS';
 export const USER_UPDATED = 'USER_UPDATED';

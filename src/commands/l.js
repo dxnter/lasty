@@ -13,6 +13,7 @@ import {
   USER_EXISTS,
   USER_UPDATED,
   USER_UNDEFINED,
+  USER_UNDEFINED_ARGS,
   USER_DELETED,
   USER_SET,
   COMMAND_INVALID
@@ -40,49 +41,59 @@ module.exports = {
       case 'help': {
         return message.channel.send(
           new Discord.MessageEmbed()
-            .setTitle('Last.fm, Commands')
-            .addField(
-              'set - Sets Last.fm username.',
-              'Example: `,l set iiMittens`'
-            )
-            .addField(
-              'delete - Deletes saved Last.fm username',
-              'Alternate: `reset`'
-            )
-            .addField(
-              'info - Shows Last.FM account information',
-              'Example: `,l info`'
-            )
-            .addField(
-              'np - Shows currently playing song. (Without `,l` prefix)',
-              'Example: `,np` or `,np iiMittens`'
-            )
-            .addField(
-              'recent - Shows 10 most recent tracks played.',
-              'Alternate: None'
-            )
-            .addBlankField(true)
-            .addField(
-              'Command Paramaters',
-              '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)\n**Username can be omitted if set with** `,l set`\n'
-            )
-            .addField(
-              'tracks - Shows most played tracks',
-              'Example: `,l tracks iiMittens month`'
-            )
-            .addField(
-              'artists - Shows most listened artists',
-              'Example: `,l artists week`'
-            )
-            .addField(
-              'albums - Shows most played albums',
-              'Example: `,l albums Reversibly 90`'
-            )
+            .setTitle('Lasty Commands')
+            .addFields([
+              {
+                name: 'set - Sets Last.fm username.',
+                value: 'Example: `,l set iiMittens`'
+              },
+              {
+                name: 'delete - Deletes saved Last.fm username',
+                value: 'Alternate: `reset`'
+              },
+              {
+                name: 'info - Shows Last.FM account information',
+                value: 'Example: `,l info`'
+              },
+              {
+                name: 'np - Shows currently playing song. (Without`,l` prefix)',
+                value: 'Example: `,np` or `,np iiMittens`'
+              },
+              {
+                name: 'recent - Shows 10 most recent tracks played.',
+                value: 'Alternate: None'
+              },
+              {
+                name: '\u200b',
+                value: '\u200b'
+              },
+              {
+                name: 'Command Paramaters',
+                value:
+                  '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)'
+              },
+              {
+                name: 'tracks - Shows most played tracks',
+                value: 'Example: `,l tracks iiMittens month`'
+              },
+              {
+                name: 'artists - Shows most listened artists',
+                value: 'Example: `,l artists week`'
+              },
+              {
+                name: 'albums - Shows most played albums',
+                value: 'Example: `,l albums Reversibly 90`'
+              }
+            ])
             .setColor('#E31C23')
         );
       }
 
       case 'set': {
+        if (!fmUser) {
+          return replyEmbedMessage(message, args, USER_UNDEFINED);
+        }
+
         const existingUser = db
           .get('users')
           .find({ userID: message.author.id })
@@ -117,7 +128,7 @@ module.exports = {
           .value();
 
         if (!existingUser && !fmUser) {
-          return replyEmbedMessage(message, args, USER_UNDEFINED);
+          return replyEmbedMessage(message, args, USER_UNDEFINED_ARGS);
         }
         const {
           totalScrobbles,
@@ -133,7 +144,7 @@ module.exports = {
           new Discord.MessageEmbed()
             .setAuthor(name, lastFMAvatar, profileURL)
             .setThumbnail(lastFMAvatar)
-            .addField('Total Scrobbes', Number(totalScrobbles).toLocaleString())
+            .addField('Total Scrobbes', totalScrobbles)
             .addField('Country', country)
             .addField(
               'Registration Date',
