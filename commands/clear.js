@@ -1,4 +1,4 @@
-import { Util } from '../utils/util';
+import { replyEmbedMessage } from '../utils';
 import { PERMISSION_INVALID } from '../constants';
 
 module.exports = {
@@ -6,7 +6,7 @@ module.exports = {
   run: (bot, message, args) => {
     if (!message.member.hasPermission('ADMINISTRATOR')) {
       console.log('admin');
-      return Util.replyEmbedMessage(message, args, PERMISSION_INVALID);
+      return replyEmbedMessage(message, args, PERMISSION_INVALID);
     }
     const amount = Number(args[0]);
 

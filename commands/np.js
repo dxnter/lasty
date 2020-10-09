@@ -1,10 +1,9 @@
 import Discord from 'discord.js';
 import axios from 'axios';
+import { fetchRecentTrack, fetchUserInfo } from '../api/lastfm';
 import db from '../db';
 import { USER_UNDEFINED, USER_UNREGISTERED } from '../constants';
-import { Util } from '../utils/util';
-
-import { fetchRecentTrack, fetchUserInfo } from '../api/lastfm';
+import { replyEmbedMessage } from '../utils';
 
 module.exports = {
   name: 'np',
@@ -16,7 +15,7 @@ module.exports = {
         .find({ userID: message.author.id })
         .value();
       if (!dbUser) {
-        return Util.replyEmbedMessage(message, args, USER_UNDEFINED);
+        return replyEmbedMessage(message, args, USER_UNDEFINED);
       }
       fmUser = dbUser.lastFM;
     }
@@ -36,7 +35,7 @@ module.exports = {
             error
           } = trackInfo;
           if (error) {
-            return Util.replyEmbedMessage(message, args, error, null, fmUser);
+            return replyEmbedMessage(message, args, error, { fmUser });
           }
 
           const { totalScrobbles, image } = userInfo;
@@ -69,7 +68,7 @@ module.exports = {
         })
       )
       .catch(err =>
-        Util.replyEmbedMessage(message, args, USER_UNREGISTERED, null, fmUser)
+        replyEmbedMessage(message, args, USER_UNREGISTERED, null, fmUser)
       );
   }
 };

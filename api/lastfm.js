@@ -1,10 +1,11 @@
 require('dotenv').config();
 import axios from 'axios';
-import { Util } from '../utils/util';
+import { pluralize, makeReadablePeriod, sortTopAlbums } from '../utils';
 import {
   ARTIST_INVALID,
   ARTIST_UNDEFINED,
   EMPTY_LISTENING_DATA,
+  TRACK_NOT_FOUND,
   LASTFM_API_URL,
   PERIOD_INVALID,
   PERIOD_PARAMS,
@@ -92,7 +93,8 @@ export async function fetchRecentTrack(fmUser) {
     const TRACK_INFO_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&track=${track}&artist=${artist}&format=json`;
     const trackInfoRequestURL = `${LASTFM_API_URL}${TRACK_INFO}${TRACK_INFO_QUERY_STRING}`;
     const { data } = await axios.get(trackInfoRequestURL);
-    if (data.error) return { error: 'Track not found!' };
+    console.log(data);
+    if (data.error) return { error: TRACK_NOT_FOUND };
 
     const trackInfo = data.track;
     const {
@@ -219,7 +221,7 @@ export async function fetchUsersTopTracks(fmUser, period) {
     });
 
     return {
-      author: `Top Tracks - ${Util.makeReadablePeriod(period)} - ${fmUser}`,
+      author: `Top Tracks - ${makeReadablePeriod(period)} - ${fmUser}`,
       description: topTracks
     };
   } catch (err) {
@@ -274,7 +276,7 @@ export async function fetchUsersTopArtists(fmUser, period) {
     });
 
     return {
-      author: `Top Artists - ${Util.makeReadablePeriod(period)} - ${fmUser}`,
+      author: `Top Artists - ${makeReadablePeriod(period)} - ${fmUser}`,
       description: topArtists
     };
   } catch (err) {
@@ -334,7 +336,7 @@ export async function fetchUsersTopAlbums(fmUser, period) {
     });
 
     return {
-      author: `Top Albums - ${Util.makeReadablePeriod(period)} - ${fmUser}`,
+      author: `Top Albums - ${makeReadablePeriod(period)} - ${fmUser}`,
       description: topAlbums
     };
   } catch (err) {
@@ -368,7 +370,7 @@ export async function fetchArtistTopAlbums(message, args) {
     const formattedArtist = data.topalbums['@attr'].artist;
     const artistURL = data.topalbums.album[0].artist.url;
     const artistTopAlbums = data.topalbums.album
-      .sort(Util.sortTopAlbums())
+      .sort(sortTopAlbums())
       .map(album => {
         const { name, playcount, url: albumURL } = album;
         return `\`${playcount.toLocaleString()} ▶️\` • **[${name}](${albumURL.replace(
@@ -378,7 +380,7 @@ export async function fetchArtistTopAlbums(message, args) {
       });
 
     return {
-      author: `${Util.pluralize(formattedArtist)} Top 10 Albums`,
+      author: `${pluralize(formattedArtist)} Top 10 Albums`,
       description: artistTopAlbums,
       artistURL: artistURL
     };

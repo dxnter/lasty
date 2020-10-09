@@ -1,4 +1,6 @@
 import Discord from 'discord.js';
+import db from '../db';
+import { replyEmbedMessage } from '../utils';
 import {
   fetchUserInfo,
   fetch10RecentTracks,
@@ -7,7 +9,6 @@ import {
   fetchUsersTopAlbums,
   fetchArtistTopAlbums
 } from '../api/lastfm';
-import db from '../db';
 import {
   USER_EXISTS,
   USER_UPDATED,
@@ -16,7 +17,6 @@ import {
   USER_SET,
   COMMAND_INVALID
 } from '../constants';
-import { Util } from '../utils/util';
 
 module.exports = {
   name: 'l',
@@ -90,7 +90,7 @@ module.exports = {
 
         if (existingUser) {
           if (existingUser.lastFM === fmUser) {
-            return Util.replyEmbedMessage(message, args, USER_EXISTS, {
+            return replyEmbedMessage(message, args, USER_EXISTS, {
               fmUser
             });
           }
@@ -99,7 +99,7 @@ module.exports = {
             .find({ userID: message.author.id })
             .assign({ lastFM: fmUser })
             .write();
-          return Util.replyEmbedMessage(message, args, USER_UPDATED, {
+          return replyEmbedMessage(message, args, USER_UPDATED, {
             fmUser
           });
         }
@@ -107,7 +107,7 @@ module.exports = {
         db.get('users')
           .push({ userID: message.author.id, lastFM: fmUser })
           .write();
-        return Util.replyEmbedMessage(message, args, USER_SET, { fmUser });
+        return replyEmbedMessage(message, args, USER_SET, { fmUser });
       }
 
       case 'info': {
@@ -117,7 +117,7 @@ module.exports = {
           .value();
 
         if (!existingUser && !fmUser) {
-          return Util.replyEmbedMessage(message, args, USER_UNDEFINED);
+          return replyEmbedMessage(message, args, USER_UNDEFINED);
         }
         const {
           totalScrobbles,
@@ -154,12 +154,12 @@ module.exports = {
           db.get('users')
             .remove({ userID: message.author.id })
             .write();
-          return Util.replyEmbedMessage(message, null, USER_DELETED, {
+          return replyEmbedMessage(message, null, USER_DELETED, {
             fmUser
           });
         }
 
-        return Util.replyEmbedMessage(message, args, USER_UNDEFINED);
+        return replyEmbedMessage(message, args, USER_UNDEFINED);
       }
 
       case 'recent': {
@@ -169,7 +169,7 @@ module.exports = {
           args
         );
         if (error) {
-          return Util.replyEmbedMessage(message, args, error, { fmUser });
+          return replyEmbedMessage(message, args, error, { fmUser });
         }
 
         return message.channel.send(
@@ -192,7 +192,7 @@ module.exports = {
           args
         );
         if (error) {
-          return Util.replyEmbedMessage(message, args, error, {
+          return replyEmbedMessage(message, args, error, {
             period,
             fmUser
           });
@@ -218,7 +218,7 @@ module.exports = {
           args
         );
         if (error) {
-          return Util.replyEmbedMessage(message, args, error, {
+          return replyEmbedMessage(message, args, error, {
             period,
             fmUser
           });
@@ -244,7 +244,7 @@ module.exports = {
           args
         );
         if (error) {
-          return Util.replyEmbedMessage(message, args, error, {
+          return replyEmbedMessage(message, args, error, {
             period,
             fmUser
           });
@@ -270,7 +270,7 @@ module.exports = {
           error
         } = await fetchArtistTopAlbums(message, args);
         if (error) {
-          return Util.replyEmbedMessage(message, args, error);
+          return replyEmbedMessage(message, args, error);
         }
 
         return message.channel.send(
@@ -282,7 +282,7 @@ module.exports = {
       }
 
       default: {
-        return Util.replyEmbedMessage(message, args, COMMAND_INVALID);
+        return replyEmbedMessage(message, args, COMMAND_INVALID);
       }
     }
   }
