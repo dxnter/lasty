@@ -1,21 +1,26 @@
-module.exports.run = async (bot, message, args) => {
-  if (!message.member.hasPermission('MANAGE_MESSAGES')) {
-    return message.reply('oof.');
-  }
-  if (!args[0])
-    return message.channel.send(
-      'Please supply a clear amount\n`,clear <amount>`'
-    );
-  if (!Number.isInteger(Number(args[0])))
-    return message.channel.send('Please enter an integer value');
-  message.channel.bulkDelete(args[0]).then(() => {
-    message.channel
-      .send(`Cleared ${args[0]} messages`)
-      .then(msg => msg.delete(1500))
-      .catch(console.error);
-  });
-};
+import { Util } from '../utils/util';
+import { PERMISSION_INVALID } from '../constants';
 
 module.exports = {
-  name: 'clear'
+  name: 'clear',
+  run: (bot, message, args) => {
+    if (!message.member.hasPermission('ADMINISTRATOR')) {
+      console.log('admin');
+      return Util.replyEmbedMessage(message, args, PERMISSION_INVALID);
+    }
+    const amount = Number(args[0]);
+
+    if (!amount) return message.reply('give amount');
+    if (isNaN(amount)) return message.reply('not a num');
+
+    if (amount > 100) return message.reply('no more than 100');
+    if (amount < 1) return message.reply('delete at least 1');
+
+    message.channel.bulkDelete(amount + 1).then(() => {
+      message.channel
+        .send(`Deleted ${amount} messages`)
+        .then(msg => msg.delete(1500))
+        .catch(console.error);
+    });
+  }
 };

@@ -1,6 +1,6 @@
-const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
+export const LASTFM_API_URL = 'http://ws.audioscrobbler.com/2.0/?method=';
 
-const PERIOD_PARAMS = {
+export const PERIOD_PARAMS = {
   week: '7day',
   month: '1month',
   '90': '3month',
@@ -9,7 +9,7 @@ const PERIOD_PARAMS = {
   all: 'overall'
 };
 
-const READABLE_PERIODS = {
+export const READABLE_PERIODS = {
   week: 'Week',
   month: 'Month',
   '90': '3 Months',
@@ -17,4 +17,15 @@ const READABLE_PERIODS = {
   year: 'Year'
 };
 
-export { LASTFM_API_URL, PERIOD_PARAMS, READABLE_PERIODS };
+export const USER_UNDEFINED = 'USER_UNDEFINED';
+export const USER_SET = 'USER_SET';
+export const USER_EXISTS = 'USER_EXISTS';
+export const USER_UPDATED = 'USER_UPDATED';
+export const USER_DELETED = 'USER_DELETED';
+export const USER_UNREGISTERED = 'USER_UNREGISTERED';
+export const ARTIST_UNDEFINED = 'ARTIST_UNDEFINED';
+export const ARTIST_INVALID = 'ARTIST_INVALID';
+export const PERIOD_INVALID = 'PERIOD_INVALID';
+export const EMPTY_LISTENING_DATA = 'EMPTY_LISTENING_DATA';
+export const PERMISSION_INVALID = 'PERMISSION_INVALID';
+export const COMMAND_INVALID = 'COMMAND_INVALID';

@@ -18,7 +18,7 @@
     "bot"
   ],
   "author": "dxnter",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "dependencies": {
     "@types/node": "^13.1.4",
     "axios": "^0.19.0",

@@ -1,7 +1,16 @@
 require('dotenv').config();
 import axios from 'axios';
 import { Util } from '../utils/util';
-import { LASTFM_API_URL, PERIOD_PARAMS } from '../constants';
+import {
+  ARTIST_INVALID,
+  ARTIST_UNDEFINED,
+  EMPTY_LISTENING_DATA,
+  LASTFM_API_URL,
+  PERIOD_INVALID,
+  PERIOD_PARAMS,
+  USER_UNDEFINED,
+  USER_UNREGISTERED
+} from '../constants';
 
 const { LASTFM_API_KEY } = process.env;
 /**
@@ -104,7 +113,7 @@ export async function fetchRecentTrack(fmUser) {
     };
   } catch (err) {
     return {
-      error: 'EMPTY_LISTENING_DATA'
+      error: EMPTY_LISTENING_DATA
     };
   }
 }
@@ -118,7 +127,7 @@ export async function fetchRecentTrack(fmUser) {
 export async function fetch10RecentTracks(fmUser) {
   if (!fmUser) {
     return {
-      error: 'USER_UNDEFINED'
+      error: USER_UNDEFINED
     };
   }
   const GET_RECENT_TRACKS = 'user.getRecentTracks';
@@ -133,7 +142,7 @@ export async function fetch10RecentTracks(fmUser) {
     } = await axios.get(recentTracksRequestURL);
     if (tracks.length === 0) {
       return {
-        error: 'EMPTY_LISTENING_DATA'
+        error: EMPTY_LISTENING_DATA
       };
     }
 
@@ -155,7 +164,7 @@ export async function fetch10RecentTracks(fmUser) {
     };
   } catch (err) {
     return {
-      error: 'USER_UNREGISTERED'
+      error: USER_UNREGISTERED
     };
   }
 }
@@ -170,12 +179,12 @@ export async function fetch10RecentTracks(fmUser) {
 export async function fetchUsersTopTracks(fmUser, period) {
   if (!fmUser) {
     return {
-      error: 'USER_UNDEFINED'
+      error: USER_UNDEFINED
     };
   }
   if (period && !PERIOD_PARAMS[period]) {
     return {
-      error: 'PERIOD_INVALID',
+      error: PERIOD_INVALID,
       period
     };
   }
@@ -192,7 +201,7 @@ export async function fetchUsersTopTracks(fmUser, period) {
     } = await axios.get(topTracksRequestURL);
     if (tracks.length === 0) {
       return {
-        error: 'EMPTY_LISTENING_DATA'
+        error: EMPTY_LISTENING_DATA
       };
     }
 
@@ -215,7 +224,7 @@ export async function fetchUsersTopTracks(fmUser, period) {
     };
   } catch (err) {
     return {
-      error: 'USER_UNREGISTERED'
+      error: USER_UNREGISTERED
     };
   }
 }
@@ -230,12 +239,12 @@ export async function fetchUsersTopTracks(fmUser, period) {
 export async function fetchUsersTopArtists(fmUser, period) {
   if (!fmUser) {
     return {
-      error: 'USER_UNDEFINED'
+      error: USER_UNDEFINED
     };
   }
   if (period && !PERIOD_PARAMS[period]) {
     return {
-      error: 'PERIOD_INVALID',
+      error: PERIOD_INVALID,
       period
     };
   }
@@ -252,7 +261,7 @@ export async function fetchUsersTopArtists(fmUser, period) {
     } = await axios.get(topArtistsRequestURL);
     if (artists.length === 0) {
       return {
-        error: 'EMPTY_LISTENING_DATA'
+        error: EMPTY_LISTENING_DATA
       };
     }
 
@@ -270,7 +279,7 @@ export async function fetchUsersTopArtists(fmUser, period) {
     };
   } catch (err) {
     return {
-      error: 'USER_UNREGISTERED'
+      error: USER_UNREGISTERED
     };
   }
 }
@@ -285,12 +294,12 @@ export async function fetchUsersTopArtists(fmUser, period) {
 export async function fetchUsersTopAlbums(fmUser, period) {
   if (!fmUser) {
     return {
-      error: 'USER_UNDEFINED'
+      error: USER_UNDEFINED
     };
   }
   if (period && !PERIOD_PARAMS[period]) {
     return {
-      error: 'PERIOD_INVALID',
+      error: PERIOD_INVALID,
       period
     };
   }
@@ -307,7 +316,7 @@ export async function fetchUsersTopAlbums(fmUser, period) {
     } = await axios.get(topAlbumsRequestURL);
     if (albums.length === 0) {
       return {
-        error: 'EMPTY_LISTENING_DATA'
+        error: EMPTY_LISTENING_DATA
       };
     }
 
@@ -330,7 +339,7 @@ export async function fetchUsersTopAlbums(fmUser, period) {
     };
   } catch (err) {
     return {
-      error: 'USER_UNREGISTERED'
+      error: USER_UNREGISTERED
     };
   }
 }
@@ -345,32 +354,39 @@ export async function fetchArtistTopAlbums(message, args) {
   const artist = args.slice(1).join(' ');
   if (!artist) {
     return {
-      error: 'ARTIST_UNDEFINED'
+      error: ARTIST_UNDEFINED
     };
   }
 
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
   const TOP_ALBUMS_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
   const artistTopAlbumsRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
-  const { data } = await axios.get(artistTopAlbumsRequestURL);
 
-  const formattedArtist = data.topalbums['@attr'].artist;
-  const artistURL = data.topalbums.album[0].artist.url;
-  const artistTopAlbums = data.topalbums.album
-    .sort(Util.sortTopAlbums())
-    .map(album => {
-      const { name, playcount, url: albumURL } = album;
-      return `\`${playcount.toLocaleString()} ▶️\` • **[${name}](${albumURL.replace(
-        ')',
-        '\\)'
-      )})**`;
-    });
+  try {
+    const { data } = await axios.get(artistTopAlbumsRequestURL);
 
-  return {
-    author: `${Util.pluralize(formattedArtist)} Top 10 Albums`,
-    description: artistTopAlbums,
-    artistURL: artistURL
-  };
+    const formattedArtist = data.topalbums['@attr'].artist;
+    const artistURL = data.topalbums.album[0].artist.url;
+    const artistTopAlbums = data.topalbums.album
+      .sort(Util.sortTopAlbums())
+      .map(album => {
+        const { name, playcount, url: albumURL } = album;
+        return `\`${playcount.toLocaleString()} ▶️\` • **[${name}](${albumURL.replace(
+          ')',
+          '\\)'
+        )})**`;
+      });
+
+    return {
+      author: `${Util.pluralize(formattedArtist)} Top 10 Albums`,
+      description: artistTopAlbums,
+      artistURL: artistURL
+    };
+  } catch (err) {
+    return {
+      error: ARTIST_INVALID
+    };
+  }
 }
 
 /**
