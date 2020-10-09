@@ -4,7 +4,7 @@ module.exports = {
   name: 'help',
   run: (bot, message) =>
     message.channel.send(
-      new Discord.RichEmbed()
+      new Discord.MessageEmbed()
         .setColor('#E31C23')
         .addField(
           'Lasty Commands',

@@ -23,7 +23,7 @@ async function weeklyStatCron(bot) {
       .fetchUser(userID)
       .then(user => {
         user.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setColor('#E31C23')
             .setTitle(`:musical_note: Weekly Recap (${lastWeek} - ${now})`)
             .setAuthor(
@@ -31,22 +31,22 @@ async function weeklyStatCron(bot) {
               lastFMAvatar,
               `https://last.fm/user/${fmUser}`
             )
-          .setDescription(`Scrobbles • \`${weeklyScrobbles} ▶️\``)
+            .setDescription(`Scrobbles • \`${weeklyScrobbles} ▶️\``)
         );
         user.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setColor('#E31C23')
             .setTitle('**:man_singer: Top Artists**')
             .setDescription(topArtists)
         );
         user.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setColor('#E31C23')
             .setTitle('**:cd: Top Albums**')
             .setDescription(topAlbums)
         );
         user.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setColor('#E31C23')
             .setTitle('**:repeat: Top Tracks**')
             .setDescription(topTracks)

@@ -4,7 +4,7 @@ module.exports = {
   name: 'serverinfo',
   run: async (bot, message) =>
     message.channel.send(
-      new Discord.RichEmbed()
+      new Discord.MessageEmbed()
         .setThumbnail(message.guild.iconURL)
         .setColor('#E31C23')
         .setTitle('Server Information')

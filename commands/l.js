@@ -39,7 +39,7 @@ module.exports = {
     switch (args[0]) {
       case 'help': {
         return message.channel.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setTitle('Last.fm, Commands')
             .addField(
               'set - Sets Last.fm username.',
@@ -130,7 +130,7 @@ module.exports = {
         const lastFMAvatar = image[2]['#text'];
 
         return message.channel.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setAuthor(name, lastFMAvatar, profileURL)
             .setThumbnail(lastFMAvatar)
             .addField('Total Scrobbes', Number(totalScrobbles).toLocaleString())
@@ -173,10 +173,10 @@ module.exports = {
         }
 
         return message.channel.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setAuthor(
               author,
-              message.author.avatarURL,
+              message.author.avatarURL({ dynamic: true }),
               `http://www.last.fm/user/${fmUser}`
             )
             .setDescription(description)
@@ -199,10 +199,10 @@ module.exports = {
         }
 
         return message.channel.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setAuthor(
               author,
-              message.author.avatarURL,
+              message.author.avatarURL({ dynamic: true }),
               `http://www.last.fm/user/${fmUser}`
             )
             .setDescription(description)
@@ -225,10 +225,10 @@ module.exports = {
         }
 
         return message.channel.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setAuthor(
               author,
-              message.author.avatarURL,
+              message.author.avatarURL({ dynamic: true }),
               `http://www.last.fm/user/${fmUser}`
             )
             .setDescription(description)
@@ -251,10 +251,10 @@ module.exports = {
         }
 
         return message.channel.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setAuthor(
               author,
-              message.author.avatarURL,
+              message.author.avatarURL({ dynamic: true }),
               `http://www.last.fm/user/${fmUser}`
             )
             .setDescription(description)
@@ -274,7 +274,7 @@ module.exports = {
         }
 
         return message.channel.send(
-          new Discord.RichEmbed()
+          new Discord.MessageEmbed()
             .setAuthor(author, null, artistURL)
             .setDescription(description)
             .setColor('#E31C23')

@@ -42,7 +42,7 @@ module.exports = {
           const { totalScrobbles, image } = userInfo;
           const lastFMAvatar = image[2]['#text'];
 
-          const embed = new Discord.RichEmbed()
+          const embed = new Discord.MessageEmbed()
             .setAuthor(
               `Now playing - ${fmUser}`,
               lastFMAvatar,
