@@ -38,6 +38,6 @@ module.exports = {
       const limit = gridInfo.rows * gridInfo.cols;
     }
 
-    return message.channel.send('grid');
+    return message.channel.send('Work in progress, follow Github for updates');
   }
 };

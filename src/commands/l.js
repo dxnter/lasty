@@ -7,7 +7,8 @@ import {
   fetchUsersTopTracks,
   fetchUsersTopArtists,
   fetchUsersTopAlbums,
-  fetchArtistTopAlbums
+  fetchArtistTopAlbums,
+  fetchArtistInfo
 } from '../api/lastfm';
 import {
   USER_EXISTS,
@@ -35,6 +36,12 @@ module.exports = {
     if (args.length === 3) {
       fmUser = args[1];
       period = args[2];
+    }
+    if (!dbUser && args[0] === 'artist') {
+      fmUser = undefined;
+    }
+    if (dbUser && args[0] === 'artist') {
+      fmUser = dbUser.lastFM;
     }
 
     switch (args[0]) {
@@ -130,6 +137,11 @@ module.exports = {
         if (!existingUser && !fmUser) {
           return replyEmbedMessage(message, args, USER_UNDEFINED_ARGS);
         }
+
+        if (args[1]) {
+          fmUser = args[1];
+        }
+
         const {
           totalScrobbles,
           name,
@@ -278,16 +290,45 @@ module.exports = {
           author,
           description,
           artistURL,
-          error
-        } = await fetchArtistTopAlbums(message, args);
+          error,
+          artist
+        } = await fetchArtistTopAlbums(args);
         if (error) {
-          return replyEmbedMessage(message, args, error);
+          return replyEmbedMessage(message, args, error, { artist });
         }
 
         return message.channel.send(
           new Discord.MessageEmbed()
             .setAuthor(author, null, artistURL)
             .setDescription(description)
+            .setColor('#E31C23')
+        );
+      }
+
+      case 'artist': {
+        const {
+          artistName,
+          artistURL,
+          totalListeners,
+          totalPlays,
+          userPlays,
+          similarArtistsString,
+          biography,
+          error,
+          artist
+        } = await fetchArtistInfo(args, fmUser);
+        if (error) {
+          return replyEmbedMessage(message, args, error, { artist });
+        }
+
+        return message.channel.send(
+          new Discord.MessageEmbed()
+            .setAuthor(artistName, null, artistURL)
+            .addField('Listeners', totalListeners, true)
+            .addField('Total Plays', totalPlays, true)
+            .addField('Your plays', userPlays, true)
+            .addField('Summary', biography)
+            .addField('Similar Artists', similarArtistsString)
             .setColor('#E31C23')
         );
       }

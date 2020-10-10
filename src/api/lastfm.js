@@ -10,7 +10,8 @@ import {
   PERIOD_INVALID,
   PERIOD_PARAMS,
   USER_UNDEFINED_ARGS,
-  USER_UNREGISTERED
+  USER_UNREGISTERED,
+  ARTIST_NOT_FOUND
 } from '../constants';
 
 const { LASTFM_API_KEY } = process.env;
@@ -337,7 +338,7 @@ export async function fetchUsersTopAlbums(fmUser, period) {
  *
  * @returns {{artistTopAlbums: Array, formattedArtist: String, artistURL: String}}
  */
-export async function fetchArtistTopAlbums(message, args) {
+export async function fetchArtistTopAlbums(args) {
   const artist = args.slice(1).join(' ');
   if (!artist) {
     return {
@@ -373,7 +374,87 @@ export async function fetchArtistTopAlbums(message, args) {
     };
   } catch (err) {
     return {
-      error: ARTIST_INVALID
+      error: ARTIST_INVALID,
+      artist
+    };
+  }
+}
+
+/**
+ * Fetches information and listening data about an artist.
+ * @param {Array} args - Discord.js args containing the artist paramater.
+ * @param {String} fmUser - A registered user on Last.FM.
+ *
+ * @returns {{artistName: String, artistURL: String, artistImage: String, totalListeners: Number, totalPlays: Number, userPlays: Number, similarArtistsString: String, biography: String}}
+ */
+export async function fetchArtistInfo(args, fmUser) {
+  const artist = args.slice(1).join(' ');
+  if (!artist) {
+    return {
+      error: ARTIST_UNDEFINED
+    };
+  }
+
+  const ARTIST_GET_INFO = 'artist.getInfo';
+  const ARTIST_INFO_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&username=${fmUser}&autocorrect=1&format=json`;
+  const artistInfoRequestURL = `${LASTFM_API_URL}${ARTIST_GET_INFO}${ARTIST_INFO_QUERY_STRING}`;
+
+  try {
+    const {
+      data: {
+        artist: {
+          name: artistName,
+          url: artistURL,
+          stats: { listeners, playcount, userplaycount },
+          similar: { artist: similarArtists },
+          bio: { summary }
+        }
+      }
+    } = await axios.get(artistInfoRequestURL);
+
+    const totalListeners = `\`${Number(listeners).toLocaleString()}\``;
+    const totalPlays = `\`${Number(playcount).toLocaleString()}\``;
+    const userPlays = fmUser
+      ? `\`${Number(userplaycount).toLocaleString()}\``
+      : '`0`';
+
+    const strippedSummary = summary.replace(
+      `<a href="${artistURL}">Read more on Last.fm</a>`,
+      ''
+    );
+
+    /**
+     * Some artists don't have a full biography available. After removing the <a> tag that's
+     * on every response a check is done to make sure it still contains content.
+     */
+    const biography =
+      strippedSummary.length > 1 ? strippedSummary : 'Not Available';
+
+    let similarArtistsString;
+    if (similarArtists.length > 0) {
+      similarArtistsString = similarArtists.reduce((str, { name, url }, i) => {
+        if (i === similarArtists.length - 1) {
+          return str + `[${name}](${url})`;
+        }
+        return str + `[${name}](${url}) • `;
+      }, '');
+    } else {
+      similarArtistsString = 'Not Available';
+    }
+
+    return {
+      artistName,
+      artistURL,
+      totalListeners,
+      totalPlays,
+      userPlays,
+      similarArtistsString,
+      biography
+    };
+  } catch (err) {
+    return {
+      error: ARTIST_NOT_FOUND,
+      artist
     };
   }
 }

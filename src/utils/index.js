@@ -9,6 +9,7 @@ import {
   USER_DELETED,
   USER_UNREGISTERED,
   ARTIST_UNDEFINED,
+  ARTIST_NOT_FOUND,
   ARTIST_INVALID,
   PERIOD_INVALID,
   EMPTY_LISTENING_DATA,
@@ -35,7 +36,7 @@ export const replyEmbedMessage = (
   message,
   args,
   description,
-  { period, fmUser } = {}
+  { period, fmUser, artist } = {}
 ) => {
   switch (description) {
     case USER_UNDEFINED_ARGS:
@@ -95,14 +96,21 @@ export const replyEmbedMessage = (
       return message.channel.send(
         new Discord.MessageEmbed()
           .setAuthor('❌ Error')
-          .setDescription(`Enter the name of an artist after \`topalbums\``)
+          .setDescription(`Enter the name of an artist after \`${args[0]}\``)
           .setColor('#E31C23')
       );
     case ARTIST_INVALID:
       return message.channel.send(
         new Discord.MessageEmbed()
           .setAuthor('❌ Error')
-          .setDescription(`No albums found for **${args[1]}**`)
+          .setDescription(`No albums found for **${artist}**`)
+          .setColor('#E31C23')
+      );
+    case ARTIST_NOT_FOUND:
+      return message.channel.send(
+        new Discord.MessageEmbed()
+          .setAuthor('❌ Error')
+          .setDescription(`No artist found named **${artist}**`)
           .setColor('#E31C23')
       );
     case PERIOD_INVALID:
