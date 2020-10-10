@@ -19,7 +19,7 @@
 Lasty is a Discord bot intended to interact with [Last.FM](https://last.fm/) to provide real time listening data.
 <br/>
 _A public instance of Lasty is currently not available. Follow [Installation](https://github.com/dxnter/lasty#installation) to get started._
-
+For comments and support contact me on Discord: <strong>dxnter#1600</strong>
 ## 🚀 Installation
 ### Requirements
 - [Discord Bot Token](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
