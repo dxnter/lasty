@@ -1,4 +1,4 @@
 node_modules/
 .env
 jsconfig.json
-db.json
+~/db.json
