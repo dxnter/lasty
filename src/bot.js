@@ -1,16 +1,11 @@
 import Discord from 'discord.js';
 import fs from 'fs';
 import chalk from 'chalk';
-import dotenv from 'dotenv';
 import { CronJob } from 'cron';
 import './db';
-
 import weeklyStatCron from './utils/weeklyStatCron';
 
-dotenv.config();
-
-const log = console.log;
-const { DISCORD_BOT_TOKEN, PREFIX } = process.env;
+import { DISCORD_BOT_TOKEN, PREFIX } from '../config.json';
 
 const bot = new Discord.Client({ disableEveryone: true });
 bot.commands = new Discord.Collection();
@@ -25,7 +20,7 @@ for (const file of commandFiles) {
 }
 
 bot.on('ready', async () => {
-  log(chalk.blue(`[Discord.js] ${bot.user.username} is online!`));
+  console.log(chalk.blue(`[Discord.js] ${bot.user.username} is online!`));
   bot.user.setActivity(' ,l help', { type: 'LISTENING' });
 });
 

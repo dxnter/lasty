@@ -17,7 +17,8 @@ import {
   USER_UNDEFINED_ARGS,
   USER_DELETED,
   USER_SET,
-  COMMAND_INVALID
+  COMMAND_INVALID,
+  USER_UNREGISTERED
 } from '../constants';
 
 module.exports = {
@@ -142,28 +143,34 @@ module.exports = {
           fmUser = args[1];
         }
 
-        const {
-          totalScrobbles,
-          name,
-          profileURL,
-          country,
-          image,
-          unixRegistration
-        } = await fetchUserInfo(fmUser);
-        const lastFMAvatar = image[2]['#text'];
+        try {
+          const {
+            totalScrobbles,
+            name,
+            profileURL,
+            country,
+            image,
+            unixRegistration
+          } = await fetchUserInfo(fmUser);
+          const lastFMAvatar = image[2]['#text'];
 
-        return message.channel.send(
-          new Discord.MessageEmbed()
-            .setAuthor(name, lastFMAvatar, profileURL)
-            .setThumbnail(lastFMAvatar)
-            .addField('Total Scrobbes', totalScrobbles)
-            .addField('Country', country)
-            .addField(
-              'Registration Date',
-              new Date(unixRegistration * 1000).toLocaleString()
-            )
-            .setColor('#E31C23')
-        );
+          return message.channel.send(
+            new Discord.MessageEmbed()
+              .setAuthor(name, lastFMAvatar, profileURL)
+              .setThumbnail(lastFMAvatar)
+              .addField('Total Scrobbes', totalScrobbles)
+              .addField('Country', country)
+              .addField(
+                'Registration Date',
+                new Date(unixRegistration * 1000).toLocaleString()
+              )
+              .setColor('#E31C23')
+          );
+        } catch (err) {
+          return replyEmbedMessage(message, args, USER_UNREGISTERED, {
+            fmUser
+          });
+        }
       }
 
       case 'delete':

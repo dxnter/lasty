@@ -17,6 +17,8 @@ export const READABLE_PERIODS = {
   year: 'Year'
 };
 
+export const ERROR = 'ERROR';
+export const SUCCESS = 'SUCCESS';
 export const USER_UNDEFINED = 'USER_UNDEFINED';
 export const USER_UNDEFINED_ARGS = 'USER_UNDEFINED_ARGS';
 export const USER_SET = 'USER_SET';

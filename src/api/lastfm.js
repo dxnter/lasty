@@ -1,6 +1,6 @@
-require('dotenv').config();
 import axios from 'axios';
 import { pluralize, makeReadablePeriod, sortTopAlbums } from '../utils';
+import { LASTFM_API_KEY } from '../../config.json';
 import {
   ARTIST_INVALID,
   ARTIST_UNDEFINED,
@@ -14,7 +14,6 @@ import {
   ARTIST_NOT_FOUND
 } from '../constants';
 
-const { LASTFM_API_KEY } = process.env;
 /**
  * Fetches information about a registered Last.FM user
  * @param {String} fmUser - A registered user on Last.FM.

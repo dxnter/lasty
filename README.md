@@ -21,34 +21,41 @@ Lasty is a Discord bot intended to interact with [Last.FM](https://last.fm/) to 
 _A public instance of Lasty is currently not available. Follow [Installation](https://github.com/dxnter/lasty#installation) to get started._
 <br/>
 For comments and support contact me on Discord: <strong>dxnter#1600</strong>
-## 🚀 Installation
+
+## 🚀 Getting Started
 ### Requirements
 - [Discord Bot Token](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
 - [Last.FM API Key](https://last.fm/api)
 
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/dxnter/lasty
 
-Clone the repo:
-```console
-$ git clone https://github.com/dxnter/lasty
-$ cd lasty
+# Enter into the directory
+cd lasty
+
+# Install dependencies
+npm install
 ```
 
-Install dependencies:
-```console
-$ npm install
+### Configuration
+Create a `config.json` file in the root directory and follow the format below with your information.
+```json
+{
+  "PREFIX": "",
+  "DISCORD_BOT_TOKEN": "",
+  "LASTFM_API_KEY": ""
+}
 ```
 
-Create and edit the `.env` file with the required tokens.
-```console
-$ vim .env
-```
-⬇️ Format for `.env`
-```env
-PREFIX=
-DISCORD_BOT_TOKEN=
-LASTFM_API_KEY=
+### Starting the bot
+#### Basic
+```bash
+npm start
 ```
 
+#### Advanced
 Globally install `pm2` *(This enables Lasty to continuously run)*
 ```console
 $ npm install --global pm2
