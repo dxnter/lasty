@@ -7,7 +7,7 @@ import weeklyStatCron from './utils/weeklyStatCron';
 
 import { DISCORD_BOT_TOKEN, PREFIX } from '../config.json';
 
-const bot = new Discord.Client({ disableEveryone: true });
+const bot = new Discord.Client({ disableMentions: 'everyone' });
 bot.commands = new Discord.Collection();
 
 const commandFiles = fs

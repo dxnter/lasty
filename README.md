@@ -58,7 +58,7 @@ npm start
 #### Advanced
 This section is completely optional but suggested if hosting Lasty on a VPS.
 <br/>
-Globally install `pm2`, this enables Lasty to run as a daemon process
+Globally install `pm2`, this enables Lasty to run as a daemon process.
 ```console
 $ npm install --global pm2
 ```

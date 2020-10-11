@@ -19,8 +19,8 @@ async function weeklyStatCron(bot) {
       .subtract(7, 'day')
       .format('M/D');
 
-    bot
-      .fetchUser(userID)
+    bot.users
+      .fetch(userID)
       .then(user => {
         user.send(
           new Discord.MessageEmbed()
