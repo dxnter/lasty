@@ -8,6 +8,7 @@ import {
   fetchUsersTopArtists,
   fetchUsersTopAlbums,
   fetchArtistTopAlbums,
+  fetchArtistTopTracks,
   fetchArtistInfo
 } from '../api/lastfm';
 import {
@@ -70,6 +71,14 @@ module.exports = {
               {
                 name: 'recent - Shows 10 most recent tracks played.',
                 value: 'Alternate: None'
+              },
+              {
+                name: 'topalbums - Shows the top albums by an artist',
+                value: 'Example: ,l topalbums Kendrick Lamar'
+              },
+              {
+                name: 'toptracks - Shows the top tracks by an artist',
+                value: 'Example: ,l toptracks Radiohead'
               },
               {
                 name: '\u200b',
@@ -300,6 +309,26 @@ module.exports = {
           error,
           artist
         } = await fetchArtistTopAlbums(args);
+        if (error) {
+          return replyEmbedMessage(message, args, error, { artist });
+        }
+
+        return message.channel.send(
+          new Discord.MessageEmbed()
+            .setAuthor(author, null, artistURL)
+            .setDescription(description)
+            .setColor('#E31C23')
+        );
+      }
+
+      case 'toptracks': {
+        const {
+          author,
+          description,
+          artistURL,
+          error,
+          artist
+        } = await fetchArtistTopTracks(args);
         if (error) {
           return replyEmbedMessage(message, args, error, { artist });
         }

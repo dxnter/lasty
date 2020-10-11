@@ -50,13 +50,15 @@ Create a `config.json` file in the root directory and follow the format below wi
 ```
 
 ### Starting the bot
-#### Basic
+
 ```bash
 npm start
 ```
 
 #### Advanced
-Globally install `pm2` *(This enables Lasty to continuously run)*
+This section is completely optional but suggested if hosting Lasty on a VPS.
+<br/>
+Globally install `pm2`, this enables Lasty to run as a daemon process
 ```console
 $ npm install --global pm2
 ```

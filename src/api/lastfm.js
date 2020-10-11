@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { pluralize, makeReadablePeriod, sortTopAlbums } from '../utils';
+import { pluralize, makeReadablePeriod, sortTotalListeners } from '../utils';
 import { LASTFM_API_KEY } from '../../config.json';
 import {
   ARTIST_INVALID,
@@ -350,12 +350,14 @@ export async function fetchArtistTopAlbums(args) {
   const artistTopAlbumsRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
 
   try {
-    const { data } = await axios.get(artistTopAlbumsRequestURL);
+    const {
+      data: { topalbums }
+    } = await axios.get(artistTopAlbumsRequestURL);
 
-    const formattedArtist = data.topalbums['@attr'].artist;
-    const artistURL = data.topalbums.album[0].artist.url;
-    const artistTopAlbums = data.topalbums.album
-      .sort(sortTopAlbums())
+    const formattedArtist = topalbums['@attr'].artist;
+    const artistURL = topalbums.album[0].artist.url;
+    const artistTopAlbums = topalbums.album
+      .sort(sortTotalListeners())
       .map(album => {
         const { name, playcount, url: albumURL } = album;
         return `\`${Number(
@@ -369,6 +371,51 @@ export async function fetchArtistTopAlbums(args) {
     return {
       author: `${pluralize(formattedArtist)} Top 10 Albums`,
       description: artistTopAlbums,
+      artistURL: artistURL
+    };
+  } catch (err) {
+    return {
+      error: ARTIST_INVALID,
+      artist
+    };
+  }
+}
+
+export async function fetchArtistTopTracks(args) {
+  const artist = args.slice(1).join(' ');
+  if (!artist) {
+    return {
+      error: ARTIST_UNDEFINED
+    };
+  }
+
+  const ARTIST_GET_TOP_TRACKS = 'artist.getTopTracks';
+  const TOP_TRACKS_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
+  const artistTopTracksRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
+
+  try {
+    const {
+      data: { toptracks },
+      data: {
+        toptracks: { track: tracks }
+      }
+    } = await axios.get(artistTopTracksRequestURL);
+
+    const formattedArtist = toptracks['@attr'].artist;
+    const artistURL = tracks[0].artist.url;
+    const artistTopTracks = tracks.sort(sortTotalListeners()).map(track => {
+      const { name, playcount, url: trackURL } = track;
+      return `\`${Number(
+        playcount
+      ).toLocaleString()} ▶️\` • **[${name}](${trackURL.replace(
+        ')',
+        '\\)'
+      )})**`;
+    });
+
+    return {
+      author: `${pluralize(formattedArtist)} Top 10 Tracks`,
+      description: artistTopTracks,
       artistURL: artistURL
     };
   } catch (err) {

@@ -25,7 +25,7 @@ export const makeReadablePeriod = period => {
   return 'Overall';
 };
 
-export const sortTopAlbums = () => {
+export const sortTotalListeners = () => {
   return (a, b) => b.playcount - a.playcount;
 };
 
