@@ -20,7 +20,7 @@ Lasty is a Discord bot intended to interact with [Last.FM](https://last.fm/) to 
 <br/>
 _A public instance of Lasty is currently not available. Follow [Installation](https://github.com/dxnter/lasty#installation) to get started._
 <br/>
-For comments and support contact me on Discord: <strong>dxnter#1600</strong>
+For comments and support contact me on Discord: <strong>dxnter#0001</strong>
 
 ## 🚀 Getting Started
 ### Requirements
@@ -59,15 +59,15 @@ npm start
 This section is completely optional but suggested if hosting Lasty on a VPS.
 <br/>
 Globally install `pm2`, this enables Lasty to run as a daemon process.
-```console
-$ npm install --global pm2
+```bash
+npm install --global pm2
 ```
 
 Start / stop the bot
-```console
-$ pm2 start npm -- start
+```bash
+pm2 start npm -- start
 OR
-$ pm2 stop all
+pm2 stop all
 ```
 
 ## 📝 Commands
