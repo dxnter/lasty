@@ -7,14 +7,20 @@ module.exports = {
     message.channel.send(
       new Discord.MessageEmbed()
         .setColor('#E31C23')
-        .addField('Lasty Commands', `Run commands with prefix \`${PREFIX}\``)
-        .addField('`l`', 'Last.fm statistics and charts, `,l help`')
-        .addField(
-          '`np`',
-          'Displays last played track on Last.fm `,np` or `,np [username]`'
-        )
-        .addField('`botinfo`', 'Display information about Lasty')
-        .addField('`serverinfo`', 'Display information about the server')
-        .addField('clear', 'Delete a number of messages in chat. `,clear 20`')
+        .setTitle('Lasty Commands', `Run commands with prefix \`${PREFIX}\``)
+        .addFields([
+          {
+            name: '`l`',
+            value: 'Last.fm statistics and charts, try `,l help`'
+          },
+          {
+            name: '`serverinfo`',
+            value: 'Display information about the server'
+          },
+          {
+            name: '`clear`',
+            value: '**Admin** - Clear a number of messages in chat. `,clear 20`'
+          }
+        ])
     )
 };

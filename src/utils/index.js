@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import { PREFIX } from '../../config.json';
 import {
   ERROR,
   SUCCESS,
@@ -164,55 +165,72 @@ export const replyEmbedMessage = (
 
 export const helpMessageEmbed = () => {
   return new Discord.MessageEmbed()
-    .setTitle('Lasty Commands')
+    .setTitle(`Last.fm Commands - (Use \`${PREFIX}l\` before commands)`)
     .addFields([
       {
-        name: 'set - Sets Last.fm username.',
-        value: 'Example: `,l set iiMittens`'
+        name: '`set`',
+        value: 'Sets Last.fm username'
       },
       {
-        name: 'delete - Deletes saved Last.fm username',
-        value: 'Alternate: `reset`'
+        name: '`delete`',
+        value: 'Deletes saved Last.fm username'
       },
       {
-        name: 'info - Shows Last.FM account information',
-        value: 'Example: `,l info`'
+        name: '`sub`',
+        value: 'Subscribe to the Weekly Recap'
       },
       {
-        name: 'np - Shows currently playing song. (Without`,l` prefix)',
-        value: 'Example: `,np` or `,np iiMittens`'
+        name: '`unsub`',
+        value: 'Unsubscribe to the Weekly Recap'
       },
       {
-        name: 'recent - Shows 10 most recent tracks played.',
-        value: 'Alternate: None'
+        name: '`info`',
+        value: 'Shows Last.FM account information'
       },
       {
-        name: 'topalbums - Shows the top albums by an artist',
-        value: 'Example: ,l topalbums Kendrick Lamar'
+        name: '`np`',
+        value: 'Shows currently playing song. (Without `,l` prefix)'
       },
       {
-        name: 'toptracks - Shows the top tracks by an artist',
-        value: 'Example: ,l toptracks Radiohead'
+        name: '`recent`',
+        value: 'Shows 10 most recent tracks played'
+      },
+      {
+        name: '`tracks`',
+        value: 'Shows your most played tracks'
+      },
+      {
+        name: '`artists`',
+        value: 'Shows your most listened artists'
+      },
+      {
+        name: '`albums`',
+        value: 'Shows your most played albums'
+      },
+      {
+        name: '`artist`',
+        value: 'Shows information about an artist'
+      },
+      {
+        name: '`topalbums`',
+        value: 'Shows the top albums by an artist'
+      },
+      {
+        name: '`toptracks`',
+        value: 'Shows the top tracks by an artist'
       },
       {
         name: '\u200b',
         value: '\u200b'
       },
       {
-        name: 'Command Paramaters',
+        name: 'Valid Periods',
         value: '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)'
       },
       {
-        name: 'tracks - Shows most played tracks',
-        value: 'Example: `,l tracks iiMittens month`'
-      },
-      {
-        name: 'artists - Shows most listened artists',
-        value: 'Example: `,l artists week`'
-      },
-      {
-        name: 'albums - Shows most played albums',
-        value: 'Example: `,l albums Reversibly 90`'
+        name: 'Wiki',
+        value:
+          'Read the [wiki](https://github.com/dxnter/lasty/wiki/Commands) for additional help and examples'
       }
     ])
     .setColor('#E31C23');

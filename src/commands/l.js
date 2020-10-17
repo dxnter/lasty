@@ -110,7 +110,6 @@ module.exports = {
         return replyEmbedMessage(message, args, USER_UNDEFINED);
       }
 
-      case 'subscribe':
       case 'sub': {
         const existingUser = db
           .get('users')
@@ -129,7 +128,6 @@ module.exports = {
         return replyEmbedMessage(message, args, USER_UNDEFINED);
       }
 
-      case 'unsubscribe':
       case 'unsub': {
         const existingUser = db
           .get('users')

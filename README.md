@@ -71,7 +71,4 @@ pm2 stop all
 ```
 
 ## 📝 Commands
-*Work in progress, writing wiki page.*
-<br />
-For a list of all available commands:
-`,l help`
+[Commands Wiki](https://github.com/dxnter/lasty/wiki/Commands)
