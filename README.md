@@ -40,7 +40,7 @@ npm install
 ```
 
 ### Configuration
-Create a `config.json` file in the root directory and follow the format below with your information.
+Rename `config.example.json` to `config.json` in the root directory and enter in the correct information for each property.
 ```json
 {
   "PREFIX": "",

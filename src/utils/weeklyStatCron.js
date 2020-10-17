@@ -6,14 +6,19 @@ import getCronData from '../utils/getCronData';
 async function weeklyStatCron(bot) {
   const users = db.get('users').value();
   users.forEach(async user => {
-    const { userID, lastFM: fmUser } = user;
+    const { userID, lastFM: fmUser, isSubscribedWeekly } = user;
+    if (!isSubscribedWeekly) return;
+
     const {
       topArtists,
       topAlbums,
       topTracks,
       lastFMAvatar,
-      weeklyScrobbles
+      weeklyScrobbles,
+      error
     } = await getCronData(fmUser);
+    if (error) return;
+
     const now = dayjs().format('M/D');
     const lastWeek = dayjs()
       .subtract(7, 'day')

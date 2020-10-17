@@ -9,6 +9,9 @@ import {
   USER_EXISTS,
   USER_UPDATED,
   USER_DELETED,
+  USER_UNSUBSCRIBED,
+  USER_ALREADY_SUBSCRIBED,
+  USER_ALREADY_UNSUBSCRIBED,
   USER_UNREGISTERED,
   ARTIST_UNDEFINED,
   ARTIST_NOT_FOUND,
@@ -17,7 +20,8 @@ import {
   EMPTY_LISTENING_DATA,
   TRACK_NOT_FOUND,
   PERMISSION_INVALID,
-  COMMAND_INVALID
+  COMMAND_INVALID,
+  USER_SUBSCRIBED
 } from '../constants';
 
 export const makeReadablePeriod = period => {
@@ -84,6 +88,28 @@ export const replyEmbedMessage = (
           `**${fmUser}** has been deleted from the database`
         )
       );
+    case USER_SUBSCRIBED:
+      return message.channel.send(
+        createEmbedMessage(SUCCESS, 'Subscribed to the Weekly Recap!')
+      );
+    case USER_UNSUBSCRIBED:
+      return message.channel.send(
+        createEmbedMessage(SUCCESS, 'Unsubscribed from the Weekly Recap!')
+      );
+    case USER_ALREADY_SUBSCRIBED:
+      return message.channel.send(
+        createEmbedMessage(
+          ERROR,
+          'You are already subscribed to the Weekly Recap!'
+        )
+      );
+    case USER_ALREADY_UNSUBSCRIBED:
+      return message.channel.send(
+        createEmbedMessage(
+          ERROR,
+          'You are already unsubscribed to the Weekly Recap!'
+        )
+      );
     case USER_UNREGISTERED:
       return message.channel.send(
         createEmbedMessage(
@@ -134,4 +160,60 @@ export const replyEmbedMessage = (
         createEmbedMessage(ERROR, `Invalid command, try \`,l help\``)
       );
   }
+};
+
+export const helpMessageEmbed = () => {
+  return new Discord.MessageEmbed()
+    .setTitle('Lasty Commands')
+    .addFields([
+      {
+        name: 'set - Sets Last.fm username.',
+        value: 'Example: `,l set iiMittens`'
+      },
+      {
+        name: 'delete - Deletes saved Last.fm username',
+        value: 'Alternate: `reset`'
+      },
+      {
+        name: 'info - Shows Last.FM account information',
+        value: 'Example: `,l info`'
+      },
+      {
+        name: 'np - Shows currently playing song. (Without`,l` prefix)',
+        value: 'Example: `,np` or `,np iiMittens`'
+      },
+      {
+        name: 'recent - Shows 10 most recent tracks played.',
+        value: 'Alternate: None'
+      },
+      {
+        name: 'topalbums - Shows the top albums by an artist',
+        value: 'Example: ,l topalbums Kendrick Lamar'
+      },
+      {
+        name: 'toptracks - Shows the top tracks by an artist',
+        value: 'Example: ,l toptracks Radiohead'
+      },
+      {
+        name: '\u200b',
+        value: '\u200b'
+      },
+      {
+        name: 'Command Paramaters',
+        value: '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)'
+      },
+      {
+        name: 'tracks - Shows most played tracks',
+        value: 'Example: `,l tracks iiMittens month`'
+      },
+      {
+        name: 'artists - Shows most listened artists',
+        value: 'Example: `,l artists week`'
+      },
+      {
+        name: 'albums - Shows most played albums',
+        value: 'Example: `,l albums Reversibly 90`'
+      }
+    ])
+    .setColor('#E31C23');
 };

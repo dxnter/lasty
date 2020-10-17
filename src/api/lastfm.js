@@ -15,7 +15,7 @@ import {
 } from '../constants';
 
 /**
- * Fetches information about a registered Last.FM user
+ * Fetches information about a registered Last.FM user.
  * @param {String} fmUser - A registered user on Last.FM.
  *
  * @returns {{totalScrobbles: Number, name: String, profileURL: String, country: String, image: String, unixRegistration: Number}}
@@ -49,7 +49,7 @@ export async function fetchUserInfo(fmUser) {
 
 /**
  * Fetches the most recently listened to track for the provided Last.FM user.
- * @param {String} fmUser A registered user on Last.FM.
+ * @param {String} fmUser - A registered user on Last.FM.
  *
  * @returns {{track: String, artist: String, album: String, albumCover: String, songURL: String, artistURL: String, userplaycount: Number}}
  */
@@ -101,9 +101,9 @@ export async function fetchRecentTrack(fmUser) {
 
 /**
  * Fetches 10 most recently listen to tracks for the provided Last.FM user.
- * @param {String} fmUser A registered user on Last.FM.
+ * @param {String} fmUser - A registered user on Last.FM.
  *
- * @returns {Array} recentTracks - Markdown formatted strings containing Last.FM links and track data.
+ * @returns {{author: String, description: Array}} - Formatted data to be used in a discord.js embed.
  */
 export async function fetch10RecentTracks(fmUser) {
   if (!fmUser) {
@@ -151,11 +151,11 @@ export async function fetch10RecentTracks(fmUser) {
 }
 
 /**
- * Fetches the top 10 most scrobbled tracks for the supplied time period.
- * @param {String} fmUser A registered user on Last.FM.
- * @param {String} [period] A valid period in the PERIOD_PARAMS.
+ * Fetches a user's top 10 most scrobbled tracks for the provided time period.
+ * @param {String} fmUser - A registered user on Last.FM.
+ * @param {String} period - A valid period in the PERIOD_PARAMS.
  *
- * @returns {Array} topTracks - Markdown formatted strings containing Last.FM links and track data.
+ * @returns {author: String, description: Array} - Formatted data to be used in a discord.js embed.
  */
 export async function fetchUsersTopTracks(fmUser, period) {
   if (!fmUser) {
@@ -213,11 +213,11 @@ export async function fetchUsersTopTracks(fmUser, period) {
 }
 
 /**
- * Fetches the top 10 most scrobbled artists for the supplied time period.
- * @param {String} fmUser A registered user on Last.FM.
- * @param {String} period A valid period in the PERIOD_PARAMS.
+ * Fetches a user's top 10 most scrobbled artists for the provided time period.
+ * @param {String} fmUser - A registered user on Last.FM.
+ * @param {String} period - A valid period in the PERIOD_PARAMS.
  *
- * @returns {Array} topArtists - Markdown formatted strings containing Last.FM links and artist data.
+ * @returns {author: String, description: Array} - Formatted data to be used in a discord.js embed.
  */
 export async function fetchUsersTopArtists(fmUser, period) {
   if (!fmUser) {
@@ -270,11 +270,11 @@ export async function fetchUsersTopArtists(fmUser, period) {
 }
 
 /**
- * Fetches the top 10 most scrobbled albums for the supplied time period.
+ * Fetches a user's top 10 most scrobbled albums for the provided time period.
  * @param {String} fmUser A registered user on Last.FM.
- * @param {String} [period] A valid period in the PERIOD_PARAMS.
+ * @param {String} period A valid period in the PERIOD_PARAMS.
  *
- * @returns {Array} topAlbums - Markdown formatted strings containing Last.FM links and artist data.
+ * @returns {author: String, description: Array} - Formatted data to be used in a discord.js embed.
  */
 export async function fetchUsersTopAlbums(fmUser, period) {
   if (!fmUser) {
@@ -333,20 +333,19 @@ export async function fetchUsersTopAlbums(fmUser, period) {
 
 /**
  * Fetches the top 10 albums of an artist sorted by listeners.
- * @param {Array} args - Discord.js args containing the artist paramater.
+ * @param {String} artistName - Name of an artist to search.
  *
- * @returns {{artistTopAlbums: Array, formattedArtist: String, artistURL: String}}
+ * @returns {{author: String, description: Array, artistURL: String}} - Formatted data to be used in a discord.js embed.
  */
-export async function fetchArtistTopAlbums(args) {
-  const artist = args.slice(1).join(' ');
-  if (!artist) {
+export async function fetchArtistTopAlbums(artistName) {
+  if (!artistName) {
     return {
       error: ARTIST_UNDEFINED
     };
   }
 
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
   const artistTopAlbumsRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
 
   try {
@@ -376,21 +375,26 @@ export async function fetchArtistTopAlbums(args) {
   } catch (err) {
     return {
       error: ARTIST_INVALID,
-      artist
+      artist: artistName
     };
   }
 }
 
-export async function fetchArtistTopTracks(args) {
-  const artist = args.slice(1).join(' ');
-  if (!artist) {
+/**
+ * Fetches the top 10 tracks of an artist sorted by listeners.
+ * @param {String} artistName - Name of an artist to search.
+ *
+ * @returns {{author: String, description: Array, artistURL: String}} - Formatted data to be used in a discord.js embed.
+ */
+export async function fetchArtistTopTracks(artistName) {
+  if (!artistName) {
     return {
       error: ARTIST_UNDEFINED
     };
   }
 
   const ARTIST_GET_TOP_TRACKS = 'artist.getTopTracks';
-  const TOP_TRACKS_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
+  const TOP_TRACKS_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
   const artistTopTracksRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
 
   try {
@@ -421,35 +425,34 @@ export async function fetchArtistTopTracks(args) {
   } catch (err) {
     return {
       error: ARTIST_INVALID,
-      artist
+      artist: artistName
     };
   }
 }
 
 /**
  * Fetches information and listening data about an artist.
- * @param {Array} args - Discord.js args containing the artist paramater.
+ * @param {String} artistName - Name of an artist to search.
  * @param {String} fmUser - A registered user on Last.FM.
  *
- * @returns {{artistName: String, artistURL: String, artistImage: String, totalListeners: Number, totalPlays: Number, userPlays: Number, similarArtistsString: String, biography: String}}
+ * @returns {{formattedArtistName: String, artistURL: String, artistImage: String, totalListeners: Number, totalPlays: Number, userPlays: Number, similarArtistsString: String, biography: String}} - Formatted data to be used in a discord.js embed.
  */
-export async function fetchArtistInfo(args, fmUser) {
-  const artist = args.slice(1).join(' ');
-  if (!artist) {
+export async function fetchArtistInfo(artistName, fmUser) {
+  if (!artistName) {
     return {
       error: ARTIST_UNDEFINED
     };
   }
 
   const ARTIST_GET_INFO = 'artist.getInfo';
-  const ARTIST_INFO_QUERY_STRING = `&artist=${artist}&api_key=${LASTFM_API_KEY}&limit=10&username=${fmUser}&autocorrect=1&format=json`;
+  const ARTIST_INFO_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=10&username=${fmUser}&autocorrect=1&format=json`;
   const artistInfoRequestURL = `${LASTFM_API_URL}${ARTIST_GET_INFO}${ARTIST_INFO_QUERY_STRING}`;
 
   try {
     const {
       data: {
         artist: {
-          name: artistName,
+          name: formattedArtistName,
           url: artistURL,
           stats: { listeners, playcount, userplaycount },
           similar: { artist: similarArtists },
@@ -489,7 +492,7 @@ export async function fetchArtistInfo(args, fmUser) {
     }
 
     return {
-      artistName,
+      formattedArtistName,
       artistURL,
       totalListeners,
       totalPlays,
@@ -500,14 +503,16 @@ export async function fetchArtistInfo(args, fmUser) {
   } catch (err) {
     return {
       error: ARTIST_NOT_FOUND,
-      artist
+      artist: artistName
     };
   }
 }
 
 /**
- * Fetches the total amount of scrobbles in a week to be used on the weekly cron
- * @param {String} fmUser A registered user on Last.FM.
+ * Fetches the total amount of scrobbles in a week to be used on the weekly cron.
+ * @param {String} fmUser - A registered user on Last.FM.
+ *
+ * @returns {Number} Total number of scrobbles in the past week.
  */
 
 export async function fetchUsersWeeklyScrobbles(fmUser) {

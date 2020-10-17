@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import db from '../db';
-import { replyEmbedMessage } from '../utils';
+import { helpMessageEmbed, replyEmbedMessage } from '../utils';
 import {
   fetchUserInfo,
   fetch10RecentTracks,
@@ -12,14 +12,18 @@ import {
   fetchArtistInfo
 } from '../api/lastfm';
 import {
-  USER_EXISTS,
+  USER_SET,
   USER_UPDATED,
+  USER_DELETED,
+  USER_EXISTS,
+  USER_SUBSCRIBED,
+  USER_UNSUBSCRIBED,
+  USER_ALREADY_SUBSCRIBED,
+  USER_UNREGISTERED,
   USER_UNDEFINED,
   USER_UNDEFINED_ARGS,
-  USER_DELETED,
-  USER_SET,
   COMMAND_INVALID,
-  USER_UNREGISTERED
+  USER_ALREADY_UNSUBSCRIBED
 } from '../constants';
 
 module.exports = {
@@ -29,6 +33,7 @@ module.exports = {
       .get('users')
       .find({ userID: message.author.id })
       .value();
+    const artistName = args.slice(1).join(' ');
     let fmUser = args[1];
     let period = args[2];
     if (dbUser && args[0] !== 'set') {
@@ -48,62 +53,7 @@ module.exports = {
 
     switch (args[0]) {
       case 'help': {
-        return message.channel.send(
-          new Discord.MessageEmbed()
-            .setTitle('Lasty Commands')
-            .addFields([
-              {
-                name: 'set - Sets Last.fm username.',
-                value: 'Example: `,l set iiMittens`'
-              },
-              {
-                name: 'delete - Deletes saved Last.fm username',
-                value: 'Alternate: `reset`'
-              },
-              {
-                name: 'info - Shows Last.FM account information',
-                value: 'Example: `,l info`'
-              },
-              {
-                name: 'np - Shows currently playing song. (Without`,l` prefix)',
-                value: 'Example: `,np` or `,np iiMittens`'
-              },
-              {
-                name: 'recent - Shows 10 most recent tracks played.',
-                value: 'Alternate: None'
-              },
-              {
-                name: 'topalbums - Shows the top albums by an artist',
-                value: 'Example: ,l topalbums Kendrick Lamar'
-              },
-              {
-                name: 'toptracks - Shows the top tracks by an artist',
-                value: 'Example: ,l toptracks Radiohead'
-              },
-              {
-                name: '\u200b',
-                value: '\u200b'
-              },
-              {
-                name: 'Command Paramaters',
-                value:
-                  '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)'
-              },
-              {
-                name: 'tracks - Shows most played tracks',
-                value: 'Example: `,l tracks iiMittens month`'
-              },
-              {
-                name: 'artists - Shows most listened artists',
-                value: 'Example: `,l artists week`'
-              },
-              {
-                name: 'albums - Shows most played albums',
-                value: 'Example: `,l albums Reversibly 90`'
-              }
-            ])
-            .setColor('#E31C23')
-        );
+        return message.channel.send(helpMessageEmbed());
       }
 
       case 'set': {
@@ -122,7 +72,6 @@ module.exports = {
               fmUser
             });
           }
-          existingUser.lastFM = fmUser;
           db.get('users')
             .find({ userID: message.author.id })
             .assign({ lastFM: fmUser })
@@ -133,9 +82,71 @@ module.exports = {
         }
 
         db.get('users')
-          .push({ userID: message.author.id, lastFM: fmUser })
+          .push({
+            userID: message.author.id,
+            lastFM: fmUser,
+            isSubscribedWeekly: true
+          })
           .write();
         return replyEmbedMessage(message, args, USER_SET, { fmUser });
+      }
+
+      case 'delete':
+      case 'reset': {
+        const existingUser = db
+          .get('users')
+          .find({ userID: message.author.id })
+          .value();
+
+        if (existingUser) {
+          db.get('users')
+            .remove({ userID: message.author.id })
+            .write();
+          return replyEmbedMessage(message, null, USER_DELETED, {
+            fmUser
+          });
+        }
+
+        return replyEmbedMessage(message, args, USER_UNDEFINED);
+      }
+
+      case 'subscribe':
+      case 'sub': {
+        const existingUser = db
+          .get('users')
+          .find({ userID: message.author.id })
+          .value();
+        if (existingUser) {
+          if (!existingUser.isSubscribedWeekly) {
+            db.get('users')
+              .find({ userID: message.author.id })
+              .assign({ isSubscribedWeekly: true })
+              .write();
+            return replyEmbedMessage(message, null, USER_SUBSCRIBED);
+          }
+          return replyEmbedMessage(message, null, USER_ALREADY_SUBSCRIBED);
+        }
+        return replyEmbedMessage(message, args, USER_UNDEFINED);
+      }
+
+      case 'unsubscribe':
+      case 'unsub': {
+        const existingUser = db
+          .get('users')
+          .find({ userID: message.author.id })
+          .value();
+
+        if (existingUser) {
+          if (existingUser.isSubscribedWeekly) {
+            db.get('users')
+              .find({ userID: message.author.id })
+              .assign({ isSubscribedWeekly: false })
+              .write();
+            return replyEmbedMessage(message, null, USER_UNSUBSCRIBED);
+          }
+          return replyEmbedMessage(message, null, USER_ALREADY_UNSUBSCRIBED);
+        }
+        return replyEmbedMessage(message, args, USER_UNDEFINED);
       }
 
       case 'info': {
@@ -180,25 +191,6 @@ module.exports = {
             fmUser
           });
         }
-      }
-
-      case 'delete':
-      case 'reset': {
-        const existingUser = db
-          .get('users')
-          .find({ userID: message.author.id })
-          .value();
-
-        if (existingUser) {
-          db.get('users')
-            .remove({ userID: message.author.id })
-            .write();
-          return replyEmbedMessage(message, null, USER_DELETED, {
-            fmUser
-          });
-        }
-
-        return replyEmbedMessage(message, args, USER_UNDEFINED);
       }
 
       case 'recent': {
@@ -308,7 +300,7 @@ module.exports = {
           artistURL,
           error,
           artist
-        } = await fetchArtistTopAlbums(args);
+        } = await fetchArtistTopAlbums(artistName);
         if (error) {
           return replyEmbedMessage(message, args, error, { artist });
         }
@@ -328,7 +320,7 @@ module.exports = {
           artistURL,
           error,
           artist
-        } = await fetchArtistTopTracks(args);
+        } = await fetchArtistTopTracks(artistName);
         if (error) {
           return replyEmbedMessage(message, args, error, { artist });
         }
@@ -343,7 +335,7 @@ module.exports = {
 
       case 'artist': {
         const {
-          artistName,
+          formattedArtistName,
           artistURL,
           totalListeners,
           totalPlays,
@@ -352,14 +344,14 @@ module.exports = {
           biography,
           error,
           artist
-        } = await fetchArtistInfo(args, fmUser);
+        } = await fetchArtistInfo(artistName, fmUser);
         if (error) {
           return replyEmbedMessage(message, args, error, { artist });
         }
 
         return message.channel.send(
           new Discord.MessageEmbed()
-            .setAuthor(artistName, null, artistURL)
+            .setAuthor(formattedArtistName, null, artistURL)
             .addField('Listeners', totalListeners, true)
             .addField('Total Plays', totalPlays, true)
             .addField('Your plays', userPlays, true)
