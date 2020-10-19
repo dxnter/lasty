@@ -66,7 +66,7 @@ npm install --global pm2
 Start / stop the bot
 ```bash
 pm2 start npm -- start
-OR
+AND
 pm2 stop all
 ```
 
