@@ -1,5 +1,10 @@
 import axios from 'axios';
-import { pluralize, makeReadablePeriod, sortTotalListeners } from '../utils';
+import {
+  millisToMinutesAndSeconds,
+  pluralize,
+  makeReadablePeriod,
+  sortTotalListeners
+} from '../utils';
 import { LASTFM_API_KEY } from '../../config.json';
 import {
   ARTIST_INVALID,
@@ -78,13 +83,19 @@ export async function fetchRecentTrack(fmUser) {
     const trackInfo = data.track;
     const {
       url: songURL,
+      duration,
       artist: { url: artistURL }
     } = trackInfo;
     const userplaycount =
       'userplaycount' in trackInfo ? trackInfo.userplaycount : 1;
+    const trackLength =
+      duration && duration !== '0'
+        ? millisToMinutesAndSeconds(Number(duration))
+        : undefined;
 
     return {
       track,
+      trackLength,
       artist,
       album,
       albumCover,

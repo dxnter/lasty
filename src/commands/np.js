@@ -26,6 +26,7 @@ module.exports = {
         axios.spread((trackInfo, userInfo) => {
           const {
             track,
+            trackLength,
             artist,
             album,
             albumCover,
@@ -43,17 +44,18 @@ module.exports = {
 
           const embed = new Discord.MessageEmbed()
             .setAuthor(
-              `Now playing - ${fmUser}`,
+              `Last.fm - ${fmUser}`,
               lastFMAvatar,
               `http://www.last.fm/user/${fmUser}`
             )
             .setThumbnail(albumCover)
             .addField(
               '**Track**',
-              `[${track}](${songURL.replace(')', '\\)')})`,
-              true
+              `[${track}](${songURL.replace(')', '\\)')}) ${
+                trackLength ? `- *${trackLength}*` : ''
+              }`
             )
-            .addField('**Artist**', `[${artist}](${artistURL})`, true)
+            .addField('**Artist**', `[${artist}](${artistURL})`)
             .setFooter(
               `Playcount: ${userplaycount} | ${fmUser} Scrobbles: ${totalScrobbles ||
                 0} | Album: ${album}`

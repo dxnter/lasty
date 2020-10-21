@@ -25,6 +25,12 @@ import {
   USER_SUBSCRIBED
 } from '../constants';
 
+export const millisToMinutesAndSeconds = millis => {
+  const minutes = Math.floor(millis / 60000);
+  const seconds = ((millis % 60000) / 1000).toFixed(0);
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+};
+
 export const makeReadablePeriod = period => {
   if (period in READABLE_PERIODS) return READABLE_PERIODS[period];
   return 'Overall';
