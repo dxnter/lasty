@@ -19,6 +19,19 @@ import {
   ARTIST_NOT_FOUND
 } from '../constants';
 
+export async function isValidToken() {
+  const GET_TOKEN = 'auth.getToken';
+  const AUTH_QUERY_STRING = `&api_key=${LASTFM_API_KEY}&format=json`;
+  const getAuthTokenRequestURL = `${LASTFM_API_URL}${GET_TOKEN}${AUTH_QUERY_STRING}`;
+
+  try {
+    const { data: token } = await axios.get(getAuthTokenRequestURL);
+    if (token) return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 /**
  * Fetches information about a registered Last.FM user.
  * @param {String} fmUser - A registered user on Last.FM.

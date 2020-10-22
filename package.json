@@ -1,40 +1,41 @@
 {
   "name": "lasty",
   "version": "1.0.0",
-  "description": "LastFM and utility Discord bot",
+  "description": "A Discord bot for fetching Last.fm stats",
   "main": "bot.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dxnter/lasty.git"
   },
+  "bugs": "https://github.com/dxnter/lasty/issues",
   "scripts": {
-    "start": "node -r esm src/bot.js",
+    "start": "NODE_ENV=production node -r esm src/bot.js",
     "dev": "nodemon -r esm src/bot.js --ignore db.json",
     "lint": "eslint --fix . && echo 'Lint complete.'"
   },
   "keywords": [
     "discord",
-    "lastfm",
-    "bot"
+    "bot",
+    "lastfm"
   ],
-  "author": "dxnter",
+  "author": "Danny <contact@danfoster.io> (https://danny.sh)",
   "license": "GPL-3.0",
   "dependencies": {
-    "@types/node": "^13.13.24",
+    "@types/node": "^13.13.27",
     "axios": "^0.19.2",
     "canvas": "^2.6.1",
     "chalk": "^3.0.0",
     "cron": "^1.8.2",
-    "dayjs": "^1.9.1",
-    "discord.js": "^12.3.1",
+    "dayjs": "^1.9.3",
+    "discord.js": "^12.4.0",
     "esm": "^3.2.25",
     "lowdb": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.12.0",
+    "eslint-config-prettier": "^6.13.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.6",
     "prettier": "^1.19.1"
   }
 }

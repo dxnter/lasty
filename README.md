@@ -7,7 +7,7 @@
 <br/>
 <div align="center">
   <a href="https://github.com/discordjs">
-    <img src="https://img.shields.io/badge/discord.js-v12.3.1-blue.svg?logo=npm" alt="shield.png">
+    <img src="https://img.shields.io/badge/discord.js-v12.4.0-blue.svg?logo=npm" alt="shield.png">
   </a>
   <a href="https://github.com/dxnter/lasty/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/license-GNU%20GPL%20v3-green" alt="License shield">

@@ -3,9 +3,19 @@ import fs from 'fs';
 import chalk from 'chalk';
 import { CronJob } from 'cron';
 import './db';
+import { isValidToken } from '../src/api/lastfm';
 import weeklyStatCron from './utils/weeklyStatCron';
+import { PREFIX, DISCORD_BOT_TOKEN, LASTFM_API_KEY } from '../config.json';
+const log = console.log;
 
-import { DISCORD_BOT_TOKEN, PREFIX } from '../config.json';
+(async () => {
+  if (!(await isValidToken(LASTFM_API_KEY))) {
+    log(chalk`{red.bold [Error] Invalid Last.fm API Key. Visit the link below for a key.\n}
+    {white https://www.last.fm/api/account/create​}
+    `);
+    process.exit(0);
+  }
+})();
 
 const bot = new Discord.Client({ disableMentions: 'everyone' });
 bot.commands = new Discord.Collection();
@@ -20,7 +30,10 @@ for (const file of commandFiles) {
 }
 
 bot.on('ready', async () => {
-  console.log(chalk.blue(`[Discord.js] ${bot.user.username} is online!`));
+  log(chalk`{green.bold [Success]} {green Valid Last.fm API Key}`);
+  log(
+    chalk`{cyan.bold [Discord.js]} {white.bold ${bot.user.username}} {cyan is online!}`
+  );
   bot.user.setActivity(' ,l help', { type: 'LISTENING' });
 });
 
