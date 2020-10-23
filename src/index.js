@@ -4,13 +4,13 @@ import { CronJob } from 'cron';
 import './db';
 import checkIfValidToken from './utils/checkIfValidToken';
 import weeklyStatCron from './utils/weeklyStatCron';
-import { PREFIX, DISCORD_BOT_TOKEN } from '../config.json';
+import { OWNERS, PREFIX, DISCORD_BOT_TOKEN } from '../config.json';
 
 checkIfValidToken();
 
 const client = new Client({
   commandPrefix: PREFIX,
-  owner: '136246346280730624',
+  owner: OWNERS.split(',').map(id => id.trim()),
   disableMentions: 'everyone'
 });
 

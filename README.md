@@ -26,6 +26,7 @@ For comments and support contact me on Discord: <strong>dxnter#0001</strong>
 ### Requirements
 - [Discord Bot Token](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
 - [Last.FM API Key](https://last.fm/api)
+- [Discord User ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)
 
 ### Installation
 ```bash
@@ -41,9 +42,12 @@ npm install
 
 ### Configuration
 Rename `config.example.json` to `config.json` in the root directory and enter in the correct information for each property.
+
+`OWNERS` can either be a single Discord User ID or multiple ID's separated by a comma. Owners will have complete control over Lasty and bypass command throttling.
 ```json
 {
   "PREFIX": "",
+  "OWNERS": "",
   "DISCORD_BOT_TOKEN": "",
   "LASTFM_API_KEY": ""
 }
