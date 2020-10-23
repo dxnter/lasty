@@ -23,8 +23,8 @@ async function getCronData(fmUser) {
     );
     const { image } = await fetchUserInfo(fmUser);
     const weeklyScrobbles = await fetchUsersWeeklyScrobbles(fmUser);
-
     const lastFMAvatar = image[2]['#text'];
+
     return { topArtists, topAlbums, topTracks, lastFMAvatar, weeklyScrobbles };
   } catch (err) {
     return {

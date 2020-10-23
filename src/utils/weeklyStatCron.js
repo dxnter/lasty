@@ -2,13 +2,14 @@ import Discord from 'discord.js';
 import dayjs from 'dayjs';
 import db from '../db';
 import getCronData from '../utils/getCronData';
+import { createEmbedMessage } from '.';
+import { ERROR } from '../constants';
 
-async function weeklyStatCron(bot) {
+async function weeklyStatCron(client) {
   const users = db.get('users').value();
   users.forEach(async user => {
-    const { userID, lastFM: fmUser, isSubscribedWeekly } = user;
+    const { userID, fmUser, isSubscribedWeekly } = user;
     if (!isSubscribedWeekly) return;
-
     const {
       topArtists,
       topAlbums,
@@ -17,14 +18,25 @@ async function weeklyStatCron(bot) {
       weeklyScrobbles,
       error
     } = await getCronData(fmUser);
-    if (error) return;
+    if (error) {
+      return client.users
+        .fetch(userID)
+        .then(user =>
+          user.send(
+            createEmbedMessage(
+              ERROR,
+              `Weekly Recap was unsuccessful.\n**${fmUser}** is not a registered Last.fm user`
+            )
+          )
+        );
+    }
 
     const now = dayjs().format('M/D');
     const lastWeek = dayjs()
       .subtract(7, 'day')
       .format('M/D');
 
-    bot.users
+    client.users
       .fetch(userID)
       .then(user => {
         user.send(
@@ -32,7 +44,7 @@ async function weeklyStatCron(bot) {
             .setColor('#E31C23')
             .setTitle(`:musical_note: Weekly Recap (${lastWeek} - ${now})`)
             .setAuthor(
-              `Last.FM | ${fmUser}`,
+              `Last.fm | ${fmUser}`,
               lastFMAvatar,
               `https://last.fm/user/${fmUser}`
             )

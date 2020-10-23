@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import { PREFIX } from '../../config.json';
+import db from '../db';
 import {
   ERROR,
   SUCCESS,
@@ -25,6 +25,24 @@ import {
   USER_SUBSCRIBED
 } from '../constants';
 
+export const userInDatabase = userID => {
+  const dbUser = db
+    .get('users')
+    .find({ userID })
+    .value();
+  if (!dbUser) {
+    return false;
+  }
+  return dbUser.fmUser;
+};
+
+export const findExistingUser = userID => {
+  return db
+    .get('users')
+    .find({ userID })
+    .value();
+};
+
 export const millisToMinutesAndSeconds = millis => {
   const minutes = Math.floor(millis / 60000);
   const seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -45,7 +63,7 @@ export const pluralize = word => {
   return `${word}'s`;
 };
 
-const createEmbedMessage = (status, statusDescription) => {
+export const createEmbedMessage = (status, statusDescription) => {
   return new Discord.MessageEmbed()
     .setAuthor(status === SUCCESS ? '✅ Success' : '❌ Error')
     .setDescription(statusDescription)
@@ -53,191 +71,116 @@ const createEmbedMessage = (status, statusDescription) => {
 };
 
 export const replyEmbedMessage = (
-  message,
-  args,
+  msg,
+  commandName,
   statusDescription,
   { period, fmUser, artist } = {}
 ) => {
   switch (statusDescription) {
     case USER_UNDEFINED_ARGS:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
-          `Last.fm username not set, enter \`,l set <username>\` or enter a username after \`${args[0]}\``
+          `Last.fm username not set, enter \`,set <username>\` or enter a username after \`${commandName}\``
         )
       );
     case USER_UNDEFINED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
-          `Last.fm username not set, enter \`,l set <username>\``
+          `Last.fm username not set, enter \`,set <username>\``
         )
       );
     case USER_SET:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(SUCCESS, `Last.fm username set to **${fmUser}**`)
       );
     case USER_EXISTS:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
           `Last.fm username is already set to **${fmUser}**`
         )
       );
     case USER_UPDATED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(SUCCESS, `Last.fm username updated to **${fmUser}**`)
       );
     case USER_DELETED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           SUCCESS,
           `**${fmUser}** has been deleted from the database`
         )
       );
     case USER_SUBSCRIBED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(SUCCESS, 'Subscribed to the Weekly Recap!')
       );
     case USER_UNSUBSCRIBED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(SUCCESS, 'Unsubscribed from the Weekly Recap!')
       );
     case USER_ALREADY_SUBSCRIBED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
           'You are already subscribed to the Weekly Recap!'
         )
       );
     case USER_ALREADY_UNSUBSCRIBED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
           'You are already unsubscribed to the Weekly Recap!'
         )
       );
     case USER_UNREGISTERED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
           `**${fmUser}** is not a registered Last.FM user`
         )
       );
     case ARTIST_UNDEFINED:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
-          `Enter the name of an artist after \`${args[0]}\``
+          `Enter the name of an artist after \`${commandName}\``
         )
       );
     case ARTIST_INVALID:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(ERROR, `No albums found for **${artist}**`)
       );
     case ARTIST_NOT_FOUND:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(ERROR, `No artist found named **${artist}**`)
       );
     case PERIOD_INVALID:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
           `Invalid period: **${period}**\nPeriods:  \`week\`, \`month\`, \`90\`, \`180\`, \`year\`, \`all\` (Default: all)`
         )
       );
     case EMPTY_LISTENING_DATA:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(
           ERROR,
           `**${fmUser}** hasn't listened to anything recently...`
         )
       );
     case TRACK_NOT_FOUND:
-      return message.channel.send(
-        createEmbedMessage(ERROR, `Track not found on Last.fm!`)
-      );
+      return msg.say(createEmbedMessage(ERROR, `Track not found on Last.fm!`));
 
     case PERMISSION_INVALID:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(ERROR, `You do not have permission to do that`)
       );
     case COMMAND_INVALID:
-      return message.channel.send(
+      return msg.say(
         createEmbedMessage(ERROR, `Invalid command, try \`,l help\``)
       );
   }
-};
-
-export const helpMessageEmbed = () => {
-  return new Discord.MessageEmbed()
-    .setTitle(`Last.fm Commands - (Use \`${PREFIX}l\` before commands)`)
-    .addFields([
-      {
-        name: '`set`',
-        value: 'Sets Last.fm username'
-      },
-      {
-        name: '`delete`',
-        value: 'Deletes saved Last.fm username'
-      },
-      {
-        name: '`sub`',
-        value: 'Subscribe to the Weekly Recap'
-      },
-      {
-        name: '`unsub`',
-        value: 'Unsubscribe to the Weekly Recap'
-      },
-      {
-        name: '`info`',
-        value: 'Shows Last.FM account information'
-      },
-      {
-        name: '`np`',
-        value: 'Shows currently playing song. (Without `,l` prefix)'
-      },
-      {
-        name: '`recent`',
-        value: 'Shows 10 most recent tracks played'
-      },
-      {
-        name: '`tracks`',
-        value: 'Shows your most played tracks'
-      },
-      {
-        name: '`artists`',
-        value: 'Shows your most listened artists'
-      },
-      {
-        name: '`albums`',
-        value: 'Shows your most played albums'
-      },
-      {
-        name: '`artist`',
-        value: 'Shows information about an artist'
-      },
-      {
-        name: '`topalbums`',
-        value: 'Shows the top albums by an artist'
-      },
-      {
-        name: '`toptracks`',
-        value: 'Shows the top tracks by an artist'
-      },
-      {
-        name: '\u200b',
-        value: '\u200b'
-      },
-      {
-        name: 'Valid Periods',
-        value: '`week`, `month`, `90`, `180`, `year`, `all` (Default: all)'
-      },
-      {
-        name: 'Wiki',
-        value:
-          'Read the [wiki](https://github.com/dxnter/lasty/wiki/Commands) for additional help and examples'
-      }
-    ])
-    .setColor('#E31C23');
 };
