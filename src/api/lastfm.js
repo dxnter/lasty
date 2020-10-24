@@ -44,7 +44,9 @@ export async function isValidToken(LASTFM_API_KEY) {
 export async function fetchUserInfo(fmUser) {
   const USER_INFO = 'user.getInfo';
   const USER_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&format=json`;
-  const userRequestURL = `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`;
+  const userRequestURL = encodeURI(
+    `${LASTFM_API_URL}${USER_INFO}${USER_QUERY_STRING}`
+  );
 
   try {
     const {
@@ -84,7 +86,9 @@ export async function fetchUserInfo(fmUser) {
 export async function fetchRecentTrack(fmUser) {
   const RECENT_TRACKS = 'user.getRecentTracks';
   const SONG_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=1&format=json`;
-  const songRequestURL = `${LASTFM_API_URL}${RECENT_TRACKS}${SONG_QUERY_STRING}`;
+  const songRequestURL = encodeURI(
+    `${LASTFM_API_URL}${RECENT_TRACKS}${SONG_QUERY_STRING}`
+  );
 
   try {
     const recentRes = await axios.get(songRequestURL);
@@ -99,8 +103,11 @@ export async function fetchRecentTrack(fmUser) {
 
     const TRACK_INFO = 'track.getInfo';
     const TRACK_INFO_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&track=${track}&artist=${artist}&format=json`;
-    const trackInfoRequestURL = `${LASTFM_API_URL}${TRACK_INFO}${TRACK_INFO_QUERY_STRING}`;
+    const trackInfoRequestURL = encodeURI(
+      `${LASTFM_API_URL}${TRACK_INFO}${TRACK_INFO_QUERY_STRING}`
+    );
     const { data } = await axios.get(trackInfoRequestURL);
+    console.log(data);
     if (data.error) return { error: TRACK_NOT_FOUND };
 
     const trackInfo = data.track;
@@ -127,6 +134,7 @@ export async function fetchRecentTrack(fmUser) {
       userplaycount: Number(userplaycount).toLocaleString()
     };
   } catch (err) {
+    console.log(err);
     return {
       error: USER_UNREGISTERED
     };
@@ -147,7 +155,9 @@ export async function fetch10RecentTracks(fmUser) {
   }
   const GET_RECENT_TRACKS = 'user.getRecentTracks';
   const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
-  const recentTracksRequestURL = `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`;
+  const recentTracksRequestURL = encodeURI(
+    `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`
+  );
 
   try {
     const {
@@ -193,7 +203,9 @@ export async function fetchUsersTopTracks(period, fmUser) {
 
   const GET_TOP_TRACKS = 'user.getTopTracks';
   const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
-  const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
+  const topTracksRequestURL = encodeURI(
+    `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`
+  );
 
   try {
     const {
@@ -240,7 +252,9 @@ export async function fetchUsersTopArtists(period, fmUser) {
 
   const GET_TOP_ARTISTS = 'user.getTopArtists';
   const TOP_ARTISTS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
-  const topArtistsRequestURL = `${LASTFM_API_URL}${GET_TOP_ARTISTS}${TOP_ARTISTS_QUERY_STRING}`;
+  const topArtistsRequestURL = encodeURI(
+    `${LASTFM_API_URL}${GET_TOP_ARTISTS}${TOP_ARTISTS_QUERY_STRING}`
+  );
 
   try {
     const {
@@ -287,7 +301,9 @@ export async function fetchUsersTopAlbums(period, fmUser) {
 
   const GET_TOP_ALBUMS = 'user.getTopAlbums';
   const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
-  const topAlbumsRequestURL = `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
+  const topAlbumsRequestURL = encodeURI(
+    `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`
+  );
 
   try {
     const {
@@ -328,7 +344,9 @@ export async function fetchArtistTopAlbums(artistName) {
   const API_ARTIST_NAME = artistName.split(' ').join('+');
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
   const TOP_ALBUMS_QUERY_STRING = `&artist=${API_ARTIST_NAME}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
-  const artistTopAlbumsRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
+  const artistTopAlbumsRequestURL = encodeURI(
+    `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`
+  );
 
   try {
     const {
@@ -364,7 +382,9 @@ export async function fetchArtistTopTracks(artistName) {
 
   const ARTIST_GET_TOP_TRACKS = 'artist.getTopTracks';
   const TOP_TRACKS_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
-  const artistTopTracksRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
+  const artistTopTracksRequestURL = encodeURI(
+    `${LASTFM_API_URL}${ARTIST_GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`
+  );
 
   try {
     const {
@@ -405,7 +425,9 @@ export async function fetchArtistInfo(artistName, fmUser) {
 
   const ARTIST_GET_INFO = 'artist.getInfo';
   const ARTIST_INFO_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=10&username=${fmUser}&autocorrect=1&format=json`;
-  const artistInfoRequestURL = `${LASTFM_API_URL}${ARTIST_GET_INFO}${ARTIST_INFO_QUERY_STRING}`;
+  const artistInfoRequestURL = encodeURI(
+    `${LASTFM_API_URL}${ARTIST_GET_INFO}${ARTIST_INFO_QUERY_STRING}`
+  );
 
   try {
     const {
@@ -452,7 +474,9 @@ export async function fetchUsersWeeklyScrobbles(fmUser) {
    */
   const GET_TOP_TRACKS = 'user.gettoptracks';
   const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=7day&api_key=${LASTFM_API_KEY}&limit=1000&format=json`;
-  const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
+  const topTracksRequestURL = encodeURI(
+    `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`
+  );
 
   const {
     data: {

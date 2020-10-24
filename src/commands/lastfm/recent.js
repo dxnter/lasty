@@ -41,10 +41,13 @@ export default class RecentCommand extends Command {
         name: song,
         url
       } = track;
+      const artistURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
+        .split(' ')
+        .join('+')}`;
       return `\`${i + 1}\` [${song}](${url.replace(
         ')',
         '\\)'
-      )}) by **${artist}**`;
+      )}) by **[${artist}](${artistURL})**`;
     });
 
     return msg.say(
