@@ -40,7 +40,7 @@ export default class TracksCommand extends Command {
       return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
     }
 
-    const { error, author, description } = await fetchUsersTopTracks(
+    const { error, tracks, readablePeriod } = await fetchUsersTopTracks(
       period,
       fmUser
     );
@@ -48,14 +48,29 @@ export default class TracksCommand extends Command {
       return replyEmbedMessage(msg, null, error, { period, fmUser });
     }
 
+    const topTracks = tracks.map(track => {
+      const {
+        artist: { name: artist, url: artistURL },
+        name: song,
+        playcount,
+        url
+      } = track;
+      return `\`${Number(
+        playcount
+      ).toLocaleString()} ▶️\` • [${song}](${url.replace(
+        ')',
+        '\\)'
+      )}) by **[${artist}](${artistURL.replace(')', '\\)')})**`;
+    });
+
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          author,
+          `Top Tracks - ${readablePeriod} - ${fmUser}`,
           msg.author.avatarURL({ dynamic: true }),
           `http://www.last.fm/user/${fmUser}`
         )
-        .setDescription(description)
+        .setDescription(topTracks)
         .setColor('#E31C23')
     );
   }

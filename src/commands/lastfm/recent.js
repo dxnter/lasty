@@ -32,17 +32,29 @@ export default class RecentCommand extends Command {
       return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
     }
 
-    const { error, author, description } = await fetch10RecentTracks(fmUser);
+    const { error, tracks } = await fetch10RecentTracks(fmUser);
     if (error) return replyEmbedMessage(msg, null, error, { fmUser });
+
+    const recentTracks = tracks.map((track, i) => {
+      const {
+        artist: { '#text': artist },
+        name: song,
+        url
+      } = track;
+      return `\`${i + 1}\` [${song}](${url.replace(
+        ')',
+        '\\)'
+      )}) by **${artist}**`;
+    });
 
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          author,
+          `Latest tracks for ${fmUser}`,
           msg.author.avatarURL({ dynamic: true }),
           `http://www.last.fm/user/${fmUser}`
         )
-        .setDescription(description)
+        .setDescription(recentTracks)
         .setColor('#E31C23')
     );
   }

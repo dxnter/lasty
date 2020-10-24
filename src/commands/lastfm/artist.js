@@ -30,17 +30,47 @@ export default class ArtistCommand extends Command {
     const fmUser = userInDatabase(msg.author.id);
     const {
       error,
+      artist,
       formattedArtistName,
       artistURL,
-      totalListeners,
-      totalPlays,
-      userPlays,
-      similarArtistsString,
-      biography,
-      artist
+      listeners,
+      playcount,
+      userplaycount,
+      similarArtists,
+      summary
     } = await fetchArtistInfo(artistName, fmUser);
     if (error) {
       return replyEmbedMessage(msg, null, error, { artist });
+    }
+
+    const totalListeners = `\`${Number(listeners).toLocaleString()}\``;
+    const totalPlays = `\`${Number(playcount).toLocaleString()}\``;
+    const userPlays = fmUser
+      ? `\`${Number(userplaycount).toLocaleString()}\``
+      : '`0`';
+
+    const strippedSummary = summary.replace(
+      `<a href="${artistURL}">Read more on Last.fm</a>`,
+      ''
+    );
+
+    /**
+     * Some artists don't have a full biography available. After removing the <a> tag that's
+     * on every response a check is done to make sure it still contains content.
+     */
+    const biography =
+      strippedSummary.length > 1 ? strippedSummary : 'Not Available';
+
+    let similarArtistsString;
+    if (similarArtists.length > 0) {
+      similarArtistsString = similarArtists.reduce((str, { name, url }, i) => {
+        if (i === similarArtists.length - 1) {
+          return str + `[${name}](${url})`;
+        }
+        return str + `[${name}](${url}) • `;
+      }, '');
+    } else {
+      similarArtistsString = 'Not Available';
     }
 
     return msg.say(

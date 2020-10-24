@@ -40,7 +40,7 @@ export default class ArtistsCommand extends Command {
       return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
     }
 
-    const { error, author, description } = await fetchUsersTopArtists(
+    const { error, artists, readablePeriod } = await fetchUsersTopArtists(
       period,
       fmUser
     );
@@ -48,14 +48,24 @@ export default class ArtistsCommand extends Command {
       return replyEmbedMessage(msg, null, error, { period, fmUser });
     }
 
+    const topArtists = artists.map(artistRes => {
+      const { name: artist, playcount } = artistRes;
+      const usersArtistsSrobblesURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
+        .split(' ')
+        .join('+')}`;
+      return `\`${Number(
+        playcount
+      ).toLocaleString()} ▶️\` • **[${artist}](${usersArtistsSrobblesURL})**`;
+    });
+
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          author,
+          `Top Artists - ${readablePeriod} - ${fmUser}`,
           msg.author.avatarURL({ dynamic: true }),
           `http://www.last.fm/user/${fmUser}`
         )
-        .setDescription(description)
+        .setDescription(topArtists)
         .setColor('#E31C23')
     );
   }

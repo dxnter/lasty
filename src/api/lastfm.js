@@ -1,10 +1,5 @@
 import axios from 'axios';
-import {
-  millisToMinutesAndSeconds,
-  pluralize,
-  makeReadablePeriod,
-  sortTotalListeners
-} from '../utils';
+import { millisToMinutesAndSeconds, makeReadablePeriod } from '../utils';
 import { LASTFM_API_KEY } from '../../config.json';
 import {
   ARTIST_INVALID,
@@ -41,8 +36,8 @@ export async function isValidToken(LASTFM_API_KEY) {
 }
 
 /**
- * Fetches information about a registered Last.FM user.
- * @param {string} fmUser A registered user on Last.FM.
+ * Fetches information about a registered Last.fm user.
+ * @param {string} fmUser A registered user on Last.fm.
  *
  * @returns {{totalScrobbles: number, name: string, profileURL: string, country: string, image: string, unixRegistration: string}}
  */
@@ -81,10 +76,10 @@ export async function fetchUserInfo(fmUser) {
 }
 
 /**
- * Fetches the most recently listened to track for the provided Last.FM user.
- * @param {string} fmUser A registered user on Last.FM.
+ * Fetches the most recently listened to track for the provided Last.fm user.
+ * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {{track: string, artist: string, album: string, albumCover: string, songURL: string, artistURL: string, userplaycount: number}}
+ * @returns {{track: string, artist: string, trackLength: string, album: string, albumCove: string, songURL: string, artistURL: string, userplaycount: number}}
  */
 export async function fetchRecentTrack(fmUser) {
   const RECENT_TRACKS = 'user.getRecentTracks';
@@ -123,8 +118,8 @@ export async function fetchRecentTrack(fmUser) {
 
     return {
       track,
-      trackLength,
       artist,
+      trackLength,
       album,
       albumCover,
       songURL,
@@ -139,10 +134,10 @@ export async function fetchRecentTrack(fmUser) {
 }
 
 /**
- * Fetches 10 most recently listen to tracks for the provided Last.FM user.
- * @param {string} fmUser A registered user on Last.FM.
+ * Fetches 10 most recently listen to tracks for the provided Last.fm user.
+ * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {{author: string, description: array}} Formatted data to be used in a discord.js embed.
+ * @returns {{tracks: array}} Array of the 10 recent tracks listened to for an fmUser.
  */
 export async function fetch10RecentTracks(fmUser) {
   if (!fmUser) {
@@ -166,21 +161,8 @@ export async function fetch10RecentTracks(fmUser) {
       };
     }
 
-    const recentTracks = tracks.map((track, i) => {
-      const {
-        artist: { '#text': artist },
-        name: song,
-        url
-      } = track;
-      return `\`${i + 1}\` [${song}](${url.replace(
-        ')',
-        '\\)'
-      )}) by **${artist}**`;
-    });
-
     return {
-      author: `Latest tracks for ${fmUser}`,
-      description: recentTracks
+      tracks
     };
   } catch (err) {
     return {
@@ -192,9 +174,9 @@ export async function fetch10RecentTracks(fmUser) {
 /**
  * Fetches a user's top 10 most scrobbled tracks for the provided time period.
  * @param {string} period A valid period in the PERIOD_PARAMS.
- * @param {string} fmUser A registered user on Last.FM.
+ * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {author: string, description: array} Formatted data to be used in a discord.js embed.
+ * @returns {tracks: array, readablePeriod: string} Array of the 10 top tracks for an fmUser and a readable time period.
  */
 export async function fetchUsersTopTracks(period, fmUser) {
   if (!fmUser) {
@@ -225,24 +207,9 @@ export async function fetchUsersTopTracks(period, fmUser) {
       };
     }
 
-    const topTracks = tracks.map(track => {
-      const {
-        artist: { name: artist, url: artistURL },
-        name: song,
-        playcount,
-        url
-      } = track;
-      return `\`${Number(
-        playcount
-      ).toLocaleString()} ▶️\` • [${song}](${url.replace(
-        ')',
-        '\\)'
-      )}) by **[${artist}](${artistURL.replace(')', '\\)')})**`;
-    });
-
     return {
-      author: `Top Tracks - ${makeReadablePeriod(period)} - ${fmUser}`,
-      description: topTracks
+      tracks,
+      readablePeriod: makeReadablePeriod(period)
     };
   } catch (err) {
     return {
@@ -254,9 +221,9 @@ export async function fetchUsersTopTracks(period, fmUser) {
 /**
  * Fetches a user's top 10 most scrobbled artists for the provided time period.
  * @param {string} period A valid period in the PERIOD_PARAMS.
- * @param {string} fmUser A registered user on Last.FM.
+ * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {author: string, description: array} Formatted data to be used in a discord.js embed.
+ * @returns {artists: array, readablePeriod: string} Array of the 10 top artists for an fmUser and a readable time period.
  */
 export async function fetchUsersTopArtists(period, fmUser) {
   if (!fmUser) {
@@ -287,19 +254,9 @@ export async function fetchUsersTopArtists(period, fmUser) {
       };
     }
 
-    const topArtists = artists.map(artistRes => {
-      const { name: artist, playcount } = artistRes;
-      const usersArtistsSrobblesURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
-        .split(' ')
-        .join('+')}`;
-      return `\`${Number(
-        playcount
-      ).toLocaleString()} ▶️\` • **[${artist}](${usersArtistsSrobblesURL})**`;
-    });
-
     return {
-      author: `Top Artists - ${makeReadablePeriod(period)} - ${fmUser}`,
-      description: topArtists
+      artists,
+      readablePeriod: makeReadablePeriod(period)
     };
   } catch (err) {
     return {
@@ -311,9 +268,9 @@ export async function fetchUsersTopArtists(period, fmUser) {
 /**
  * Fetches a user's top 10 most scrobbled albums for the provided time period.
  * @param {string} period A valid period in the PERIOD_PARAMS.
- * @param {string} fmUser A registered user on Last.FM.
+ * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {author: string, description: array} Formatted data to be used in a discord.js embed.
+ * @returns {albums: array, readablePeriod: string} Array of the top 10 albums for an fmUser and a readable time period.
  */
 export async function fetchUsersTopAlbums(period, fmUser) {
   if (!fmUser) {
@@ -344,24 +301,9 @@ export async function fetchUsersTopAlbums(period, fmUser) {
       };
     }
 
-    const topAlbums = albums.map(singleAlbum => {
-      const {
-        name: albumName,
-        playcount,
-        url: albumURL,
-        artist: { name: artistName, url: artistURL }
-      } = singleAlbum;
-      return `\`${Number(
-        playcount
-      ).toLocaleString()} ▶️\` • [${albumName}](${albumURL.replace(
-        ')',
-        '\\)'
-      )}) by **[${artistName}](${artistURL.replace(')', '\\)')})**`;
-    });
-
     return {
-      author: `Top Albums - ${makeReadablePeriod(period)} - ${fmUser}`,
-      description: topAlbums
+      albums,
+      readablePeriod: makeReadablePeriod(period)
     };
   } catch (err) {
     return {
@@ -374,7 +316,7 @@ export async function fetchUsersTopAlbums(period, fmUser) {
  * Fetches the top 10 albums of an artist sorted by listeners.
  * @param {string} artistName Name of an artist to search.
  *
- * @returns {{author: string, description: array, artistURL: string}} Formatted data to be used in a discord.js embed.
+ * @returns {{topalbums: array}} Array of the top 10 albums for an artist.
  */
 export async function fetchArtistTopAlbums(artistName) {
   if (!artistName) {
@@ -383,33 +325,21 @@ export async function fetchArtistTopAlbums(artistName) {
     };
   }
 
+  const API_ARTIST_NAME = artistName.split(' ').join('+');
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&artist=${API_ARTIST_NAME}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
   const artistTopAlbumsRequestURL = `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`;
 
   try {
     const {
       data: { topalbums }
     } = await axios.get(artistTopAlbumsRequestURL);
-
-    const formattedArtist = topalbums['@attr'].artist;
-    const artistURL = topalbums.album[0].artist.url;
-    const artistTopAlbums = topalbums.album
-      .sort(sortTotalListeners())
-      .map(album => {
-        const { name, playcount, url: albumURL } = album;
-        return `\`${Number(
-          playcount
-        ).toLocaleString()} ▶️\` • **[${name}](${albumURL.replace(
-          ')',
-          '\\)'
-        )})**`;
-      });
+    if (!topalbums || topalbums.album.length === 0) {
+      return { error: ARTIST_INVALID, artist: artistName };
+    }
 
     return {
-      author: `${pluralize(formattedArtist)} Top 10 Albums`,
-      description: artistTopAlbums,
-      artistURL: artistURL
+      topalbums
     };
   } catch (err) {
     return {
@@ -423,7 +353,7 @@ export async function fetchArtistTopAlbums(artistName) {
  * Fetches the top 10 tracks of an artist sorted by listeners.
  * @param {string} artistName Name of an artist to search.
  *
- * @returns {{author: string, description: array, artistURL: string}} Formatted data to be used in a discord.js embed.
+ * @returns {{toptracks: object, tracks: array}} Object containing artist information and an array of the top 10 tracks for an artist.
  */
 export async function fetchArtistTopTracks(artistName) {
   if (!artistName) {
@@ -443,23 +373,13 @@ export async function fetchArtistTopTracks(artistName) {
         toptracks: { track: tracks }
       }
     } = await axios.get(artistTopTracksRequestURL);
-
-    const formattedArtist = toptracks['@attr'].artist;
-    const artistURL = tracks[0].artist.url;
-    const artistTopTracks = tracks.sort(sortTotalListeners()).map(track => {
-      const { name, playcount, url: trackURL } = track;
-      return `\`${Number(
-        playcount
-      ).toLocaleString()} ▶️\` • **[${name}](${trackURL.replace(
-        ')',
-        '\\)'
-      )})**`;
-    });
+    if (!toptracks || tracks.length === 0) {
+      return { error: ARTIST_INVALID, artist: artistName };
+    }
 
     return {
-      author: `${pluralize(formattedArtist)} Top 10 Tracks`,
-      description: artistTopTracks,
-      artistURL: artistURL
+      toptracks,
+      tracks
     };
   } catch (err) {
     return {
@@ -472,9 +392,9 @@ export async function fetchArtistTopTracks(artistName) {
 /**
  * Fetches information and listening data about an artist.
  * @param {string} artistName Name of an artist to search.
- * @param {string} fmUser A registered user on Last.FM.
+ * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {{formattedArtistName: string, artistURL: string, artistImage: string, totalListeners: number, totalPlays: number, userPlays: number, similarArtistsString: string, biography: string}} Formatted data to be used in a discord.js embed.
+ * @returns {{formattedArtistName: string, artistURL: string, listeners: string, playcount: string, userplaycount: string, similarArtists: array, summary: string}}
  */
 export async function fetchArtistInfo(artistName, fmUser) {
   if (!artistName) {
@@ -500,44 +420,14 @@ export async function fetchArtistInfo(artistName, fmUser) {
       }
     } = await axios.get(artistInfoRequestURL);
 
-    const totalListeners = `\`${Number(listeners).toLocaleString()}\``;
-    const totalPlays = `\`${Number(playcount).toLocaleString()}\``;
-    const userPlays = fmUser
-      ? `\`${Number(userplaycount).toLocaleString()}\``
-      : '`0`';
-
-    const strippedSummary = summary.replace(
-      `<a href="${artistURL}">Read more on Last.fm</a>`,
-      ''
-    );
-
-    /**
-     * Some artists don't have a full biography available. After removing the <a> tag that's
-     * on every response a check is done to make sure it still contains content.
-     */
-    const biography =
-      strippedSummary.length > 1 ? strippedSummary : 'Not Available';
-
-    let similarArtistsString;
-    if (similarArtists.length > 0) {
-      similarArtistsString = similarArtists.reduce((str, { name, url }, i) => {
-        if (i === similarArtists.length - 1) {
-          return str + `[${name}](${url})`;
-        }
-        return str + `[${name}](${url}) • `;
-      }, '');
-    } else {
-      similarArtistsString = 'Not Available';
-    }
-
     return {
       formattedArtistName,
       artistURL,
-      totalListeners,
-      totalPlays,
-      userPlays,
-      similarArtistsString,
-      biography
+      listeners,
+      playcount,
+      userplaycount,
+      similarArtists,
+      summary
     };
   } catch (err) {
     return {
@@ -549,12 +439,17 @@ export async function fetchArtistInfo(artistName, fmUser) {
 
 /**
  * Fetches the total amount of scrobbles in a week to be used on the weekly cron.
- * @param {string} fmUser A registered user on Last.FM.
+ * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {number} Total number of scrobbles in the past week.
+ * @returns {songs: array} Array of the listened tracks for the past week.
  */
 
 export async function fetchUsersWeeklyScrobbles(fmUser) {
+  /**
+   * This function needs to be refactored. A limit of just 1000 doesn't seem like the correct way to make the request.
+   * Some users may surpass 1000 scrobbles per week. A better approach would be recursively fetching tracks during the
+   * past 7 days until no additional data is returned.
+   */
   const GET_TOP_TRACKS = 'user.gettoptracks';
   const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=7day&api_key=${LASTFM_API_KEY}&limit=1000&format=json`;
   const topTracksRequestURL = `${LASTFM_API_URL}${GET_TOP_TRACKS}${TOP_TRACKS_QUERY_STRING}`;
@@ -565,9 +460,5 @@ export async function fetchUsersWeeklyScrobbles(fmUser) {
     }
   } = await axios.get(topTracksRequestURL);
 
-  const totalScrobbles = songs.reduce((total, track) => {
-    return (total += Number(track.playcount));
-  }, 0);
-
-  return totalScrobbles;
+  return songs;
 }

@@ -1,7 +1,7 @@
 import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
 import { fetchArtistTopTracks } from '../../api/lastfm';
-import { replyEmbedMessage } from '../../utils';
+import { replyEmbedMessage, sortTotalListeners, pluralize } from '../../utils';
 
 export default class TopTracksCommand extends Command {
   constructor(client) {
@@ -26,21 +26,33 @@ export default class TopTracksCommand extends Command {
   }
 
   async run(msg, { artistName }) {
-    const {
-      error,
-      author,
-      description,
-      artistURL,
-      artist
-    } = await fetchArtistTopTracks(artistName);
+    const { error, artist, toptracks, tracks } = await fetchArtistTopTracks(
+      artistName
+    );
     if (error) {
       return replyEmbedMessage(msg, null, error, { artist });
     }
 
+    const formattedArtist = toptracks['@attr'].artist;
+    const artistURL = tracks[0].artist.url;
+    const artistTopTracks = tracks.sort(sortTotalListeners()).map(track => {
+      const { name, playcount, url: trackURL } = track;
+      return `\`${Number(
+        playcount
+      ).toLocaleString()} ▶️\` • **[${name}](${trackURL.replace(
+        ')',
+        '\\)'
+      )})**`;
+    });
+
     return msg.say(
       new MessageEmbed()
-        .setAuthor(author, null, artistURL)
-        .setDescription(description)
+        .setAuthor(
+          `${pluralize(formattedArtist)} Top 10 Tracks`,
+          null,
+          artistURL
+        )
+        .setDescription(artistTopTracks)
         .setColor('#E31C23')
     );
   }

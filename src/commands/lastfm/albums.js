@@ -40,7 +40,7 @@ export default class AlbumsCommand extends Command {
       return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
     }
 
-    const { error, author, description } = await fetchUsersTopAlbums(
+    const { error, albums, readablePeriod } = await fetchUsersTopAlbums(
       period,
       fmUser
     );
@@ -48,14 +48,29 @@ export default class AlbumsCommand extends Command {
       return replyEmbedMessage(msg, null, error, { period, fmUser });
     }
 
+    const topAlbums = albums.map(singleAlbum => {
+      const {
+        name: albumName,
+        playcount,
+        url: albumURL,
+        artist: { name: artistName, url: artistURL }
+      } = singleAlbum;
+      return `\`${Number(
+        playcount
+      ).toLocaleString()} ▶️\` • [${albumName}](${albumURL.replace(
+        ')',
+        '\\)'
+      )}) by **[${artistName}](${artistURL.replace(')', '\\)')})**`;
+    });
+
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          author,
+          `Top Albums - ${readablePeriod} - ${fmUser}`,
           msg.author.avatarURL({ dynamic: true }),
           `http://www.last.fm/user/${fmUser}`
         )
-        .setDescription(description)
+        .setDescription(topAlbums)
         .setColor('#E31C23')
     );
   }
