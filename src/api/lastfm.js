@@ -83,7 +83,7 @@ export async function fetchUserInfo(fmUser) {
  * Fetches the most recently listened to track for the provided Last.fm user.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {{track: string, artist: string, trackLength: string, album: string, albumCove: string, songURL: string, artistURL: string, userplaycount: number}}
+ * @returns {{track: string, artist: string, trackLength: string, album: string, albumCover: string, songURL: string, artistURL: string, userplaycount: number}}
  */
 export async function fetchRecentTrack(fmUser) {
   const RECENT_TRACKS = 'user.getRecentTracks';
@@ -101,7 +101,7 @@ export async function fetchRecentTrack(fmUser) {
       artist: { '#text': artist },
       album: { '#text': album }
     } = latestTrack;
-    const albumCover = latestTrack.image[2]['#text'];
+    const albumCover = latestTrack.image[3]['#text'];
 
     const TRACK_INFO = 'track.getInfo';
     const TRACK_INFO_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&track=${track}&artist=${artist}&format=json`;
@@ -365,6 +365,13 @@ export async function fetchArtistTopAlbums(artistName) {
     };
   }
 }
+
+/**
+ * Fetches album information and the album cover image.
+ * @param {string} albumName Name of an album to search.
+ *
+ * @returns {{name: string, artist: string, albumURL: string, albumCoverURL: string}}
+ */
 
 export async function fetchAlbumCover(albumName) {
   if (!albumName) {

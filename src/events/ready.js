@@ -7,4 +7,6 @@ module.exports = client => {
     chalk`{cyan.bold [Discord.js]} {white.bold ${client.user.username}} {cyan is online!}`
   );
   client.user.setActivity(' ,help', { type: 'LISTENING' });
+
+  client.embedColor = 'red';
 };
