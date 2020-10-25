@@ -6,6 +6,7 @@ import {
   READABLE_PERIODS,
   USER_UNDEFINED,
   USER_UNDEFINED_ARGS,
+  USER_UNDEFINED_ALBUM_ARGS,
   USER_SET,
   USER_EXISTS,
   USER_UPDATED,
@@ -15,6 +16,8 @@ import {
   USER_ALREADY_UNSUBSCRIBED,
   USER_UNREGISTERED,
   ARTIST_UNDEFINED,
+  ALBUM_UNDEFINED,
+  ALBUM_INVALID,
   ARTIST_NOT_FOUND,
   ARTIST_INVALID,
   PERIOD_INVALID,
@@ -74,21 +77,28 @@ export const replyEmbedMessage = (
   msg,
   commandName,
   statusDescription,
-  { period, fmUser, artist } = {}
+  { period, fmUser, artist, albumName } = {}
 ) => {
   switch (statusDescription) {
     case USER_UNDEFINED_ARGS:
       return msg.say(
         createEmbedMessage(
           ERROR,
-          `Last.fm username not set, enter \`,set <username>\` or enter a username after \`${commandName}\``
+          `Last.fm username not set, enter \`,set <lastFMUsername>\` or enter a username after \`${commandName}\``
+        )
+      );
+    case USER_UNDEFINED_ALBUM_ARGS:
+      return msg.say(
+        createEmbedMessage(
+          ERROR,
+          `Last.fm username not set, enter \`,set <lastFMUsername>\` or enter an album name after \`${commandName}\``
         )
       );
     case USER_UNDEFINED:
       return msg.say(
         createEmbedMessage(
           ERROR,
-          `Last.fm username not set, enter \`,set <username>\``
+          `Last.fm username not set, enter \`,set <lastFMUsername>\``
         )
       );
     case USER_SET:
@@ -139,8 +149,19 @@ export const replyEmbedMessage = (
       return msg.say(
         createEmbedMessage(
           ERROR,
-          `**${fmUser}** is not a registered Last.FM user`
+          `**${fmUser}** is not a registered Last.fm user`
         )
+      );
+    case ALBUM_UNDEFINED:
+      return msg.say(
+        createEmbedMessage(
+          ERROR,
+          `Enter the name of an album after \`${commandName}\``
+        )
+      );
+    case ALBUM_INVALID:
+      return msg.say(
+        createEmbedMessage(ERROR, `No album found for **${albumName}**`)
       );
     case ARTIST_UNDEFINED:
       return msg.say(

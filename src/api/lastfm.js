@@ -11,7 +11,9 @@ import {
   PERIOD_PARAMS,
   USER_UNDEFINED_ARGS,
   USER_UNREGISTERED,
-  ARTIST_NOT_FOUND
+  ARTIST_NOT_FOUND,
+  ALBUM_UNDEFINED,
+  ALBUM_INVALID
 } from '../constants';
 
 /**
@@ -107,7 +109,6 @@ export async function fetchRecentTrack(fmUser) {
       `${LASTFM_API_URL}${TRACK_INFO}${TRACK_INFO_QUERY_STRING}`
     );
     const { data } = await axios.get(trackInfoRequestURL);
-    console.log(data);
     if (data.error) return { error: TRACK_NOT_FOUND };
 
     const trackInfo = data.track;
@@ -134,7 +135,6 @@ export async function fetchRecentTrack(fmUser) {
       userplaycount: Number(userplaycount).toLocaleString()
     };
   } catch (err) {
-    console.log(err);
     return {
       error: USER_UNREGISTERED
     };
@@ -341,9 +341,8 @@ export async function fetchArtistTopAlbums(artistName) {
     };
   }
 
-  const API_ARTIST_NAME = artistName.split(' ').join('+');
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&artist=${API_ARTIST_NAME}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
   const artistTopAlbumsRequestURL = encodeURI(
     `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`
   );
@@ -363,6 +362,50 @@ export async function fetchArtistTopAlbums(artistName) {
     return {
       error: ARTIST_INVALID,
       artist: artistName
+    };
+  }
+}
+
+export async function fetchAlbumCover(albumName) {
+  if (!albumName) {
+    return {
+      error: ALBUM_UNDEFINED
+    };
+  }
+
+  const ALBUM_SEARCH = 'album.search';
+  const ALBUM_SEARCH_QUERY_STRING = `&album=${albumName}&api_key=${LASTFM_API_KEY}&autocorrect=1&format=json`;
+  const albumSearchRequestURL = encodeURI(
+    `${LASTFM_API_URL}${ALBUM_SEARCH}${ALBUM_SEARCH_QUERY_STRING}`
+  );
+
+  try {
+    const {
+      data: {
+        results: {
+          albummatches: { album: albums }
+        }
+      }
+    } = await axios.get(albumSearchRequestURL);
+
+    if (albums.length === 0) {
+      return {
+        error: ALBUM_INVALID
+      };
+    }
+
+    const { name, artist, url: albumURL, image } = albums[0];
+    const coverURL = image[3]['#text'];
+
+    return {
+      name,
+      artist,
+      albumURL,
+      albumCoverURL: coverURL
+    };
+  } catch (err) {
+    return {
+      error: ALBUM_INVALID
     };
   }
 }

@@ -25,8 +25,8 @@ For comments and support contact me on Discord: <strong>dxnter#0001</strong>
 ## 🚀 Getting Started
 ### Requirements
 - [Discord Bot Token](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
-- [Last.FM API Key](https://last.fm/api)
 - [Discord User ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)
+- [Last.FM API Key](https://last.fm/api)
 
 ### Installation
 ```bash

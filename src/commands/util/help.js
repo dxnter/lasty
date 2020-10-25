@@ -65,6 +65,11 @@ export default class HelpCommand extends Command {
             value: 'Shows your most played albums'
           },
           {
+            name: 'cover',
+            value:
+              'Shows the album cover of your last listened track or of a searched album'
+          },
+          {
             name: '`artist`',
             value: 'Shows information about an artist'
           },
