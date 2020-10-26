@@ -1,6 +1,7 @@
 import { MessageEmbed } from 'discord.js';
 import chalk from 'chalk';
 import db from '../db';
+import { isValidToken } from '../api/lastfm';
 import {
   ERROR,
   SUCCESS,
@@ -65,6 +66,15 @@ export default class Utilities {
   static pluralize(word) {
     if (word.endsWith('s')) return `${word}'`;
     return `${word}'s`;
+  }
+
+  static async validateToken(apiKey) {
+    if (!(await isValidToken(apiKey))) {
+      console.log(chalk`{red.bold [Error] Invalid Last.fm API Key. Visit the link below for a key.\n}
+    {white https://www.last.fm/api/account/create​}
+    `);
+      process.exit(0);
+    }
   }
 
   static validateEmbedColor(hexCode) {

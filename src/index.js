@@ -1,12 +1,11 @@
 import lastyClient from './structures/Client';
 import { CronJob } from 'cron';
-import './db';
-import validateToken from './utils/validateToken';
 import Utilities from './structures/Utilities';
 import weeklyStatCron from './utils/weeklyStatCron';
-import { EMBED_COLOR } from '../config.json';
+import './db';
+import { EMBED_COLOR, LASTFM_API_KEY } from '../config.json';
 
-validateToken();
+Utilities.validateToken(LASTFM_API_KEY);
 Utilities.validateEmbedColor(EMBED_COLOR);
 
 const client = new lastyClient();
