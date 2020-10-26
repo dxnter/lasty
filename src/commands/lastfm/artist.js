@@ -1,7 +1,6 @@
 import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
 import { fetchArtistInfo } from '../../api/lastfm';
-import { replyEmbedMessage, userInDatabase } from '../../utils';
 
 export default class ArtistCommand extends Command {
   constructor(client) {
@@ -27,7 +26,7 @@ export default class ArtistCommand extends Command {
   }
 
   async run(msg, { artistName }) {
-    const fmUser = userInDatabase(msg.author.id);
+    const fmUser = this.client.util.userInDatabase(msg.author.id);
     const {
       error,
       artist,
@@ -40,7 +39,7 @@ export default class ArtistCommand extends Command {
       summary
     } = await fetchArtistInfo(artistName, fmUser);
     if (error) {
-      return replyEmbedMessage(msg, null, error, { artist });
+      return this.client.util.replyEmbedMessage(msg, null, error, { artist });
     }
 
     const totalListeners = `\`${Number(listeners).toLocaleString()}\``;
@@ -81,7 +80,7 @@ export default class ArtistCommand extends Command {
         .addField('Your plays', userPlays, true)
         .addField('Summary', biography)
         .addField('Similar Artists', similarArtistsString)
-        .setColor('#E31C23')
+        .setColor(this.client.color)
     );
   }
 }

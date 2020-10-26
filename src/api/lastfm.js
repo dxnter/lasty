@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { millisToMinutesAndSeconds, makeReadablePeriod } from '../utils';
+import Utilities from '../structures/Utilities';
 import { LASTFM_API_KEY } from '../../config.json';
 import {
   ARTIST_INVALID,
@@ -121,7 +121,7 @@ export async function fetchRecentTrack(fmUser) {
       'userplaycount' in trackInfo ? trackInfo.userplaycount : 1;
     const trackLength =
       duration && duration !== '0'
-        ? millisToMinutesAndSeconds(Number(duration))
+        ? Utilities.millisToMinutesAndSeconds(Number(duration))
         : undefined;
 
     return {
@@ -221,7 +221,7 @@ export async function fetchUsersTopTracks(period, fmUser) {
 
     return {
       tracks,
-      readablePeriod: makeReadablePeriod(period)
+      readablePeriod: Utilities.makeReadablePeriod(period)
     };
   } catch (err) {
     return {
@@ -270,7 +270,7 @@ export async function fetchUsersTopArtists(period, fmUser) {
 
     return {
       artists,
-      readablePeriod: makeReadablePeriod(period)
+      readablePeriod: Utilities.makeReadablePeriod(period)
     };
   } catch (err) {
     return {
@@ -300,7 +300,7 @@ export async function fetchUsersTopAlbums(period, fmUser) {
   }
 
   const GET_TOP_ALBUMS = 'user.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=11&format=json`;
   const topAlbumsRequestURL = encodeURI(
     `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`
   );
@@ -319,7 +319,7 @@ export async function fetchUsersTopAlbums(period, fmUser) {
 
     return {
       albums,
-      readablePeriod: makeReadablePeriod(period)
+      readablePeriod: Utilities.makeReadablePeriod(period)
     };
   } catch (err) {
     return {
@@ -342,7 +342,7 @@ export async function fetchArtistTopAlbums(artistName) {
   }
 
   const ARTIST_GET_TOP_ALBUMS = 'artist.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=10&autocorrect=1&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&artist=${artistName}&api_key=${LASTFM_API_KEY}&limit=11&autocorrect=1&format=json`;
   const artistTopAlbumsRequestURL = encodeURI(
     `${LASTFM_API_URL}${ARTIST_GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`
   );
@@ -517,11 +517,6 @@ export async function fetchArtistInfo(artistName, fmUser) {
  */
 
 export async function fetchUsersWeeklyScrobbles(fmUser) {
-  /**
-   * This function needs to be refactored. A limit of just 1000 doesn't seem like the correct way to make the request.
-   * Some users may surpass 1000 scrobbles per week. A better approach would be recursively fetching tracks during the
-   * past 7 days until no additional data is returned.
-   */
   const GET_TOP_TRACKS = 'user.gettoptracks';
   const TOP_TRACKS_QUERY_STRING = `&user=${fmUser}&period=7day&api_key=${LASTFM_API_KEY}&limit=1000&format=json`;
   const topTracksRequestURL = encodeURI(

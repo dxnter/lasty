@@ -1,6 +1,5 @@
 import { Command } from 'discord.js-commando';
 import { MessageEmbed, MessageAttachment } from 'discord.js';
-import { replyEmbedMessage, userInDatabase } from '../../utils';
 import { USER_UNDEFINED_ALBUM_ARGS } from '../../constants';
 import { fetchAlbumCover, fetchRecentTrack } from '../../api/lastfm';
 const albumNotFoundImage = new MessageAttachment(
@@ -32,9 +31,13 @@ export default class CoverCommand extends Command {
   }
 
   async run(msg, { albumName }) {
-    const fmUser = userInDatabase(msg.author.id);
+    const fmUser = this.client.util.userInDatabase(msg.author.id);
     if (!albumName && !fmUser) {
-      return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ALBUM_ARGS);
+      return this.client.util.replyEmbedMessage(
+        msg,
+        this.name,
+        USER_UNDEFINED_ALBUM_ARGS
+      );
     }
     if (!albumName && fmUser) {
       // If no albumName is given as an argument, track info is fetched on their most recent track.
@@ -42,7 +45,9 @@ export default class CoverCommand extends Command {
         fmUser
       );
       if (error) {
-        return replyEmbedMessage(msg, this.name, error, { album });
+        return this.client.util.replyEmbedMessage(msg, this.name, error, {
+          album
+        });
       }
 
       // The album URL isn't returned from fetchRecentTrack so it's manually created.
@@ -54,7 +59,7 @@ export default class CoverCommand extends Command {
         new MessageEmbed()
           .setImage(albumCover)
           .setDescription(`**${artist}** - **[${album}](${albumURL})**`)
-          .setColor('#E31C23')
+          .setColor(this.client.color)
       );
     }
 
@@ -66,7 +71,9 @@ export default class CoverCommand extends Command {
       albumCoverURL
     } = await fetchAlbumCover(albumName);
     if (error) {
-      return replyEmbedMessage(msg, this.name, error, { albumName });
+      return this.client.util.replyEmbedMessage(msg, this.name, error, {
+        albumName
+      });
     }
 
     if (!albumCoverURL) {
@@ -79,7 +86,7 @@ export default class CoverCommand extends Command {
           .attachFiles(albumNotFoundImage)
           .setImage('attachment://album_artwork_not_found.png')
           .setDescription(`**${artist}** - **[${name}](${albumURL})**`)
-          .setColor('#E31C23')
+          .setColor(this.client.color)
       );
     }
 
@@ -88,7 +95,7 @@ export default class CoverCommand extends Command {
       new MessageEmbed()
         .setImage(albumCoverURL)
         .setDescription(`**${artist}** - **[${name}](${albumURL})**`)
-        .setColor('#E31C23')
+        .setColor(this.client.color)
     );
   }
 }

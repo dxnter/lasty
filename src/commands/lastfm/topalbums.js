@@ -1,7 +1,6 @@
 import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
 import { fetchArtistTopAlbums } from '../../api/lastfm';
-import { replyEmbedMessage, sortTotalListeners, pluralize } from '../../utils';
 
 export default class TopAlbumsCommand extends Command {
   constructor(client) {
@@ -28,13 +27,13 @@ export default class TopAlbumsCommand extends Command {
   async run(msg, { artistName }) {
     const { error, artist, topalbums } = await fetchArtistTopAlbums(artistName);
     if (error) {
-      return replyEmbedMessage(msg, null, error, { artist });
+      return this.client.util.replyEmbedMessage(msg, null, error, { artist });
     }
-
     const formattedArtist = topalbums['@attr'].artist;
     const artistURL = topalbums.album[0].artist.url;
     const artistTopAlbums = topalbums.album
-      .sort(sortTotalListeners())
+      .filter(track => track.name !== '(null)')
+      .sort(this.client.util.sortTotalListeners())
       .map(album => {
         const { name, playcount, url: albumURL } = album;
         return `\`${Number(
@@ -43,17 +42,18 @@ export default class TopAlbumsCommand extends Command {
           ')',
           '\\)'
         )})**`;
-      });
+      })
+      .filter((track, i) => i !== 10);
 
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          `${pluralize(formattedArtist)} Top 10 Albums`,
+          `${this.client.util.pluralize(formattedArtist)} Top 10 Albums`,
           null,
           artistURL
         )
         .setDescription(artistTopAlbums)
-        .setColor('#E31C23')
+        .setColor(this.client.color)
     );
   }
 }

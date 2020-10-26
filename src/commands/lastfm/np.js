@@ -3,7 +3,6 @@ import { MessageEmbed } from 'discord.js';
 import axios from 'axios';
 import { fetchRecentTrack, fetchUserInfo } from '../../api/lastfm';
 import { USER_UNDEFINED_ARGS } from '../../constants';
-import { userInDatabase, replyEmbedMessage } from '../../utils';
 
 export default class NowPlayingCommand extends Command {
   constructor(client) {
@@ -22,7 +21,7 @@ export default class NowPlayingCommand extends Command {
           key: 'fmUser',
           prompt: 'Enter a registered Last.fm username.',
           type: 'string',
-          default: msg => userInDatabase(msg.author.id)
+          default: msg => this.client.util.userInDatabase(msg.author.id)
         }
       ]
     });
@@ -30,7 +29,11 @@ export default class NowPlayingCommand extends Command {
 
   async run(msg, { fmUser }) {
     if (!fmUser) {
-      return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
+      return this.client.util.replyEmbedMessage(
+        msg,
+        this.name,
+        USER_UNDEFINED_ARGS
+      );
     }
 
     axios.all([fetchRecentTrack(fmUser), fetchUserInfo(fmUser)]).then(
@@ -47,7 +50,9 @@ export default class NowPlayingCommand extends Command {
           userplaycount
         } = trackInfo;
         if (error) {
-          return replyEmbedMessage(msg, null, error, { fmUser });
+          return this.client.util.replyEmbedMessage(msg, null, error, {
+            fmUser
+          });
         }
 
         const { totalScrobbles, image } = userInfo;
@@ -71,7 +76,7 @@ export default class NowPlayingCommand extends Command {
             `Playcount: ${userplaycount} | ${fmUser} Scrobbles: ${totalScrobbles ||
               0} | Album: ${album}`
           )
-          .setColor('#E31C23');
+          .setColor(this.client.color);
 
         return msg.say(embed).then(async msg => {
           await msg.react('👍');

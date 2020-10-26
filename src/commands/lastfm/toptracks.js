@@ -1,7 +1,6 @@
 import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
 import { fetchArtistTopTracks } from '../../api/lastfm';
-import { replyEmbedMessage, sortTotalListeners, pluralize } from '../../utils';
 
 export default class TopTracksCommand extends Command {
   constructor(client) {
@@ -30,30 +29,34 @@ export default class TopTracksCommand extends Command {
       artistName
     );
     if (error) {
-      return replyEmbedMessage(msg, null, error, { artist });
+      return this.client.util.replyEmbedMessage(msg, null, error, { artist });
     }
 
     const formattedArtist = toptracks['@attr'].artist;
     const artistURL = tracks[0].artist.url;
-    const artistTopTracks = tracks.sort(sortTotalListeners()).map(track => {
-      const { name, playcount, url: trackURL } = track;
-      return `\`${Number(
-        playcount
-      ).toLocaleString()} ▶️\` • **[${name}](${trackURL.replace(
-        ')',
-        '\\)'
-      )})**`;
-    });
+    const artistTopTracks = tracks
+      .filter(track => track.name !== '(null)')
+      .sort(this.client.util.sortTotalListeners())
+      .map(track => {
+        const { name, playcount, url: trackURL } = track;
+        return `\`${Number(
+          playcount
+        ).toLocaleString()} ▶️\` • **[${name}](${trackURL.replace(
+          ')',
+          '\\)'
+        )})**`;
+      })
+      .filter((track, i) => i !== 10);
 
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          `${pluralize(formattedArtist)} Top 10 Tracks`,
+          `${this.client.util.pluralize(formattedArtist)} Top 10 Tracks`,
           null,
           artistURL
         )
         .setDescription(artistTopTracks)
-        .setColor('#E31C23')
+        .setColor(this.client.color)
     );
   }
 }

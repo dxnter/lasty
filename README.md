@@ -43,10 +43,13 @@ npm install
 ### Configuration
 Rename `config.example.json` to `config.json` in the root directory and enter in the correct information for each property.
 
+`EMBED_COLOR` can either be left as the default or changed to a valid hex color code.
+
 `OWNERS` can either be a single Discord User ID or multiple ID's separated by a comma. Owners will have complete control over Lasty and bypass command throttling.
 ```json
 {
   "PREFIX": "",
+  "EMBED_COLOR": "#E31C23",
   "OWNERS": "",
   "DISCORD_BOT_TOKEN": "",
   "LASTFM_API_KEY": ""

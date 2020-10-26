@@ -1,8 +1,7 @@
-import Discord from 'discord.js';
+import { MessageEmbed } from 'discord.js';
 import dayjs from 'dayjs';
 import db from '../db';
 import getCronData from '../utils/getCronData';
-import { createEmbedMessage } from '.';
 import { ERROR } from '../constants';
 
 async function weeklyStatCron(client) {
@@ -23,9 +22,9 @@ async function weeklyStatCron(client) {
         .fetch(userID)
         .then(user =>
           user.send(
-            createEmbedMessage(
+            client.util.createEmbedMessage(
               ERROR,
-              `Weekly Recap was unsuccessful.\n**${fmUser}** is not a registered Last.fm user`
+              `Weekly Recap was unsuccessful.\n**${fmUser}** is not a registered Last.fm user or listening data is unavailable.`
             )
           )
         );
@@ -40,8 +39,7 @@ async function weeklyStatCron(client) {
       .fetch(userID)
       .then(user => {
         user.send(
-          new Discord.MessageEmbed()
-            .setColor('#E31C23')
+          new MessageEmbed()
             .setTitle(`:musical_note: Weekly Recap (${lastWeek} - ${now})`)
             .setAuthor(
               `Last.fm | ${fmUser}`,
@@ -49,24 +47,25 @@ async function weeklyStatCron(client) {
               `https://last.fm/user/${fmUser}`
             )
             .setDescription(`Scrobbles • \`${weeklyScrobbles} ▶️\``)
+            .setColor(client.color)
         );
         user.send(
-          new Discord.MessageEmbed()
-            .setColor('#E31C23')
+          new MessageEmbed()
             .setTitle('**:man_singer: Top Artists**')
             .setDescription(topArtists)
+            .setColor(client.color)
         );
         user.send(
-          new Discord.MessageEmbed()
-            .setColor('#E31C23')
+          new MessageEmbed()
             .setTitle('**:cd: Top Albums**')
             .setDescription(topAlbums)
+            .setColor(client.color)
         );
         user.send(
-          new Discord.MessageEmbed()
-            .setColor('#E31C23')
+          new MessageEmbed()
             .setTitle('**:repeat: Top Tracks**')
             .setDescription(topTracks)
+            .setColor(client.color)
         );
       })
       .catch(err => {

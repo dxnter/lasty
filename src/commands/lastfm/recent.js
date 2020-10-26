@@ -2,7 +2,6 @@ import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
 import { fetch10RecentTracks } from '../../api/lastfm';
 import { USER_UNDEFINED_ARGS } from '../../constants';
-import { replyEmbedMessage, userInDatabase } from '../../utils';
 
 export default class RecentCommand extends Command {
   constructor(client) {
@@ -21,7 +20,7 @@ export default class RecentCommand extends Command {
           key: 'fmUser',
           prompt: 'Enter a registered Last.fm username.',
           type: 'string',
-          default: msg => userInDatabase(msg.author.id)
+          default: msg => this.client.util.userInDatabase(msg.author.id)
         }
       ]
     });
@@ -29,11 +28,16 @@ export default class RecentCommand extends Command {
 
   async run(msg, { fmUser }) {
     if (!fmUser) {
-      return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
+      return this.client.util.replyEmbedMessage(
+        msg,
+        this.name,
+        USER_UNDEFINED_ARGS
+      );
     }
 
     const { error, tracks } = await fetch10RecentTracks(fmUser);
-    if (error) return replyEmbedMessage(msg, null, error, { fmUser });
+    if (error)
+      return this.client.util.replyEmbedMessage(msg, null, error, { fmUser });
 
     const recentTracks = tracks.map((track, i) => {
       const {
@@ -58,7 +62,7 @@ export default class RecentCommand extends Command {
           `http://www.last.fm/user/${fmUser}`
         )
         .setDescription(recentTracks)
-        .setColor('#E31C23')
+        .setColor(this.client.color)
     );
   }
 }

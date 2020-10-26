@@ -5,7 +5,6 @@ import {
   USER_SUBSCRIBED,
   USER_UNDEFINED
 } from '../../constants';
-import { findExistingUser, replyEmbedMessage } from '../../utils';
 
 export default class SubCommand extends Command {
   constructor(client) {
@@ -24,7 +23,7 @@ export default class SubCommand extends Command {
   }
 
   async run(msg) {
-    const existingUser = findExistingUser(msg.author.id);
+    const existingUser = this.client.util.findExistingUser(msg.author.id);
 
     if (existingUser) {
       const { userID, isSubscribedWeekly } = existingUser;
@@ -33,10 +32,14 @@ export default class SubCommand extends Command {
           .find({ userID })
           .assign({ isSubscribedWeekly: true })
           .write();
-        return replyEmbedMessage(msg, null, USER_SUBSCRIBED);
+        return this.client.util.replyEmbedMessage(msg, null, USER_SUBSCRIBED);
       }
-      return replyEmbedMessage(msg, null, USER_ALREADY_SUBSCRIBED);
+      return this.client.util.replyEmbedMessage(
+        msg,
+        null,
+        USER_ALREADY_SUBSCRIBED
+      );
     }
-    return replyEmbedMessage(msg, null, USER_UNDEFINED);
+    return this.client.util.replyEmbedMessage(msg, null, USER_UNDEFINED);
   }
 }

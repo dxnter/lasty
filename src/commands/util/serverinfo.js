@@ -17,14 +17,13 @@ export default class ServerInfoCommand extends Command {
   }
 
   async run(msg) {
-    console.log(msg.guild.createdAt);
     return msg.embed(
       new MessageEmbed()
-        .setColor('#E31C23')
         .setTitle('Server Information')
         .addField('Server Name', msg.guild.name)
         .addField('Total Members', msg.guild.memberCount)
         .addField('Created On', msg.guild.createdAt)
+        .setColor(this.client.color)
     );
   }
 }

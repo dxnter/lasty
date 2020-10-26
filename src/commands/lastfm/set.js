@@ -1,7 +1,6 @@
 import { Command } from 'discord.js-commando';
 import db from '../../db';
 import { USER_EXISTS, USER_SET, USER_UPDATED } from '../../constants';
-import { findExistingUser, replyEmbedMessage } from '../../utils';
 
 export default class SetCommand extends Command {
   constructor(client) {
@@ -26,17 +25,21 @@ export default class SetCommand extends Command {
   }
 
   async run(msg, { fmUser }) {
-    const existingUser = findExistingUser(msg.author.id);
+    const existingUser = this.client.util.findExistingUser(msg.author.id);
 
     if (existingUser) {
       if (existingUser.fmUser.toLowerCase() === fmUser.toLowerCase()) {
-        return replyEmbedMessage(msg, null, USER_EXISTS, { fmUser });
+        return this.client.util.replyEmbedMessage(msg, null, USER_EXISTS, {
+          fmUser
+        });
       }
       db.get('users')
         .find({ userID: msg.author.id })
         .assign({ fmUser })
         .write();
-      return replyEmbedMessage(msg, null, USER_UPDATED, { fmUser });
+      return this.client.util.replyEmbedMessage(msg, null, USER_UPDATED, {
+        fmUser
+      });
     }
 
     db.get('users')
@@ -46,6 +49,6 @@ export default class SetCommand extends Command {
         isSubscribedWeekly: true
       })
       .write();
-    return replyEmbedMessage(msg, null, USER_SET, { fmUser });
+    return this.client.util.replyEmbedMessage(msg, null, USER_SET, { fmUser });
   }
 }

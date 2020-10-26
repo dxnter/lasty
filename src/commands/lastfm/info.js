@@ -2,7 +2,6 @@ import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
 import { fetchUserInfo } from '../../api/lastfm';
 import { USER_UNDEFINED_ARGS } from '../../constants';
-import { replyEmbedMessage, userInDatabase } from '../../utils';
 
 export default class InfoCommand extends Command {
   constructor(client) {
@@ -21,7 +20,7 @@ export default class InfoCommand extends Command {
           key: 'fmUser',
           prompt: 'Enter a registered Last.fm username.',
           type: 'string',
-          default: msg => userInDatabase(msg.author.id)
+          default: msg => this.client.util.userInDatabase(msg.author.id)
         }
       ]
     });
@@ -29,7 +28,11 @@ export default class InfoCommand extends Command {
 
   async run(msg, { fmUser }) {
     if (!fmUser) {
-      return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
+      return this.client.util.replyEmbedMessage(
+        msg,
+        this.name,
+        USER_UNDEFINED_ARGS
+      );
     }
 
     const {
@@ -42,7 +45,7 @@ export default class InfoCommand extends Command {
       unixRegistration
     } = await fetchUserInfo(fmUser);
     if (error) {
-      return replyEmbedMessage(msg, null, error, { fmUser });
+      return this.client.util.replyEmbedMessage(msg, null, error, { fmUser });
     }
 
     const lastFMAvatar = image[2]['#text'];
@@ -57,7 +60,7 @@ export default class InfoCommand extends Command {
           'Registration Date',
           new Date(unixRegistration * 1000).toLocaleString()
         )
-        .setColor('#E31C23')
+        .setColor(this.client.color)
     );
   }
 }

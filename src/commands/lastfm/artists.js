@@ -1,6 +1,5 @@
 import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
-import { replyEmbedMessage, userInDatabase } from '../../utils';
 import { USER_UNDEFINED_ARGS } from '../../constants';
 import { fetchUsersTopArtists } from '../../api/lastfm';
 
@@ -29,7 +28,7 @@ export default class ArtistsCommand extends Command {
           key: 'fmUser',
           prompt: 'Enter a registered Last.fm username.',
           type: 'string',
-          default: msg => userInDatabase(msg.author.id)
+          default: msg => this.client.util.userInDatabase(msg.author.id)
         }
       ]
     });
@@ -37,7 +36,11 @@ export default class ArtistsCommand extends Command {
 
   async run(msg, { period, fmUser }) {
     if (!fmUser) {
-      return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
+      return this.client.util.replyEmbedMessage(
+        msg,
+        this.name,
+        USER_UNDEFINED_ARGS
+      );
     }
 
     const { error, artists, readablePeriod } = await fetchUsersTopArtists(
@@ -45,7 +48,10 @@ export default class ArtistsCommand extends Command {
       fmUser
     );
     if (error) {
-      return replyEmbedMessage(msg, null, error, { period, fmUser });
+      return this.client.util.replyEmbedMessage(msg, null, error, {
+        period,
+        fmUser
+      });
     }
 
     const topArtists = artists.map(artistRes => {
@@ -66,7 +72,7 @@ export default class ArtistsCommand extends Command {
           `http://www.last.fm/user/${fmUser}`
         )
         .setDescription(topArtists)
-        .setColor('#E31C23')
+        .setColor(this.client.color)
     );
   }
 }

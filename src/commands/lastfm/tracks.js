@@ -2,7 +2,6 @@ import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
 import { fetchUsersTopTracks } from '../../api/lastfm';
 import { USER_UNDEFINED_ARGS } from '../../constants';
-import { replyEmbedMessage, userInDatabase } from '../../utils';
 
 export default class TracksCommand extends Command {
   constructor(client) {
@@ -29,7 +28,7 @@ export default class TracksCommand extends Command {
           key: 'fmUser',
           prompt: 'Enter a registered Last.fm username.',
           type: 'string',
-          default: msg => userInDatabase(msg.author.id)
+          default: msg => this.client.util.userInDatabase(msg.author.id)
         }
       ]
     });
@@ -37,7 +36,11 @@ export default class TracksCommand extends Command {
 
   async run(msg, { period, fmUser }) {
     if (!fmUser) {
-      return replyEmbedMessage(msg, this.name, USER_UNDEFINED_ARGS);
+      return this.client.util.replyEmbedMessage(
+        msg,
+        this.name,
+        USER_UNDEFINED_ARGS
+      );
     }
 
     const { error, tracks, readablePeriod } = await fetchUsersTopTracks(
@@ -45,7 +48,10 @@ export default class TracksCommand extends Command {
       fmUser
     );
     if (error) {
-      return replyEmbedMessage(msg, null, error, { period, fmUser });
+      return this.client.util.replyEmbedMessage(msg, null, error, {
+        period,
+        fmUser
+      });
     }
 
     const topTracks = tracks.map(track => {
@@ -71,7 +77,7 @@ export default class TracksCommand extends Command {
           `http://www.last.fm/user/${fmUser}`
         )
         .setDescription(topTracks)
-        .setColor('#E31C23')
+        .setColor(this.client.color)
     );
   }
 }

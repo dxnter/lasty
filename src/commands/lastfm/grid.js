@@ -1,7 +1,6 @@
 import Canvas from 'canvas';
 import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
-import { replyEmbedMessage } from '../../utils';
 
 export default class GridCommand extends Command {
   constructor(client) {

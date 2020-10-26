@@ -21,7 +21,6 @@ export default class HelpCommand extends Command {
   async run(msg) {
     return msg.embed(
       new MessageEmbed()
-        .setColor('#E31C23')
         .setTitle('Lasty Commands', `Run commands with prefix \`${PREFIX}\``)
         .addFields([
           {
@@ -103,6 +102,7 @@ export default class HelpCommand extends Command {
               'Read the [wiki](https://github.com/dxnter/lasty/wiki/Commands) for additional help and examples'
           }
         ])
+        .setColor(this.client.color)
     );
   }
 }

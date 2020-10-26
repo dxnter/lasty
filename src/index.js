@@ -1,35 +1,17 @@
-import { Client } from 'discord.js-commando';
-import path from 'path';
+import lastyClient from './structures/Client';
 import { CronJob } from 'cron';
 import './db';
-import checkIfValidToken from './utils/checkIfValidToken';
+import validateToken from './utils/validateToken';
+import Utilities from './structures/Utilities';
 import weeklyStatCron from './utils/weeklyStatCron';
-import { OWNERS, PREFIX, DISCORD_BOT_TOKEN } from '../config.json';
+import { EMBED_COLOR } from '../config.json';
 
-checkIfValidToken();
+validateToken();
+Utilities.validateEmbedColor(EMBED_COLOR);
 
-const client = new Client({
-  commandPrefix: PREFIX,
-  owner: OWNERS.split(',').map(id => id.trim()),
-  disableMentions: 'everyone'
-});
+const client = new lastyClient();
 
-client.registry
-  .registerDefaultTypes()
-  .registerGroups([
-    ['lastfm', 'Last.fm'],
-    ['util', 'Util']
-  ])
-  .registerDefaultCommands({
-    help: false,
-    ping: false,
-    prefix: true,
-    commandState: false,
-    unknownCommand: false
-  })
-  .registerCommandsIn(path.join(__dirname, 'commands'));
-
-client.on('ready', () => require('./events/ready')(client));
+client.init();
 
 new CronJob(
   '0 12 * * 0',
@@ -40,5 +22,3 @@ new CronJob(
   true,
   'America/Chicago'
 );
-
-client.login(DISCORD_BOT_TOKEN);
