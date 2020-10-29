@@ -1,7 +1,10 @@
 import { Command } from 'discord.js-commando';
 import { MessageEmbed } from 'discord.js';
 import { fetch10RecentTracks } from '../../api/lastfm';
-import { USER_UNDEFINED_ARGS } from '../../constants';
+import {
+  EMBED_SIZE_EXCEEDED_RECENT,
+  USER_UNDEFINED_ARGS
+} from '../../constants';
 
 export default class RecentCommand extends Command {
   constructor(client) {
@@ -53,6 +56,19 @@ export default class RecentCommand extends Command {
         '\\)'
       )}) by **[${artist}](${artistURL})**`;
     });
+
+    const recentTracksLength = recentTracks.reduce(
+      (length, track) => length + track.length,
+      0
+    );
+
+    if (recentTracksLength >= 2048) {
+      return this.client.util.replyEmbedMessage(
+        msg,
+        null,
+        EMBED_SIZE_EXCEEDED_RECENT
+      );
+    }
 
     return msg.say(
       new MessageEmbed()

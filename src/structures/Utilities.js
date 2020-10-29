@@ -26,7 +26,8 @@ import {
   EMPTY_LISTENING_DATA,
   TRACK_NOT_FOUND,
   PERMISSION_INVALID,
-  USER_SUBSCRIBED
+  USER_SUBSCRIBED,
+  EMBED_SIZE_EXCEEDED_RECENT
 } from '../constants';
 import { EMBED_COLOR } from '../../config.json';
 
@@ -230,11 +231,19 @@ export default class Utilities {
           this.createEmbedMessage(ERROR, `Track not found on Last.fm!`)
         );
 
+      case EMBED_SIZE_EXCEEDED_RECENT:
+        return msg.say(
+          this.createEmbedMessage(
+            ERROR,
+            'Some track titles are too long and exceed the total embed message size of 2048 characters.'
+          )
+        );
+
       case PERMISSION_INVALID:
         return msg.say(
           this.createEmbedMessage(
             ERROR,
-            `You do not have permission to do that`
+            `You do not have permission to do that.`
           )
         );
     }

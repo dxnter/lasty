@@ -154,7 +154,7 @@ export async function fetch10RecentTracks(fmUser) {
     };
   }
   const GET_RECENT_TRACKS = 'user.getRecentTracks';
-  const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=9&format=json`;
+  const TRACKS_QUERY_STRING = `&user=${fmUser}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
   const recentTracksRequestURL = encodeURI(
     `${LASTFM_API_URL}${GET_RECENT_TRACKS}${TRACKS_QUERY_STRING}`
   );
