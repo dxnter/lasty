@@ -5,12 +5,17 @@ import weeklyStatCron from './utils/weeklyStatCron';
 import './db';
 import { EMBED_COLOR, LASTFM_API_KEY } from '../config.json';
 
+console.clear();
 Utilities.validateToken(LASTFM_API_KEY);
 Utilities.validateEmbedColor(EMBED_COLOR);
 
 const client = new lastyClient();
 
-client.init();
+try {
+  client.init();
+} catch (e) {
+  console.error(e);
+}
 
 new CronJob(
   '0 12 * * 0',

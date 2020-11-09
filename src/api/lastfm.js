@@ -41,7 +41,7 @@ export async function isValidToken(LASTFM_API_KEY) {
  * Fetches information about a registered Last.fm user.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {{totalScrobbles: number, name: string, profileURL: string, country: string, image: string, unixRegistration: string}}
+ * @returns {Promise<Object>}
  */
 export async function fetchUserInfo(fmUser) {
   const USER_INFO = 'user.getInfo';
@@ -83,7 +83,7 @@ export async function fetchUserInfo(fmUser) {
  * Fetches the most recently listened to track for the provided Last.fm user.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {{track: string, artist: string, trackLength: string, album: string, albumCover: string, songURL: string, artistURL: string, userplaycount: number}}
+ * @returns {Promise<Object>}
  */
 export async function fetchRecentTrack(fmUser) {
   const RECENT_TRACKS = 'user.getRecentTracks';
@@ -145,7 +145,7 @@ export async function fetchRecentTrack(fmUser) {
  * Fetches 10 most recently listen to tracks for the provided Last.fm user.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {{tracks: array}} Array of the 10 recent tracks listened to for an fmUser.
+ * @returns {Promise<Array<Object>>}
  */
 export async function fetch10RecentTracks(fmUser) {
   if (!fmUser) {
@@ -186,7 +186,7 @@ export async function fetch10RecentTracks(fmUser) {
  * @param {string} period A valid period in the PERIOD_PARAMS.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {tracks: array, readablePeriod: string} Array of the 10 top tracks for an fmUser and a readable time period.
+ * @returns {Promise<Array<Object>,<String>>}
  */
 export async function fetchUsersTopTracks(period, fmUser) {
   if (!fmUser) {
@@ -235,7 +235,7 @@ export async function fetchUsersTopTracks(period, fmUser) {
  * @param {string} period A valid period in the PERIOD_PARAMS.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {artists: array, readablePeriod: string} Array of the 10 top artists for an fmUser and a readable time period.
+ * @returns {Promise<Array<Object>,<String>>}
  */
 export async function fetchUsersTopArtists(period, fmUser) {
   if (!fmUser) {
@@ -284,7 +284,7 @@ export async function fetchUsersTopArtists(period, fmUser) {
  * @param {string} period A valid period in the PERIOD_PARAMS.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {albums: array, readablePeriod: string} Array of the top 10 albums for an fmUser and a readable time period.
+ * @returns {Promise<Array<Object>,<String>>}
  */
 export async function fetchUsersTopAlbums(period, fmUser) {
   if (!fmUser) {
@@ -300,7 +300,7 @@ export async function fetchUsersTopAlbums(period, fmUser) {
   }
 
   const GET_TOP_ALBUMS = 'user.getTopAlbums';
-  const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=11&format=json`;
+  const TOP_ALBUMS_QUERY_STRING = `&user=${fmUser}&period=${PERIOD_PARAMS[period]}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
   const topAlbumsRequestURL = encodeURI(
     `${LASTFM_API_URL}${GET_TOP_ALBUMS}${TOP_ALBUMS_QUERY_STRING}`
   );
@@ -332,7 +332,7 @@ export async function fetchUsersTopAlbums(period, fmUser) {
  * Fetches the top 10 albums of an artist sorted by listeners.
  * @param {string} artistName Name of an artist to search.
  *
- * @returns {{topalbums: array}} Array of the top 10 albums for an artist.
+ * @returns {Promise<Array<Object>>}
  */
 export async function fetchArtistTopAlbums(artistName) {
   if (!artistName) {
@@ -370,7 +370,7 @@ export async function fetchArtistTopAlbums(artistName) {
  * Fetches album information and the album cover image.
  * @param {string} albumName Name of an album to search.
  *
- * @returns {{name: string, artist: string, albumURL: string, albumCoverURL: string}}
+ * @returns {Promise<Object>}
  */
 
 export async function fetchAlbumCover(albumName) {
@@ -421,7 +421,7 @@ export async function fetchAlbumCover(albumName) {
  * Fetches the top 10 tracks of an artist sorted by listeners.
  * @param {string} artistName Name of an artist to search.
  *
- * @returns {{toptracks: object, tracks: array}} Object containing artist information and an array of the top 10 tracks for an artist.
+ * @returns {Promise<Array<Object>,<String>>}
  */
 export async function fetchArtistTopTracks(artistName) {
   if (!artistName) {
@@ -464,7 +464,7 @@ export async function fetchArtistTopTracks(artistName) {
  * @param {string} artistName Name of an artist to search.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {{formattedArtistName: string, artistURL: string, listeners: string, playcount: string, userplaycount: string, similarArtists: array, summary: string}}
+ * @returns {Promise<Array<Object>>}
  */
 export async function fetchArtistInfo(artistName, fmUser) {
   if (!artistName) {
@@ -513,7 +513,7 @@ export async function fetchArtistInfo(artistName, fmUser) {
  * Fetches the total amount of scrobbles in a week to be used on the weekly cron.
  * @param {string} fmUser A registered user on Last.fm.
  *
- * @returns {songs: array} Array of the listened tracks for the past week.
+ * @returns {Promise<Array>}
  */
 
 export async function fetchUsersWeeklyScrobbles(fmUser) {

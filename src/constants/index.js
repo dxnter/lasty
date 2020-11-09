@@ -14,7 +14,8 @@ export const READABLE_PERIODS = {
   month: 'Month',
   '90': '3 Months',
   '180': '6 Months',
-  year: 'Year'
+  year: 'Year',
+  all: 'Overall'
 };
 
 export const ERROR = 'ERROR';

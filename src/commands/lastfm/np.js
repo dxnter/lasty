@@ -69,9 +69,10 @@ export default class NowPlayingCommand extends Command {
             '**Track**',
             `[${track}](${songURL.replace(')', '\\)')}) ${
               trackLength ? `- *${trackLength}*` : ''
-            }`
+            }`,
+            true
           )
-          .addField('**Artist**', `[${artist}](${artistURL})`)
+          .addField('**Artist**', `[${artist}](${artistURL})`, true)
           .setFooter(
             `Playcount: ${userplaycount} | ${fmUser} Scrobbles: ${totalScrobbles ||
               0} | Album: ${album}`

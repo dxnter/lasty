@@ -1,6 +1,6 @@
 {
   "name": "lasty",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "A Discord bot for fetching Last.fm stats",
   "main": "bot.js",
   "repository": {
@@ -21,6 +21,7 @@
   "author": "Danny <contact@danfoster.io> (https://danny.sh)",
   "license": "GPL-3.0",
   "dependencies": {
+    "@settlin/collage": "^1.4.7",
     "@types/node": "^13.13.27",
     "axios": "^0.19.2",
     "canvas": "^2.6.1",
