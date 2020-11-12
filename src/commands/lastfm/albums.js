@@ -35,7 +35,9 @@ export default class AlbumsCommand extends Command {
   }
 
   async run(msg, { period, fmUser }) {
+    msg.channel.startTyping();
     if (!fmUser) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(
         msg,
         this.name,
@@ -48,6 +50,7 @@ export default class AlbumsCommand extends Command {
       fmUser
     );
     if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, null, error, {
         period,
         fmUser
@@ -63,18 +66,18 @@ export default class AlbumsCommand extends Command {
       } = singleAlbum;
       return `\`${Number(
         playcount
-      ).toLocaleString()} ▶️\` • [${albumName}](${albumURL.replace(
-        ')',
-        '\\)'
-      )}) by **[${artistName}](${artistURL.replace(')', '\\)')})**`;
+      ).toLocaleString()} ▶️\` ∙ **[${albumName}](${this.client.util.encodeURL(
+        albumURL
+      )})** by [${artistName}](${this.client.util.encodeURL(artistURL)})`;
     });
 
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          `Top Albums - ${readablePeriod} - ${fmUser}`,
+          `Top Albums ∙ ${readablePeriod} ∙ ${fmUser}`,
           msg.author.avatarURL({ dynamic: true }),
-          `http://www.last.fm/user/${fmUser}`
+          `https://www.last.fm/user/${fmUser}`
         )
         .setDescription(topAlbums)
         .setColor(this.client.color)

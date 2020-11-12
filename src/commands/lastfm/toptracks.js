@@ -25,10 +25,12 @@ export default class TopTracksCommand extends Command {
   }
 
   async run(msg, { artistName }) {
+    msg.channel.startTyping();
     const { error, artist, toptracks, tracks } = await fetchArtistTopTracks(
       artistName
     );
     if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, null, error, { artist });
     }
 
@@ -41,20 +43,16 @@ export default class TopTracksCommand extends Command {
         const { name, playcount, url: trackURL } = track;
         return `\`${Number(
           playcount
-        ).toLocaleString()} ▶️\` • **[${name}](${trackURL.replace(
-          ')',
-          '\\)'
+        ).toLocaleString()} ▶️\` ∙ **[${name}](${this.client.util.encodeURL(
+          trackURL
         )})**`;
       })
-      .filter((track, i) => i !== 10);
+      .filter((_, i) => i !== 10);
 
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
-        .setAuthor(
-          `${this.client.util.pluralize(formattedArtist)} Top 10 Tracks`,
-          null,
-          artistURL
-        )
+        .setAuthor(`${formattedArtist} ∙ Top 10 Tracks`, null, artistURL)
         .setDescription(artistTopTracks)
         .setColor(this.client.color)
     );

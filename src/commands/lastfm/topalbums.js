@@ -25,8 +25,10 @@ export default class TopAlbumsCommand extends Command {
   }
 
   async run(msg, { artistName }) {
+    msg.channel.startTyping();
     const { error, artist, topalbums } = await fetchArtistTopAlbums(artistName);
     if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, null, error, { artist });
     }
     const formattedArtist = topalbums['@attr'].artist;
@@ -38,20 +40,16 @@ export default class TopAlbumsCommand extends Command {
         const { name, playcount, url: albumURL } = album;
         return `\`${Number(
           playcount
-        ).toLocaleString()} ▶️\` • **[${name}](${albumURL.replace(
-          ')',
-          '\\)'
+        ).toLocaleString()} ▶️\` ∙ **[${name}](${this.client.util.encodeURL(
+          albumURL
         )})**`;
       })
-      .filter((track, i) => i !== 10);
+      .filter((_, i) => i !== 10);
 
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
-        .setAuthor(
-          `${this.client.util.pluralize(formattedArtist)} Top 10 Albums`,
-          null,
-          artistURL
-        )
+        .setAuthor(`${formattedArtist} ∙ Top 10 Albums`, null, artistURL)
         .setDescription(artistTopAlbums)
         .setColor(this.client.color)
     );

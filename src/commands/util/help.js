@@ -64,9 +64,25 @@ export default class HelpCommand extends Command {
             value: 'Shows your most played albums'
           },
           {
+            name: '`wk`',
+            value: 'Ranks the top listeners of an artist on the server'
+          },
+          {
+            name: '`wka`',
+            value: 'Ranks the top listeners of an album on the server'
+          },
+          {
+            name: '`wkt`',
+            value: 'Ranks the top listeners of an track on the server'
+          },
+          {
             name: '`cover`',
             value:
               'Shows the album cover of your last listened track or of a searched album'
+          },
+          {
+            name: '`grid`',
+            value: 'Shows a grid image of your most played albums'
           },
           {
             name: '`artist`',

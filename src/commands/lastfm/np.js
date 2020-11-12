@@ -28,7 +28,9 @@ export default class NowPlayingCommand extends Command {
   }
 
   async run(msg, { fmUser }) {
+    msg.channel.startTyping();
     if (!fmUser) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(
         msg,
         this.name,
@@ -50,6 +52,7 @@ export default class NowPlayingCommand extends Command {
           userplaycount
         } = trackInfo;
         if (error) {
+          msg.channel.stopTyping();
           return this.client.util.replyEmbedMessage(msg, null, error, {
             fmUser
           });
@@ -57,6 +60,7 @@ export default class NowPlayingCommand extends Command {
 
         const { totalScrobbles, image } = userInfo;
         const lastFMAvatar = image[2]['#text'];
+        const isDisplayedInline = track.length < 25 ? true : false;
 
         const embed = new MessageEmbed()
           .setAuthor(
@@ -67,18 +71,23 @@ export default class NowPlayingCommand extends Command {
           .setThumbnail(albumCover)
           .addField(
             '**Track**',
-            `[${track}](${songURL.replace(')', '\\)')}) ${
-              trackLength ? `- *${trackLength}*` : ''
-            }`,
-            true
+            `[${track}](${this.client.util.encodeURL(songURL)})`,
+            isDisplayedInline
           )
-          .addField('**Artist**', `[${artist}](${artistURL})`, true)
+          .addField(
+            '**Artist**',
+            `[${artist}](${artistURL})`,
+            isDisplayedInline
+          )
           .setFooter(
-            `Playcount: ${userplaycount} | ${fmUser} Scrobbles: ${totalScrobbles ||
-              0} | Album: ${album}`
+            `Playcount: ${userplaycount} ∙ ${fmUser} Scrobbles: ${totalScrobbles ||
+              0} ∙ Album: ${album} ${
+              trackLength ? `∙ Length: ${trackLength}` : ''
+            }`
           )
           .setColor(this.client.color);
 
+        msg.channel.stopTyping();
         return msg.say(embed).then(async msg => {
           await msg.react('👍');
           await msg.react('👎');

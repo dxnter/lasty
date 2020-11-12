@@ -68,6 +68,7 @@ export default class GridCommand extends Command {
           });
 
           if (albumCoverLinks.length < limit / 2) {
+            msg.channel.stopTyping();
             return this.client.util.replyEmbedMessage(
               msg,
               null,
@@ -107,6 +108,7 @@ export default class GridCommand extends Command {
         }
       )
       .catch(err => {
+        msg.channel.stopTyping();
         console.log(err);
       });
   }

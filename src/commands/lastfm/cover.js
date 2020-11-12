@@ -1,7 +1,7 @@
 import { Command } from 'discord.js-commando';
 import { MessageEmbed, MessageAttachment } from 'discord.js';
 import { USER_UNDEFINED_ALBUM_ARGS } from '../../constants';
-import { fetchAlbumCover, fetchRecentTrack } from '../../api/lastfm';
+import { searchAlbum, fetchRecentTrack } from '../../api/lastfm';
 const albumNotFoundImage = new MessageAttachment(
   'assets/images/album_artwork_not_found.png',
   'album_artwork_not_found.png'
@@ -31,8 +31,10 @@ export default class CoverCommand extends Command {
   }
 
   async run(msg, { albumName }) {
+    msg.channel.startTyping();
     const fmUser = this.client.util.userInDatabase(msg.author.id);
     if (!albumName && !fmUser) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(
         msg,
         this.name,
@@ -45,16 +47,18 @@ export default class CoverCommand extends Command {
         fmUser
       );
       if (error) {
+        msg.channel.stopTyping();
         return this.client.util.replyEmbedMessage(msg, this.name, error, {
           album
         });
       }
 
       // The album URL isn't returned from fetchRecentTrack so it's manually created.
-      const albumURL = `https://last.fm/music/${artist
-        .split(' ')
-        .join('+')}/${album.split(' ').join('+')}`;
+      const albumURL = this.client.util.encodeURL(
+        `https://last.fm/music/${artist}/${album}`
+      );
 
+      msg.channel.stopTyping();
       return msg.say(
         new MessageEmbed()
           .setImage(albumCover)
@@ -63,14 +67,11 @@ export default class CoverCommand extends Command {
       );
     }
 
-    const {
-      error,
-      name,
-      artist,
-      albumURL,
-      albumCoverURL
-    } = await fetchAlbumCover(albumName);
+    const { error, name, artist, albumURL, albumCoverURL } = await searchAlbum(
+      albumName
+    );
     if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, this.name, error, {
         albumName
       });
@@ -81,6 +82,7 @@ export default class CoverCommand extends Command {
        * If an album that is searched for doesn't have an album cover image
        * an embed is sent with a custom 'Album Artwork Not Found' image.
        */
+      msg.channel.stopTyping();
       return msg.say(
         new MessageEmbed()
           .attachFiles(albumNotFoundImage)
@@ -91,6 +93,7 @@ export default class CoverCommand extends Command {
     }
 
     // If the searched albumName has a cover image we return that in the embed instead.
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
         .setImage(albumCoverURL)

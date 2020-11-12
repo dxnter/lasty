@@ -13,7 +13,8 @@ import {
   USER_UNREGISTERED,
   ARTIST_NOT_FOUND,
   ALBUM_UNDEFINED,
-  ALBUM_INVALID
+  ALBUM_INVALID,
+  ALBUM_NOT_FOUND
 } from '../constants';
 
 /**
@@ -80,6 +81,71 @@ export async function fetchUserInfo(fmUser) {
 }
 
 /**
+ * Fetches track information.
+ * @param {string} trackName Name of a track to search.
+ *
+ * @returns {Promise<Object>}
+ */
+export async function searchTrack(trackName) {
+  const SEARCH_TRACKS = 'track.search';
+  const TRACK_SEARCH_QUERY_STRING = `&track=${trackName}&api_key=${LASTFM_API_KEY}&limit=10&format=json`;
+  const trackSearchReqeustURL = encodeURI(
+    `${LASTFM_API_URL}${SEARCH_TRACKS}${TRACK_SEARCH_QUERY_STRING}`
+  );
+
+  try {
+    const {
+      data: {
+        results: {
+          trackmatches: { track: tracks }
+        }
+      }
+    } = await axios.get(trackSearchReqeustURL);
+
+    const { name: track, artist, url: songURL } = tracks[0];
+
+    return {
+      track,
+      artist,
+      songURL
+    };
+  } catch (err) {
+    return {
+      error: TRACK_NOT_FOUND
+    };
+  }
+}
+
+/**
+ * Fetches the playcount of a track for a fmUser.
+ * @param {string} trackName Name of a track to search.
+ * @param {string} artistName Name of the artist for the track.
+ * @param {string} fmUser A registered user on Last.fm.
+ *
+ * @returns {Promise<String>}
+ */
+export async function fetchTrackScrobbles(trackName, artistName, fmUser) {
+  const TRACK_INFO = 'track.getInfo';
+  const TRACK_INFO_QUERY_STRING = `&track=${trackName}&artist=${artistName}&user=${fmUser}&api_key=${LASTFM_API_KEY}&autocorrect=1&format=json`;
+  const trackInfoRequestURL = encodeURI(
+    `${LASTFM_API_URL}${TRACK_INFO}${TRACK_INFO_QUERY_STRING}`
+  );
+
+  try {
+    const {
+      data: { track }
+    } = await axios.get(trackInfoRequestURL);
+    const { userplaycount } = track;
+
+    return userplaycount;
+  } catch (err) {
+    return {
+      error: TRACK_NOT_FOUND
+    };
+  }
+}
+
+/**
  * Fetches the most recently listened to track for the provided Last.fm user.
  * @param {string} fmUser A registered user on Last.fm.
  *
@@ -95,6 +161,7 @@ export async function fetchRecentTrack(fmUser) {
   try {
     const recentRes = await axios.get(songRequestURL);
     const latestTrack = recentRes.data.recenttracks.track[0];
+    if (!latestTrack) return { error: EMPTY_LISTENING_DATA, fmUser };
 
     const {
       name: track,
@@ -280,6 +347,47 @@ export async function fetchUsersTopArtists(period, fmUser) {
 }
 
 /**
+ * Fetches information about an album and returns the url and playcount for an fmUser.
+ * @param {string} artistName Name of an artist to search.
+ * @param {string} albumName Name of an album to search.
+ * @param {string} fmUser A registered user on Last.fm.
+ *
+ * @returns {Promise<Object>}
+ */
+export async function fetchAlbumInfo(artistName, albumName, fmUser) {
+  if (!albumName) {
+    return {
+      error: ALBUM_UNDEFINED
+    };
+  }
+
+  const ALBUM_GET_INFO = 'album.getInfo';
+  const ALBUM_INFO_QUERY_STRING = `&artist=${artistName}&album=${albumName}&api_key=${LASTFM_API_KEY}&limit10&username=${fmUser}&autocorrect=1&format=json`;
+  const albumInfoReqeustURL = encodeURI(
+    `${LASTFM_API_URL}${ALBUM_GET_INFO}${ALBUM_INFO_QUERY_STRING}`
+  );
+
+  try {
+    const {
+      data: {
+        album: { name: formattedArtistName, url: albumURL, userplaycount }
+      }
+    } = await axios.get(albumInfoReqeustURL);
+
+    return {
+      formattedArtistName,
+      albumURL,
+      userplaycount
+    };
+  } catch (err) {
+    return {
+      error: ALBUM_NOT_FOUND,
+      albumName
+    };
+  }
+}
+
+/**
  * Fetches a user's top 10 most scrobbled albums for the provided time period.
  * @param {string} period A valid period in the PERIOD_PARAMS.
  * @param {string} fmUser A registered user on Last.fm.
@@ -373,7 +481,7 @@ export async function fetchArtistTopAlbums(artistName) {
  * @returns {Promise<Object>}
  */
 
-export async function fetchAlbumCover(albumName) {
+export async function searchAlbum(albumName) {
   if (!albumName) {
     return {
       error: ALBUM_UNDEFINED

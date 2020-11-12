@@ -35,7 +35,9 @@ export default class TracksCommand extends Command {
   }
 
   async run(msg, { period, fmUser }) {
+    msg.channel.startTyping();
     if (!fmUser) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(
         msg,
         this.name,
@@ -48,6 +50,7 @@ export default class TracksCommand extends Command {
       fmUser
     );
     if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, null, error, {
         period,
         fmUser
@@ -63,18 +66,18 @@ export default class TracksCommand extends Command {
       } = track;
       return `\`${Number(
         playcount
-      ).toLocaleString()} ▶️\` • [${song}](${url.replace(
-        ')',
-        '\\)'
-      )}) by **[${artist}](${artistURL.replace(')', '\\)')})**`;
+      ).toLocaleString()} ▶️\` ∙ **[${song}](${this.client.util.encodeURL(
+        url
+      )})** by [${artist}](${this.client.util.encodeURL(artistURL)})`;
     });
 
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          `Top Tracks - ${readablePeriod} - ${fmUser}`,
+          `Top Tracks ∙ ${readablePeriod} ∙ ${fmUser}`,
           msg.author.avatarURL({ dynamic: true }),
-          `http://www.last.fm/user/${fmUser}`
+          `https://www.last.fm/user/${fmUser}`
         )
         .setDescription(topTracks)
         .setColor(this.client.color)

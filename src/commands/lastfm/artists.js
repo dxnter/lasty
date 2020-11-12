@@ -35,7 +35,9 @@ export default class ArtistsCommand extends Command {
   }
 
   async run(msg, { period, fmUser }) {
+    msg.channel.startTyping();
     if (!fmUser) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(
         msg,
         this.name,
@@ -48,6 +50,7 @@ export default class ArtistsCommand extends Command {
       fmUser
     );
     if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, null, error, {
         period,
         fmUser
@@ -56,20 +59,21 @@ export default class ArtistsCommand extends Command {
 
     const topArtists = artists.map(artistRes => {
       const { name: artist, playcount } = artistRes;
-      const usersArtistsSrobblesURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
-        .split(' ')
-        .join('+')}`;
+      const usersArtistsSrobblesURL = this.client.util.encodeURL(
+        `https://www.last.fm/user/${fmUser}/library/music/${artist}`
+      );
       return `\`${Number(
         playcount
-      ).toLocaleString()} ▶️\` • **[${artist}](${usersArtistsSrobblesURL})**`;
+      ).toLocaleString()} ▶️\` ∙ **[${artist}](${usersArtistsSrobblesURL})**`;
     });
 
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
         .setAuthor(
-          `Top Artists - ${readablePeriod} - ${fmUser}`,
+          `Top Artists ∙ ${readablePeriod} ∙ ${fmUser}`,
           msg.author.avatarURL({ dynamic: true }),
-          `http://www.last.fm/user/${fmUser}`
+          `https://www.last.fm/user/${fmUser}`
         )
         .setDescription(topArtists)
         .setColor(this.client.color)

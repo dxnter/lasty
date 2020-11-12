@@ -30,7 +30,9 @@ export default class RecentCommand extends Command {
   }
 
   async run(msg, { fmUser }) {
+    msg.channel.startTyping();
     if (!fmUser) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(
         msg,
         this.name,
@@ -39,8 +41,10 @@ export default class RecentCommand extends Command {
     }
 
     const { error, tracks } = await fetch10RecentTracks(fmUser);
-    if (error)
+    if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, null, error, { fmUser });
+    }
 
     const recentTracks = tracks.map((track, i) => {
       const {
@@ -48,13 +52,12 @@ export default class RecentCommand extends Command {
         name: song,
         url
       } = track;
-      const artistURL = `https://www.last.fm/user/${fmUser}/library/music/${artist
-        .split(' ')
-        .join('+')}`;
-      return `\`${i + 1}\` [${song}](${url.replace(
-        ')',
-        '\\)'
-      )}) by **[${artist}](${artistURL})**`;
+      const artistURL = this.client.util.encodeURL(
+        `https://www.last.fm/user/${fmUser}/library/music/${artist}`
+      );
+      return `\`${i + 1}\` **[${song}](${this.client.util.encodeURL(
+        url
+      )})** by [${artist}](${artistURL})`;
     });
 
     const recentTracksLength = recentTracks.reduce(
@@ -63,6 +66,7 @@ export default class RecentCommand extends Command {
     );
 
     if (recentTracksLength >= 2048) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(
         msg,
         null,
@@ -70,6 +74,7 @@ export default class RecentCommand extends Command {
       );
     }
 
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
         .setAuthor(

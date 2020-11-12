@@ -27,7 +27,9 @@ export default class InfoCommand extends Command {
   }
 
   async run(msg, { fmUser }) {
+    msg.channel.startTyping();
     if (!fmUser) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(
         msg,
         this.name,
@@ -45,11 +47,13 @@ export default class InfoCommand extends Command {
       unixRegistration
     } = await fetchUserInfo(fmUser);
     if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, null, error, { fmUser });
     }
 
     const lastFMAvatar = image[2]['#text'];
 
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
         .setAuthor(name, lastFMAvatar, profileURL)

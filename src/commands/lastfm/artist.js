@@ -26,6 +26,7 @@ export default class ArtistCommand extends Command {
   }
 
   async run(msg, { artistName }) {
+    msg.channel.startTyping();
     const fmUser = this.client.util.userInDatabase(msg.author.id);
     const {
       error,
@@ -39,6 +40,7 @@ export default class ArtistCommand extends Command {
       summary
     } = await fetchArtistInfo(artistName, fmUser);
     if (error) {
+      msg.channel.stopTyping();
       return this.client.util.replyEmbedMessage(msg, null, error, { artist });
     }
 
@@ -66,12 +68,13 @@ export default class ArtistCommand extends Command {
         if (i === similarArtists.length - 1) {
           return str + `[${name}](${url})`;
         }
-        return str + `[${name}](${url}) • `;
+        return str + `[${name}](${url}) ∙ `;
       }, '');
     } else {
       similarArtistsString = 'Not Available';
     }
 
+    msg.channel.stopTyping();
     return msg.say(
       new MessageEmbed()
         .setAuthor(formattedArtistName, null, artistURL)

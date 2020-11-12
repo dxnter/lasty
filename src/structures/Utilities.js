@@ -20,10 +20,12 @@ import {
   ARTIST_UNDEFINED,
   ALBUM_UNDEFINED,
   ALBUM_INVALID,
+  ALBUM_NOT_FOUND,
   ARTIST_NOT_FOUND,
   ARTIST_INVALID,
   PERIOD_INVALID,
   EMPTY_LISTENING_DATA,
+  NOT_ENOUGH_LISTENERS,
   TRACK_NOT_FOUND,
   PERMISSION_INVALID,
   USER_SUBSCRIBED,
@@ -69,6 +71,16 @@ export default class Utilities {
     return `${word}'s`;
   }
 
+  static encodeURL(url) {
+    return encodeURI(
+      url
+        .split(' ')
+        .join('+')
+        .replace(/\(/g, '%28')
+        .replace(/\)/g, '%29')
+    );
+  }
+
   static async validateToken(apiKey) {
     if (!(await isValidToken(apiKey))) {
       console.log(chalk`{red.bold [Error] Invalid Last.fm API Key. Visit the link below for a key.\n}
@@ -102,8 +114,12 @@ export default class Utilities {
     msg,
     commandName,
     statusDescription,
-    { period, fmUser, artist, albumName } = {}
+    { period, fmUser, artist, albumName, wkArg } = {}
   ) {
+    /**
+     * wkArg is ambiguously used as a catch all (album, artist, or track)
+     * for not enough listening data for the whoknows commands.
+     */
     switch (statusDescription) {
       case USER_UNDEFINED_ARGS:
         return msg.say(
@@ -204,6 +220,13 @@ export default class Utilities {
             `Enter the name of an artist after \`${commandName}\``
           )
         );
+      case ALBUM_NOT_FOUND:
+        return msg.say(
+          this.createEmbedMessage(
+            ERROR,
+            `No album found named **${albumName}**`
+          )
+        );
       case ARTIST_INVALID:
         return msg.say(
           this.createEmbedMessage(ERROR, `No albums found for **${artist}**`)
@@ -224,6 +247,13 @@ export default class Utilities {
           this.createEmbedMessage(
             ERROR,
             `**${fmUser}** hasn't listened to anything recently...`
+          )
+        );
+      case NOT_ENOUGH_LISTENERS:
+        return msg.say(
+          this.createEmbedMessage(
+            ERROR,
+            `Not enough listeners of **${wkArg}** on this server!`
           )
         );
       case TRACK_NOT_FOUND:
