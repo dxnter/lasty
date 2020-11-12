@@ -1,6 +1,6 @@
 {
   "name": "lasty",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "A Discord bot for fetching Last.fm stats",
   "main": "bot.js",
   "repository": {
