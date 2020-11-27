@@ -1,28 +1,39 @@
 {
   "name": "lasty",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "A Discord bot for fetching Last.fm stats",
-  "main": "bot.js",
+  "main": "dist/src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dxnter/lasty.git"
   },
-  "bugs": "https://github.com/dxnter/lasty/issues",
+  "bugs": {
+    "url": "https://github.com/dxnter/lasty/issues"
+  },
   "scripts": {
-    "start": "cross-env NODE_ENV=production node -r esm src/index.js",
-    "dev": "nodemon -r esm src/index.js --ignore db.json",
-    "lint": "eslint --fix . && echo 'Lint complete.'"
+    "start": "cross-env NODE_ENV=production npm run prepare && node dist/src/index.js",
+    "dev": "ts-node-dev --respawn --watch src src/index.ts",
+    "clean": "shx rm -rf dist/",
+    "compile": "tsc || true",
+    "prepare": "npm run clean && npm run compile"
   },
   "keywords": [
-    "discord",
     "bot",
+    "discord",
+    "Commando",
+    "discord.js-comando",
+    "TypeScript",
     "lastfm"
   ],
+  "engines": {
+    "node": ">=11",
+    "npm": ">=6"
+  },
   "author": "Danny <contact@danfoster.io> (https://danny.sh)",
   "license": "GPL-3.0",
   "dependencies": {
     "@settlin/collage": "^1.4.7",
-    "@types/node": "^13.13.27",
+    "@types/lowdb": "^1.0.9",
     "axios": "^0.19.2",
     "canvas": "^2.6.1",
     "chalk": "^3.0.0",
@@ -31,14 +42,21 @@
     "discord.js": "^12.4.0",
     "discord.js-commando": "git+https://github.com/discordjs/Commando.git",
     "esm": "^3.2.25",
-    "lowdb": "^1.0.0"
+    "lowdb": "^1.0.0",
+    "typescript": "^4.1.2"
   },
   "devDependencies": {
+    "@types/cron": "^1.7.2",
+    "@types/node": "^14.14.7",
+    "@types/ws": "^7.4.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.0",
+    "@typescript-eslint/parser": "^4.7.0",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.13.0",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "nodemon": "^2.0.6",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "prettier-eslint": "^11.0.0",
+    "shx": "^0.3.3"
   }
 }
