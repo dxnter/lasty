@@ -1,5 +1,6 @@
 node_modules/
 dist/
+build/
 config.json
 jsconfig.json
 **/db.json
