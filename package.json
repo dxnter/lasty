@@ -29,7 +29,7 @@
   "dependencies": {
     "@settlin/collage": "^1.4.7",
     "@types/lowdb": "^1.0.9",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "canvas": "^2.6.1",
     "chalk": "^3.0.0",
     "cron": "^1.8.2",
